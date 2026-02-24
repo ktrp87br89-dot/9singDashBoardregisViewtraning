@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Training Dashboard | Live Data</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@400;500;600&display=swap');
+        
+        body { font-family: 'Sarabun', sans-serif; background-color: #f8fafc; color: #334155; }
+        h1, h2, h3, .font-prompt { font-family: 'Prompt', sans-serif; }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        
+        .card { 
+            background: white; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 20px -2px rgba(0,0,0,0.05); 
+            border: 1px solid #f1f5f9; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 12px 25px -5px rgba(0,0,0,0.1); border-color: #e2e8f0; }
+        
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .status-dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+        .status-online { background-color: #10b981; box-shadow: 0 0 8px #10b981; }
+        .status-offline { background-color: #ef4444; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <div id="loadingOverlay" class="fixed inset-0 bg-white/90 backdrop-blur-sm z-[60] flex items-center justify-center flex-col transition-all duration-300">
+        <div class="loader mb-4"></div>
+        <p class="text-lg font-prompt font-semibold text-slate-700">กำลังดึงข้อมูลล่าสุด...</p>
+    </div>
+
+    <aside class="w-72 bg-slate-900 text-slate-300 flex-shrink-0 hidden md:flex flex-col shadow-2xl z-20">
+        <div class="p-8 border-b border-slate-800 bg-slate-950 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
+            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mx-auto flex items-center justify-center text-white mb-4 shadow-lg shadow-blue-500/30 transform rotate-3 hover:rotate-0 transition">
+                <i class="fa-solid fa-chart-line text-3xl"></i>
+            </div>
+            <h2 class="text-xl font-prompt font-bold text-white tracking-wide">HR PORTAL</h2>
+            <p class="text-[11px] text-blue-400 uppercase tracking-widest mt-1 font-semibold">Live Dashboard API</p>
+        </div>
+        
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
+            <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 px-3">เมนูหลัก</div>
+            <a href="#" class="flex items-center gap-3 px-4 py-3.5 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20 font-medium transition">
+                <i class="fa-solid fa-table-columns w-5 text-center"></i> ภาพรวม (Overview)
+            </a>
+            
+            <div class="pt-6 pb-2 px-3 text-xs font-bold text-slate-500 uppercase tracking-wider">ระบบจัดการ</div>
+            <button onclick="fetchAutoData(true)" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition group">
+                <i class="fa-solid fa-rotate w-5 text-center group-hover:rotate-180 transition duration-500"></i> <span class="font-medium">ดึงข้อมูลล่าสุด</span>
+            </button>
+        </nav>
+        
+        <div class="p-5 bg-slate-950 border-t border-slate-800 text-sm flex justify-between items-center">
+            <span class="text-slate-400"><i class="fa-brands fa-google mr-1"></i> Apps Script API</span>
+            <span id="connectionStatus" class="flex items-center text-xs font-medium"><span class="status-dot status-offline"></span> รอเชื่อมต่อ</span>
+        </div>
+    </aside>
+
+    <main id="main-content" class="flex-1 flex flex-col h-screen overflow-y-auto relative">
+        <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 px-8 py-5 flex justify-between items-center border-b border-slate-200">
+            <div>
+                <h1 class="text-2xl font-prompt font-bold text-slate-800">สรุปผลการเข้าอบรมพนักงานใหม่</h1>
+                <p class="text-sm text-slate-500 mt-1 flex items-center gap-2">
+                    <i class="fa-solid fa-link text-blue-500"></i> เชื่อมต่อ Web App เดิม (100% Sync)
+                </p>
+            </div>
+            <button onclick="fetchAutoData(true)" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl shadow-lg shadow-indigo-500/30 text-sm font-prompt font-semibold flex items-center gap-2 transition transform hover:-translate-y-0.5">
+                <i class="fa-solid fa-cloud-arrow-down"></i> Sync Now
+            </button>
+        </header>
+
+        <div class="p-8 space-y-8 max-w-[1600px] mx-auto w-full">
+            <section class="grid grid-cols-2 md:grid-cols-5 gap-5">
+                <div class="card p-6 border-b-4 border-blue-500 relative overflow-hidden">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">ลงทะเบียนรวม</p>
+                    <h3 class="text-4xl font-prompt font-bold text-slate-700" id="kpi-total">0</h3>
+                </div>
+                <div class="card p-6 border-b-4 border-emerald-500 relative overflow-hidden">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">ผ่านอบรม</p>
+                    <h3 class="text-4xl font-prompt font-bold text-emerald-600" id="kpi-passed">0</h3>
+                </div>
+                <div class="card p-6 border-b-4 border-rose-500 relative overflow-hidden">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">ออก/ได้งานใหม่</p>
+                    <h3 class="text-4xl font-prompt font-bold text-rose-600" id="kpi-dropped">0</h3>
+                </div>
+                <div class="card p-6 border-b-4 border-amber-500 relative overflow-hidden">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">กำลังเทรน</p>
+                    <h3 class="text-4xl font-prompt font-bold text-amber-600" id="kpi-active">0</h3>
+                </div>
+                <div class="card p-6 border-b-4 border-indigo-500 relative overflow-hidden bg-indigo-50">
+                    <p class="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-2">อัตราการผ่าน</p>
+                    <h3 class="text-4xl font-prompt font-bold text-indigo-600" id="kpi-rate">0%</h3>
+                </div>
+            </section>
+
+            <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="card p-6">
+                    <h3 class="font-prompt font-bold text-slate-700 text-lg mb-6"><i class="fa-solid fa-chart-pie text-indigo-500 mr-2"></i> สัดส่วนสถานะผู้เข้าอบรม</h3>
+                    <div class="h-64 relative"><canvas id="statusChart"></canvas></div>
+                </div>
+                <div class="card p-6">
+                    <h3 class="font-prompt font-bold text-slate-700 text-lg mb-6"><i class="fa-solid fa-chart-simple text-blue-500 mr-2"></i> จำนวนพนักงานแยกตามแผนก</h3>
+                    <div class="h-64 relative"><canvas id="deptChart"></canvas></div>
+                </div>
+            </section>
+
+            <section class="card overflow-hidden flex flex-col">
+                <div class="px-6 py-5 border-b border-slate-100 bg-white flex justify-between items-center">
+                    <h3 class="font-prompt font-bold text-slate-800 text-lg">ฐานข้อมูลผู้เข้าอบรมล่าสุด</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 text-[11px] font-bold uppercase tracking-wider border-b border-slate-200">
+                                <th class="py-4 px-6">วันที่ลงทะเบียน</th>
+                                <th class="py-4 px-6">ชื่อ-สกุล / แผนก / ทีม</th>
+                                <th class="py-4 px-6 text-center">มาเรียน (วัน)</th>
+                                <th class="py-4 px-6">สถานะ</th>
+                                <th class="py-4 px-6">ผู้แนะนำ</th>
+                                <th class="py-4 px-6">หมายเหตุ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBody" class="divide-y divide-slate-100 text-sm text-slate-600 bg-white">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        // ************************************************************
+        // เอา URL ของเว็บแอปตัวเดิมที่คุณใช้อยู่ (ที่ลงท้ายด้วย /exec) มาวางตรงนี้
+        const API_URL = "https://script.google.com/macros/s/AKfycbyYYauRspNoRvkhUWKZh4c5Hp1TzhxWGu_T96TvPPMZ6p1DHJqh30Azzi_PrEcGn9dy/exec"; 
+        // ************************************************************
+
+        let allData = [];
+        let charts = {};
+
+        // โหลดข้อมูลอัตโนมัติตอนเปิดหน้า
+        window.onload = () => fetchAutoData(true);
+
+        async function fetchAutoData(showUI = false) {
+            if(showUI) document.getElementById('loadingOverlay').classList.remove('hidden', 'opacity-0');
+            document.getElementById('connectionStatus').innerHTML = `<span class="status-dot status-offline bg-amber-500"></span> กำลังดึงข้อมูล...`;
+            
+            try {
+                // เรียกข้อมูลผ่าน API URL ตัวเดิม โดยส่งพารามิเตอร์ ?action=get_dashboard ไปด้วย
+                const response = await fetch(API_URL + "?action=get_dashboard");
+                const result = await response.json();
+                
+                if(result.status === "success") {
+                    const rows = result.data;
+                    
+                    // จับคู่คอลัมน์จาก Sheet (อ้างอิงจากลำดับไฟล์ CSV ของคุณ)
+                    allData = rows.map(row => ({
+                        id: row[0] || '',
+                        timestamp: row[1] || '',
+                        prefix: row[2] || '',
+                        name: row[3] || '',
+                        nickname: row[4] || '',
+                        team: row[5] || '',
+                        phone: row[6] || '',
+                        dept: row[7] || '',
+                        recruiter: row[8] || '',
+                        d1: row[9] || '',
+                        d2: row[10] || '',
+                        d3: row[11] || '',
+                        status: row[12] || 'Active', // ถ้าช่องสถานะว่าง ให้ถือว่าเป็น Active
+                        reason: row[13] || ''
+                    })).filter(d => d.name !== ''); // เอาเฉพาะบรรทัดที่มีชื่อ
+
+                    updateDashboard();
+                    
+                    document.getElementById('connectionStatus').innerHTML = `<span class="status-dot status-online"></span> เชื่อมต่อแล้ว`;
+                    
+                    if(showUI) {
+                        setTimeout(() => {
+                            document.getElementById('loadingOverlay').classList.add('opacity-0');
+                            setTimeout(() => document.getElementById('loadingOverlay').classList.add('hidden'), 300);
+                        }, 500);
+                    }
+                } else {
+                    throw new Error("ระบบคืนค่าผิดพลาด");
+                }
+            } catch (err) {
+                console.error("Error fetching data:", err);
+                document.getElementById('connectionStatus').innerHTML = `<span class="status-dot status-offline"></span> ล้มเหลว`;
+                if(showUI) {
+                    document.getElementById('loadingOverlay').classList.add('hidden');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'ดึงข้อมูลไม่สำเร็จ',
+                        text: 'โปรดตรวจสอบให้แน่ใจว่าได้ทำการ Update Version ใน Apps Script และใส่ API_URL ถูกต้องแล้ว',
+                        confirmButtonColor: '#3b82f6'
+                    });
+                }
+            }
+        }
+
+        function updateDashboard() {
+            const total = allData.length;
+            
+            // เช็คสถานะแบบยืดหยุ่น 
+            const passed = allData.filter(d => d.status.toLowerCase().includes('pass') || d.status.includes('ผ่าน')).length;
+            const dropped = allData.filter(d => d.status.toLowerCase().includes('drop') || d.status.toLowerCase().includes('new job') || d.status.includes('ออก')).length;
+            const active = allData.filter(d => d.status.toLowerCase().includes('active') || d.status.includes('กำลัง') || (!d.status.toLowerCase().includes('pass') && !d.status.toLowerCase().includes('drop') && !d.status.toLowerCase().includes('new job') && !d.status.includes('ผ่าน') && !d.status.includes('ออก'))).length;
+            
+            const rate = total > 0 ? Math.round((passed / total) * 100) : 0;
+
+            document.getElementById("kpi-total").innerText = total;
+            document.getElementById("kpi-passed").innerText = passed;
+            document.getElementById("kpi-dropped").innerText = dropped;
+            document.getElementById("kpi-active").innerText = active;
+            document.getElementById('kpi-rate').innerText = rate + "%";
+
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = '';
+            
+            // เรียงให้ข้อมูลล่าสุดอยู่บนสุด
+            const sortedData = [...allData].reverse();
+
+            sortedData.forEach(d => {
+                let badgeClass = "bg-amber-100 text-amber-700 border border-amber-200";
+                let s = d.status.toLowerCase();
+                if (s.includes('pass') || d.status.includes('ผ่าน')) badgeClass = "bg-emerald-100 text-emerald-700 border border-emerald-200";
+                else if (s.includes('drop') || s.includes('new job') || d.status.includes('ออก')) badgeClass = "bg-rose-100 text-rose-700 border border-rose-200";
+
+                let daysCount = (d.d1 ? 1 : 0) + (d.d2 ? 1 : 0) + (d.d3 ? 1 : 0);
+                let dateStr = d.timestamp ? d.timestamp.split(' ')[0] : '-';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50/80 transition duration-150">
+                        <td class="py-4 px-6 text-xs text-slate-500 font-medium">${dateStr}</td>
+                        <td class="py-4 px-6">
+                            <div class="font-prompt font-semibold text-slate-800 text-sm">${d.prefix || ''}${d.name} <span class="text-slate-400 font-normal">(${d.nickname || '-'})</span></div>
+                            <div class="text-[11px] text-indigo-500 font-medium mt-0.5">${d.dept || '-'} <span class="text-slate-300">|</span> ทีม: ${d.team || '-'}</div>
+                        </td>
+                        <td class="py-4 px-6 text-center">
+                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full ${daysCount === 3 ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600'} font-bold text-xs">
+                                ${daysCount}/3
+                            </span>
+                        </td>
+                        <td class="py-4 px-6">
+                            <span class="px-3 py-1 rounded-full text-[11px] font-bold tracking-wide ${badgeClass}">${d.status || 'Active'}</span>
+                        </td>
+                        <td class="py-4 px-6 text-xs text-slate-600 font-medium">${d.recruiter || '-'}</td>
+                        <td class="py-4 px-6 text-xs text-rose-500">${d.reason || '-'}</td>
+                    </tr>
+                `;
+            });
+
+            drawCharts(active, passed, dropped, allData);
+        }
+
+        function drawCharts(active, passed, dropped, data) {
+            Chart.defaults.font.family = "'Prompt', sans-serif";
+            Chart.defaults.color = '#64748b';
+
+            if(charts['status']) charts['status'].destroy();
+            const ctxStatus = document.getElementById('statusChart').getContext('2d');
+            charts['status'] = new Chart(ctxStatus, {
+                type: 'doughnut',
+                data: { 
+                    labels: ['กำลังเทรน (Active)', 'ผ่าน (Passed)', 'ออก (Dropped)'], 
+                    datasets: [{ 
+                        data: [active, passed, dropped], 
+                        backgroundColor: ['#f59e0b', '#10b981', '#f43f5e'],
+                        borderWidth: 2, borderColor: '#ffffff'
+                    }] 
+                },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } } } }
+            });
+
+            const depts = {}; 
+            data.forEach(d => { const k = d.dept || 'ไม่ระบุ'; depts[k] = (depts[k] || 0) + 1; });
+
+            if(charts['dept']) charts['dept'].destroy();
+            const ctxDept = document.getElementById('deptChart').getContext('2d');
+            charts['dept'] = new Chart(ctxDept, {
+                type: 'bar',
+                data: { 
+                    labels: Object.keys(depts), 
+                    datasets: [{ label: 'จำนวนพนักงาน', data: Object.values(depts), backgroundColor: '#6366f1', borderRadius: 6 }] 
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: { grid: { display: false } } } }
+            });
+        }
+    </script>
+</body>
+</html>
