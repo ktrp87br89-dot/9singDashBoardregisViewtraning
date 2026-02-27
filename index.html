@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR Training Dashboard | Live Data</title>
+    <title>HR Training Dashboard | Live Data & Filter</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -20,13 +20,7 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         
-        .card { 
-            background: white; 
-            border-radius: 16px; 
-            box-shadow: 0 4px 20px -2px rgba(0,0,0,0.05); 
-            border: 1px solid #f1f5f9; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-        }
+        .card { background: white; border-radius: 16px; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .card:hover { transform: translateY(-4px); box-shadow: 0 12px 25px -5px rgba(0,0,0,0.1); border-color: #e2e8f0; }
         
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
@@ -35,6 +29,10 @@
         .status-dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; }
         .status-online { background-color: #10b981; box-shadow: 0 0 8px #10b981; }
         .status-offline { background-color: #ef4444; }
+
+        /* Custom Date Input */
+        input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; transition: 0.2s; }
+        input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
@@ -73,16 +71,35 @@
     </aside>
 
     <main id="main-content" class="flex-1 flex flex-col h-screen overflow-y-auto relative">
-        <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 px-8 py-5 flex justify-between items-center border-b border-slate-200">
+        <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 px-8 py-4 flex justify-between items-center border-b border-slate-200">
             <div>
                 <h1 class="text-2xl font-prompt font-bold text-slate-800">สรุปผลการเข้าอบรมพนักงานใหม่</h1>
                 <p class="text-sm text-slate-500 mt-1 flex items-center gap-2">
                     <i class="fa-solid fa-link text-blue-500"></i> เชื่อมต่อ Web App เดิม (100% Sync)
                 </p>
             </div>
-            <button onclick="fetchAutoData(true)" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl shadow-lg shadow-indigo-500/30 text-sm font-prompt font-semibold flex items-center gap-2 transition transform hover:-translate-y-0.5">
-                <i class="fa-solid fa-cloud-arrow-down"></i> Sync Now
-            </button>
+            
+            <div class="flex items-center gap-3">
+                <div class="flex items-center bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-sm">
+                    <i class="fa-regular fa-calendar text-slate-400 mr-2"></i>
+                    <input type="date" id="startDate" class="text-sm text-slate-600 bg-transparent outline-none cursor-pointer">
+                    <span class="mx-2 text-slate-300">-</span>
+                    <input type="date" id="endDate" class="text-sm text-slate-600 bg-transparent outline-none cursor-pointer">
+                    
+                    <div class="h-6 w-px bg-slate-200 mx-3"></div>
+                    
+                    <button onclick="applyDateFilter()" class="text-blue-600 hover:text-blue-700 font-bold text-sm px-2 py-1 rounded transition" title="กรองข้อมูล">
+                        <i class="fa-solid fa-filter"></i> ค้นหา
+                    </button>
+                    <button onclick="clearDateFilter()" class="text-slate-400 hover:text-red-500 text-sm px-2 py-1 rounded transition" title="ล้างตัวกรอง">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <button onclick="fetchAutoData(true)" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-indigo-500/30 text-sm font-prompt font-semibold flex items-center gap-2 transition transform hover:-translate-y-0.5">
+                    <i class="fa-solid fa-rotate"></i> Sync
+                </button>
+            </div>
         </header>
 
         <div class="p-8 space-y-8 max-w-[1600px] mx-auto w-full">
@@ -122,7 +139,8 @@
 
             <section class="card overflow-hidden flex flex-col">
                 <div class="px-6 py-5 border-b border-slate-100 bg-white flex justify-between items-center">
-                    <h3 class="font-prompt font-bold text-slate-800 text-lg">ฐานข้อมูลผู้เข้าอบรมล่าสุด</h3>
+                    <h3 class="font-prompt font-bold text-slate-800 text-lg">ฐานข้อมูลผู้เข้าอบรม</h3>
+                    <span id="filterStatus" class="text-xs bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-medium border border-slate-200">แสดงข้อมูลทั้งหมด</span>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -146,29 +164,31 @@
 
     <script>
         // ************************************************************
-        // เอา URL ของเว็บแอปตัวเดิมที่คุณใช้อยู่ (ที่ลงท้ายด้วย /exec) มาวางตรงนี้
+        // เอา URL ของเว็บแอปตัวเดิมของคุณ มาวางตรงนี้เหมือนเดิมครับ
         const API_URL = "https://script.google.com/macros/s/AKfycbyYYauRspNoRvkhUWKZh4c5Hp1TzhxWGu_T96TvPPMZ6p1DHJqh30Azzi_PrEcGn9dy/exec"; 
         // ************************************************************
 
-        let allData = [];
+        let allData = []; // เก็บข้อมูลต้นฉบับทั้งหมด
         let charts = {};
 
         // โหลดข้อมูลอัตโนมัติตอนเปิดหน้า
-        window.onload = () => fetchAutoData(true);
+        window.onload = () => {
+            fetchAutoData(true);
+            // ถ้าอยากให้อัพเดตอัตโนมัติทุก 1 นาที ให้เอาเครื่องหมาย // ข้างหน้าบรรทัดล่างออก
+            // setInterval(() => fetchAutoData(false), 60000); 
+        };
 
         async function fetchAutoData(showUI = false) {
             if(showUI) document.getElementById('loadingOverlay').classList.remove('hidden', 'opacity-0');
             document.getElementById('connectionStatus').innerHTML = `<span class="status-dot status-offline bg-amber-500"></span> กำลังดึงข้อมูล...`;
             
             try {
-                // เรียกข้อมูลผ่าน API URL ตัวเดิม โดยส่งพารามิเตอร์ ?action=get_dashboard ไปด้วย
                 const response = await fetch(API_URL + "?action=get_dashboard");
                 const result = await response.json();
                 
                 if(result.status === "success") {
                     const rows = result.data;
                     
-                    // จับคู่คอลัมน์จาก Sheet (อ้างอิงจากลำดับไฟล์ CSV ของคุณ)
                     allData = rows.map(row => ({
                         id: row[0] || '',
                         timestamp: row[1] || '',
@@ -182,11 +202,12 @@
                         d1: row[9] || '',
                         d2: row[10] || '',
                         d3: row[11] || '',
-                        status: row[12] || 'Active', // ถ้าช่องสถานะว่าง ให้ถือว่าเป็น Active
+                        status: row[12] || 'Active', 
                         reason: row[13] || ''
-                    })).filter(d => d.name !== ''); // เอาเฉพาะบรรทัดที่มีชื่อ
+                    })).filter(d => d.name !== '');
 
-                    updateDashboard();
+                    // หลังจากดึงข้อมูลมาใหม่ ให้สั่งทำงาน Filter ทันที (เผื่อค้างวันที่เอาไว้)
+                    applyDateFilter();
                     
                     document.getElementById('connectionStatus').innerHTML = `<span class="status-dot status-online"></span> เชื่อมต่อแล้ว`;
                     
@@ -202,25 +223,70 @@
             } catch (err) {
                 console.error("Error fetching data:", err);
                 document.getElementById('connectionStatus').innerHTML = `<span class="status-dot status-offline"></span> ล้มเหลว`;
-                if(showUI) {
-                    document.getElementById('loadingOverlay').classList.add('hidden');
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'ดึงข้อมูลไม่สำเร็จ',
-                        text: 'โปรดตรวจสอบให้แน่ใจว่าได้ทำการ Update Version ใน Apps Script และใส่ API_URL ถูกต้องแล้ว',
-                        confirmButtonColor: '#3b82f6'
-                    });
-                }
+                if(showUI) document.getElementById('loadingOverlay').classList.add('hidden');
             }
         }
 
-        function updateDashboard() {
-            const total = allData.length;
+        // --- ระบบแปลงวันที่ (Format: DD/MM/YYYY) ---
+        function parseThaiDate(dateStr) {
+            if (!dateStr) return null;
+            // แยกวันที่ออกจากเวลา (17/02/2026 13:19:56 -> 17/02/2026)
+            let datePart = dateStr.split(' ')[0]; 
+            let parts = datePart.split('/'); 
             
-            // เช็คสถานะแบบยืดหยุ่น 
-            const passed = allData.filter(d => d.status.toLowerCase().includes('pass') || d.status.includes('ผ่าน')).length;
-            const dropped = allData.filter(d => d.status.toLowerCase().includes('drop') || d.status.toLowerCase().includes('new job') || d.status.includes('ออก')).length;
-            const active = allData.filter(d => d.status.toLowerCase().includes('active') || d.status.includes('กำลัง') || (!d.status.toLowerCase().includes('pass') && !d.status.toLowerCase().includes('drop') && !d.status.toLowerCase().includes('new job') && !d.status.includes('ผ่าน') && !d.status.includes('ออก'))).length;
+            if (parts.length === 3) {
+                // รูปแบบ new Date(Year, Month(0-11), Day)
+                return new Date(parts[2], parseInt(parts[1]) - 1, parts[0]); 
+            }
+            return null;
+        }
+
+        // --- ฟังก์ชันกรองวันที่ ---
+        function applyDateFilter() {
+            const startVal = document.getElementById('startDate').value;
+            const endVal = document.getElementById('endDate').value;
+            
+            // ถ้าไม่ได้เลือกวันที่เลย ให้โชว์ข้อมูลทั้งหมด
+            if (!startVal && !endVal) {
+                document.getElementById('filterStatus').innerHTML = "แสดงข้อมูลทั้งหมด";
+                document.getElementById('filterStatus').className = "text-xs bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-medium border border-slate-200";
+                updateDashboard(allData);
+                return;
+            }
+
+            // แปลงค่าจาก Input ให้เป็น Date Object (ถ้าไม่เลือกฝั่งไหน ให้ตั้งค่าย้อนหลัง/ล่วงหน้าสุดๆ ไว้)
+            const startDate = startVal ? new Date(startVal) : new Date('2000-01-01');
+            const endDate = endVal ? new Date(endVal) : new Date('2100-01-01');
+            endDate.setHours(23, 59, 59, 999); // ให้คลุมไปถึงเวลา 23:59 น. ของวันสิ้นสุด
+
+            // ทำการกรองข้อมูล
+            const filteredData = allData.filter(d => {
+                const rowDate = parseThaiDate(d.timestamp);
+                if (!rowDate) return false; 
+                return rowDate >= startDate && rowDate <= endDate;
+            });
+
+            // เปลี่ยนข้อความแจ้งเตือนสถานะ
+            document.getElementById('filterStatus').innerHTML = `<i class="fa-solid fa-filter mr-1"></i> กรองแล้ว: พบ ${filteredData.length} รายการ`;
+            document.getElementById('filterStatus').className = "text-xs bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-bold border border-blue-200";
+
+            // อัพเดตหน้าจอด้วยข้อมูลที่กรองแล้ว
+            updateDashboard(filteredData);
+        }
+
+        function clearDateFilter() {
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            applyDateFilter();
+        }
+
+        // --- ฟังก์ชันวาดหน้าจอ (รับพารามิเตอร์ dataToRender เพื่อรองรับการ Filter) ---
+        function updateDashboard(dataToRender) {
+            const total = dataToRender.length;
+            
+            const passed = dataToRender.filter(d => d.status.toLowerCase().includes('pass') || d.status.includes('ผ่าน')).length;
+            const dropped = dataToRender.filter(d => d.status.toLowerCase().includes('drop') || d.status.toLowerCase().includes('new job') || d.status.includes('ออก')).length;
+            const active = dataToRender.filter(d => d.status.toLowerCase().includes('active') || d.status.includes('กำลัง') || (!d.status.toLowerCase().includes('pass') && !d.status.toLowerCase().includes('drop') && !d.status.toLowerCase().includes('new job') && !d.status.includes('ผ่าน') && !d.status.includes('ออก'))).length;
             
             const rate = total > 0 ? Math.round((passed / total) * 100) : 0;
 
@@ -233,43 +299,45 @@
             const tbody = document.getElementById('dataTableBody');
             tbody.innerHTML = '';
             
-            // เรียงให้ข้อมูลล่าสุดอยู่บนสุด
-            const sortedData = [...allData].reverse();
+            if(dataToRender.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-10 text-center text-slate-400 font-medium"><i class="fa-regular fa-folder-open text-2xl mb-2 block"></i> ไม่พบข้อมูลในช่วงวันที่เลือก</td></tr>`;
+            } else {
+                const sortedData = [...dataToRender].reverse();
+                sortedData.forEach(d => {
+                    let badgeClass = "bg-amber-100 text-amber-700 border border-amber-200";
+                    let s = d.status.toLowerCase();
+                    if (s.includes('pass') || d.status.includes('ผ่าน')) badgeClass = "bg-emerald-100 text-emerald-700 border border-emerald-200";
+                    else if (s.includes('drop') || s.includes('new job') || d.status.includes('ออก')) badgeClass = "bg-rose-100 text-rose-700 border border-rose-200";
 
-            sortedData.forEach(d => {
-                let badgeClass = "bg-amber-100 text-amber-700 border border-amber-200";
-                let s = d.status.toLowerCase();
-                if (s.includes('pass') || d.status.includes('ผ่าน')) badgeClass = "bg-emerald-100 text-emerald-700 border border-emerald-200";
-                else if (s.includes('drop') || s.includes('new job') || d.status.includes('ออก')) badgeClass = "bg-rose-100 text-rose-700 border border-rose-200";
+                    let daysCount = (d.d1 ? 1 : 0) + (d.d2 ? 1 : 0) + (d.d3 ? 1 : 0);
+                    let dateStr = d.timestamp ? d.timestamp.split(' ')[0] : '-';
 
-                let daysCount = (d.d1 ? 1 : 0) + (d.d2 ? 1 : 0) + (d.d3 ? 1 : 0);
-                let dateStr = d.timestamp ? d.timestamp.split(' ')[0] : '-';
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-50/80 transition duration-150">
+                            <td class="py-4 px-6 text-xs text-slate-500 font-medium">${dateStr}</td>
+                            <td class="py-4 px-6">
+                                <div class="font-prompt font-semibold text-slate-800 text-sm">${d.prefix || ''}${d.name} <span class="text-slate-400 font-normal">(${d.nickname || '-'})</span></div>
+                                <div class="text-[11px] text-indigo-500 font-medium mt-0.5">${d.dept || '-'} <span class="text-slate-300">|</span> ทีม: ${d.team || '-'}</div>
+                            </td>
+                            <td class="py-4 px-6 text-center">
+                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full ${daysCount === 3 ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600'} font-bold text-xs">
+                                    ${daysCount}/3
+                                </span>
+                            </td>
+                            <td class="py-4 px-6">
+                                <span class="px-3 py-1 rounded-full text-[11px] font-bold tracking-wide ${badgeClass}">${d.status || 'Active'}</span>
+                            </td>
+                            <td class="py-4 px-6 text-xs text-slate-600 font-medium">${d.recruiter || '-'}</td>
+                            <td class="py-4 px-6 text-xs text-rose-500">${d.reason || '-'}</td>
+                        </tr>
+                    `;
+                });
+            }
 
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50/80 transition duration-150">
-                        <td class="py-4 px-6 text-xs text-slate-500 font-medium">${dateStr}</td>
-                        <td class="py-4 px-6">
-                            <div class="font-prompt font-semibold text-slate-800 text-sm">${d.prefix || ''}${d.name} <span class="text-slate-400 font-normal">(${d.nickname || '-'})</span></div>
-                            <div class="text-[11px] text-indigo-500 font-medium mt-0.5">${d.dept || '-'} <span class="text-slate-300">|</span> ทีม: ${d.team || '-'}</div>
-                        </td>
-                        <td class="py-4 px-6 text-center">
-                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full ${daysCount === 3 ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600'} font-bold text-xs">
-                                ${daysCount}/3
-                            </span>
-                        </td>
-                        <td class="py-4 px-6">
-                            <span class="px-3 py-1 rounded-full text-[11px] font-bold tracking-wide ${badgeClass}">${d.status || 'Active'}</span>
-                        </td>
-                        <td class="py-4 px-6 text-xs text-slate-600 font-medium">${d.recruiter || '-'}</td>
-                        <td class="py-4 px-6 text-xs text-rose-500">${d.reason || '-'}</td>
-                    </tr>
-                `;
-            });
-
-            drawCharts(active, passed, dropped, allData);
+            drawCharts(active, passed, dropped, dataToRender);
         }
 
-        function drawCharts(active, passed, dropped, data) {
+        function drawCharts(active, passed, dropped, dataToRender) {
             Chart.defaults.font.family = "'Prompt', sans-serif";
             Chart.defaults.color = '#64748b';
 
@@ -289,7 +357,7 @@
             });
 
             const depts = {}; 
-            data.forEach(d => { const k = d.dept || 'ไม่ระบุ'; depts[k] = (depts[k] || 0) + 1; });
+            dataToRender.forEach(d => { const k = d.dept || 'ไม่ระบุ'; depts[k] = (depts[k] || 0) + 1; });
 
             if(charts['dept']) charts['dept'].destroy();
             const ctxDept = document.getElementById('deptChart').getContext('2d');
