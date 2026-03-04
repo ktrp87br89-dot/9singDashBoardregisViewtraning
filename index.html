@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR Training Dashboard | Live Data & Filter</title>
+    <title>HR Training Dashboard | Live Data & Print Report</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -30,19 +30,43 @@
         .status-online { background-color: #10b981; box-shadow: 0 0 8px #10b981; }
         .status-offline { background-color: #ef4444; }
 
-        /* Custom Date Input */
         input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; transition: 0.2s; }
         input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+
+        /* --- Print Specific Styles (เพิ่มจาก v4.9) --- */
+        #reportHeader, #signatureArea { display: none; }
+
+        @media print {
+            html, body { height: auto !important; overflow: visible !important; background: white !important; }
+            .h-screen { height: auto !important; overflow: visible !important; }
+            .overflow-hidden, .overflow-y-auto { overflow: visible !important; }
+            
+            .no-print, aside, header { display: none !important; }
+            
+            #main-content { margin-left: 0 !important; width: 100% !important; padding: 0 !important; background: white !important; height: auto !important; overflow: visible !important; position: static !important; }
+            .card { box-shadow: none !important; border: 1px solid #ddd !important; page-break-inside: avoid; margin-bottom: 20px; border-radius: 8px; }
+            
+            #reportHeader { display: block !important; text-align: center; margin-bottom: 25px; border-bottom: 2px solid #1e293b; padding-bottom: 15px; padding-top: 20px; }
+            #reportHeader h1 { font-size: 22pt; color: #1e293b; font-weight: bold; font-family: 'Prompt', sans-serif; }
+            #reportHeader p { font-size: 12pt; color: #475569; margin-top: 8px; }
+
+            .grid { display: block !important; }
+            .card { width: 100% !important; }
+            canvas { max-height: 280px !important; width: 100% !important; margin: 0 auto; }
+            
+            #signatureArea { display: flex !important; justify-content: space-around; margin-top: 40px; padding: 20px; page-break-inside: avoid; }
+            .sig-box { text-align: center; width: 220px; border-top: 1px solid #333; padding-top: 10px; font-family: 'Prompt', sans-serif; }
+        }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden">
+<body class="flex h-screen overflow-hidden print:h-auto print:overflow-visible print:block">
 
     <div id="loadingOverlay" class="fixed inset-0 bg-white/90 backdrop-blur-sm z-[60] flex items-center justify-center flex-col transition-all duration-300">
         <div class="loader mb-4"></div>
         <p class="text-lg font-prompt font-semibold text-slate-700">กำลังดึงข้อมูลล่าสุด...</p>
     </div>
 
-    <aside class="w-72 bg-slate-900 text-slate-300 flex-shrink-0 hidden md:flex flex-col shadow-2xl z-20">
+    <aside class="w-72 bg-slate-900 text-slate-300 flex-shrink-0 hidden md:flex flex-col shadow-2xl z-20 print:hidden">
         <div class="p-8 border-b border-slate-800 bg-slate-950 text-center relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
             <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mx-auto flex items-center justify-center text-white mb-4 shadow-lg shadow-blue-500/30 transform rotate-3 hover:rotate-0 transition">
@@ -54,11 +78,14 @@
         
         <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
             <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 px-3">เมนูหลัก</div>
-            <a href="#" class="flex items-center gap-3 px-4 py-3.5 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20 font-medium transition">
+            <a href="#" onclick="location.reload()" class="flex items-center gap-3 px-4 py-3.5 rounded-xl bg-blue-600/10 text-blue-400 border border-blue-500/20 font-medium transition">
                 <i class="fa-solid fa-table-columns w-5 text-center"></i> ภาพรวม (Overview)
             </a>
             
             <div class="pt-6 pb-2 px-3 text-xs font-bold text-slate-500 uppercase tracking-wider">ระบบจัดการ</div>
+            <button onclick="prepareReport()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl bg-emerald-900/30 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-800 hover:text-white transition group">
+                <i class="fa-solid fa-print w-5 text-center"></i> <span class="font-medium">พิมพ์รายงาน (PDF)</span>
+            </button>
             <button onclick="fetchAutoData(true)" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition group">
                 <i class="fa-solid fa-rotate w-5 text-center group-hover:rotate-180 transition duration-500"></i> <span class="font-medium">ดึงข้อมูลล่าสุด</span>
             </button>
@@ -70,8 +97,15 @@
         </div>
     </aside>
 
-    <main id="main-content" class="flex-1 flex flex-col h-screen overflow-y-auto relative">
-        <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 px-8 py-4 flex justify-between items-center border-b border-slate-200">
+    <main id="main-content" class="flex-1 flex flex-col h-screen overflow-y-auto relative print:h-auto print:overflow-visible">
+        
+        <div id="reportHeader">
+            <h1>รายงานสรุปผลการดำเนินงานโครงการอบรมพนักงาน</h1>
+            <p>ข้อมูล ณ ช่วงวันที่: <span id="reportDateRange" class="font-bold">...</span></p>
+            <p>จัดทำโดย: ฝ่ายบริหารทรัพยากรบุคคล (HR Management)</p>
+        </div>
+
+        <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 px-8 py-4 flex justify-between items-center border-b border-slate-200 no-print">
             <div>
                 <h1 class="text-2xl font-prompt font-bold text-slate-800">สรุปผลการเข้าอบรมพนักงานใหม่</h1>
                 <p class="text-sm text-slate-500 mt-1 flex items-center gap-2">
@@ -96,6 +130,9 @@
                     </button>
                 </div>
 
+                <button onclick="prepareReport()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 text-sm font-prompt font-semibold flex items-center gap-2 transition transform hover:-translate-y-0.5">
+                    <i class="fa-solid fa-print"></i> พิมพ์
+                </button>
                 <button onclick="fetchAutoData(true)" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-indigo-500/30 text-sm font-prompt font-semibold flex items-center gap-2 transition transform hover:-translate-y-0.5">
                     <i class="fa-solid fa-rotate"></i> Sync
                 </button>
@@ -103,6 +140,17 @@
         </header>
 
         <div class="p-8 space-y-8 max-w-[1600px] mx-auto w-full">
+            
+            <section class="card p-6 border-indigo-200 bg-indigo-50/50">
+                <div class="flex justify-between items-center mb-3">
+                    <label class="block text-sm font-prompt font-bold text-indigo-800">บทสรุปเพิ่มเติมสำหรับผู้บริหาร (Executive Summary)</label>
+                    <button id="btnAISummary" onclick="generateAISummary()" class="no-print text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition shadow-sm flex items-center gap-2 font-medium">
+                        <i class="fa-solid fa-robot"></i> AI ช่วยสรุปจากข้อมูล
+                    </button>
+                </div>
+                <textarea id="reportSummaryInput" rows="4" class="w-full p-4 bg-white border border-indigo-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 leading-relaxed font-sarabun text-slate-700" placeholder="สามารถพิมพ์บทสรุปสั้นๆ ตรงนี้ หรือกดปุ่ม 'AI ช่วยสรุป' เพื่อให้ระบบประมวลผลให้อัตโนมัติ..."></textarea>
+            </section>
+
             <section class="grid grid-cols-2 md:grid-cols-5 gap-5">
                 <div class="card p-6 border-b-4 border-blue-500 relative overflow-hidden">
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">ลงทะเบียนรวม</p>
@@ -140,7 +188,7 @@
             <section class="card overflow-hidden flex flex-col">
                 <div class="px-6 py-5 border-b border-slate-100 bg-white flex justify-between items-center">
                     <h3 class="font-prompt font-bold text-slate-800 text-lg">ฐานข้อมูลผู้เข้าอบรม</h3>
-                    <span id="filterStatus" class="text-xs bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-medium border border-slate-200">แสดงข้อมูลทั้งหมด</span>
+                    <span id="filterStatus" class="no-print text-xs bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-medium border border-slate-200">แสดงข้อมูลทั้งหมด</span>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -159,23 +207,36 @@
                     </table>
                 </div>
             </section>
+
+            <div id="signatureArea">
+                <div class="sig-box">
+                    <p class="font-bold">ผู้ออกรายงาน</p>
+                    <br><br>
+                    <p>(................................................)</p>
+                    <p class="mt-2 text-sm text-slate-500">วันที่: ......./......./.......</p>
+                </div>
+                <div class="sig-box">
+                    <p class="font-bold">หัวหน้างาน / ผู้บริหารรับทราบ</p>
+                    <br><br>
+                    <p>(................................................)</p>
+                    <p class="mt-2 text-sm text-slate-500">วันที่: ......./......./.......</p>
+                </div>
+            </div>
+
         </div>
     </main>
 
     <script>
         // ************************************************************
-        // เอา URL ของเว็บแอปตัวเดิมของคุณ มาวางตรงนี้เหมือนเดิมครับ
+        // เอา URL ของเว็บแอปตัวเดิมของคุณ มาวางตรงนี้เหมือนเดิมครับ (ห้ามเปลี่ยนเด็ดขาด)
         const API_URL = "https://script.google.com/macros/s/AKfycbyYYauRspNoRvkhUWKZh4c5Hp1TzhxWGu_T96TvPPMZ6p1DHJqh30Azzi_PrEcGn9dy/exec"; 
         // ************************************************************
 
         let allData = []; // เก็บข้อมูลต้นฉบับทั้งหมด
         let charts = {};
 
-        // โหลดข้อมูลอัตโนมัติตอนเปิดหน้า
         window.onload = () => {
             fetchAutoData(true);
-            // ถ้าอยากให้อัพเดตอัตโนมัติทุก 1 นาที ให้เอาเครื่องหมาย // ข้างหน้าบรรทัดล่างออก
-            // setInterval(() => fetchAutoData(false), 60000); 
         };
 
         async function fetchAutoData(showUI = false) {
@@ -206,7 +267,6 @@
                         reason: row[13] || ''
                     })).filter(d => d.name !== '');
 
-                    // หลังจากดึงข้อมูลมาใหม่ ให้สั่งทำงาน Filter ทันที (เผื่อค้างวันที่เอาไว้)
                     applyDateFilter();
                     
                     document.getElementById('connectionStatus').innerHTML = `<span class="status-dot status-online"></span> เชื่อมต่อแล้ว`;
@@ -227,50 +287,40 @@
             }
         }
 
-        // --- ระบบแปลงวันที่ (Format: DD/MM/YYYY) ---
         function parseThaiDate(dateStr) {
             if (!dateStr) return null;
-            // แยกวันที่ออกจากเวลา (17/02/2026 13:19:56 -> 17/02/2026)
             let datePart = dateStr.split(' ')[0]; 
             let parts = datePart.split('/'); 
-            
             if (parts.length === 3) {
-                // รูปแบบ new Date(Year, Month(0-11), Day)
                 return new Date(parts[2], parseInt(parts[1]) - 1, parts[0]); 
             }
             return null;
         }
 
-        // --- ฟังก์ชันกรองวันที่ ---
         function applyDateFilter() {
             const startVal = document.getElementById('startDate').value;
             const endVal = document.getElementById('endDate').value;
             
-            // ถ้าไม่ได้เลือกวันที่เลย ให้โชว์ข้อมูลทั้งหมด
             if (!startVal && !endVal) {
                 document.getElementById('filterStatus').innerHTML = "แสดงข้อมูลทั้งหมด";
-                document.getElementById('filterStatus').className = "text-xs bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-medium border border-slate-200";
+                document.getElementById('filterStatus').className = "no-print text-xs bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-medium border border-slate-200";
                 updateDashboard(allData);
                 return;
             }
 
-            // แปลงค่าจาก Input ให้เป็น Date Object (ถ้าไม่เลือกฝั่งไหน ให้ตั้งค่าย้อนหลัง/ล่วงหน้าสุดๆ ไว้)
             const startDate = startVal ? new Date(startVal) : new Date('2000-01-01');
             const endDate = endVal ? new Date(endVal) : new Date('2100-01-01');
-            endDate.setHours(23, 59, 59, 999); // ให้คลุมไปถึงเวลา 23:59 น. ของวันสิ้นสุด
+            endDate.setHours(23, 59, 59, 999);
 
-            // ทำการกรองข้อมูล
             const filteredData = allData.filter(d => {
                 const rowDate = parseThaiDate(d.timestamp);
                 if (!rowDate) return false; 
                 return rowDate >= startDate && rowDate <= endDate;
             });
 
-            // เปลี่ยนข้อความแจ้งเตือนสถานะ
             document.getElementById('filterStatus').innerHTML = `<i class="fa-solid fa-filter mr-1"></i> กรองแล้ว: พบ ${filteredData.length} รายการ`;
-            document.getElementById('filterStatus').className = "text-xs bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-bold border border-blue-200";
+            document.getElementById('filterStatus').className = "no-print text-xs bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-bold border border-blue-200";
 
-            // อัพเดตหน้าจอด้วยข้อมูลที่กรองแล้ว
             updateDashboard(filteredData);
         }
 
@@ -280,7 +330,6 @@
             applyDateFilter();
         }
 
-        // --- ฟังก์ชันวาดหน้าจอ (รับพารามิเตอร์ dataToRender เพื่อรองรับการ Filter) ---
         function updateDashboard(dataToRender) {
             const total = dataToRender.length;
             
@@ -369,6 +418,113 @@
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: { grid: { display: false } } } }
             });
+        }
+
+        /* =========================================================
+           ฟังก์ชันใหม่ที่เพิ่มเข้ามาสำหรับ AI Summary และ Print Report 
+           ========================================================= */
+
+        function generateAISummary() {
+            // ดึงค่าวันที่ที่กรองอยู่
+            const startVal = document.getElementById('startDate').value;
+            const endVal = document.getElementById('endDate').value;
+            
+            // จำลองการ Filter เพื่อเอาข้อมูลชุดเดียวกับที่แสดงบนหน้าจอมาวิเคราะห์
+            let dataToAnalyze = allData;
+            if (startVal || endVal) {
+                const startDate = startVal ? new Date(startVal) : new Date('2000-01-01');
+                const endDate = endVal ? new Date(endVal) : new Date('2100-01-01');
+                endDate.setHours(23, 59, 59, 999);
+                dataToAnalyze = allData.filter(d => {
+                    const rowDate = parseThaiDate(d.timestamp);
+                    if (!rowDate) return false; 
+                    return rowDate >= startDate && rowDate <= endDate;
+                });
+            }
+
+            const total = dataToAnalyze.length;
+            if(total === 0) {
+                document.getElementById('reportSummaryInput').value = "ไม่พบข้อมูลในช่วงเวลาที่เลือก";
+                return;
+            }
+
+            const passed = dataToAnalyze.filter(d => d.status.toLowerCase().includes('pass') || d.status.includes('ผ่าน')).length;
+            const dropped = dataToAnalyze.filter(d => d.status.toLowerCase().includes('drop') || d.status.toLowerCase().includes('new job') || d.status.includes('ออก')).length;
+            const rate = total > 0 ? Math.round((passed / total) * 100) : 0;
+
+            let dateRange = "ภาพรวมทั้งหมด";
+            if(startVal && endVal) {
+                const sDate = new Date(startVal);
+                const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+                dateRange = `ประจำเดือน ${monthNames[sDate.getMonth()]} ปี ${sDate.getFullYear() + 543}`;
+            }
+
+            const autoText = `เรียน ผู้บริหาร\n\nสรุปผลการดำเนินงานโครงการอบรมพนักงาน ${dateRange}\nมีผู้เข้าอบรมทั้งสิ้น ${total} ราย โดยแบ่งเป็น:\n- ผู้ผ่านการประเมิน: ${passed} ราย (คิดเป็นอัตราความสำเร็จ ${rate}%)\n- ผู้ที่ไม่ผ่าน/สละสิทธิ์: ${dropped} ราย\n\nจึงเรียนมาเพื่อโปรดทราบและพิจารณาประเมินผลในรอบถัดไป`;
+
+            document.getElementById('reportSummaryInput').value = autoText;
+            
+            // สร้าง Effect ปุ่ม
+            const btn = document.getElementById('btnAISummary');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-check"></i> สร้างข้อความสำเร็จ!`;
+            btn.classList.replace('bg-indigo-600', 'bg-emerald-600');
+            btn.classList.replace('hover:bg-indigo-700', 'hover:bg-emerald-700');
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.replace('bg-emerald-600', 'bg-indigo-600');
+                btn.classList.replace('hover:bg-emerald-700', 'hover:bg-indigo-700');
+            }, 2500);
+        }
+
+        function prepareReport() {
+            const start = document.getElementById('startDate').value;
+            const end = document.getElementById('endDate').value;
+            
+            // แจ้งเตือนถ้าไม่ได้เลือกวันที่
+            if(!start || !end) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'กรุณาเลือกช่วงวันที่',
+                    text: 'กรุณาเลือกตั้งแต่วันที่ และ ถึงวันที่ ก่อนกดพิมพ์รายงานครับ',
+                    confirmButtonColor: '#4f46e5'
+                });
+                return;
+            }
+
+            // จัดรูปแบบวันที่ภาษาไทยลงใน Header
+            const formatThai = (dStr) => {
+                const d = new Date(dStr);
+                const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+                return `${d.getDate()} ${monthNames[d.getMonth()]} ${d.getFullYear() + 543}`;
+            };
+            document.getElementById('reportDateRange').innerText = `${formatThai(start)} ถึง ${formatThai(end)}`;
+            
+            // เปลี่ยน Textarea เป็น Text ธรรมดาก่อนพิมพ์ให้สวยงาม
+            const summaryInput = document.getElementById('reportSummaryInput');
+            const summaryText = summaryInput.value;
+            if(summaryText.trim() !== "") {
+                const div = document.createElement('div');
+                div.id = "tempSummaryDiv";
+                div.className = "whitespace-pre-wrap text-[15px] text-slate-800 bg-transparent border-0 p-2 font-sarabun mt-2";
+                div.innerText = summaryText;
+                summaryInput.style.display = "none";
+                summaryInput.parentNode.insertBefore(div, summaryInput.nextSibling);
+            }
+
+            // เลื่อนขึ้นบนสุด
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // หน่วงเวลาให้กราฟและ UI โหลดเสร็จก่อนสั่งพิมพ์
+            setTimeout(() => { 
+                window.print(); 
+                
+                // หลังพิมพ์เสร็จ คืนร่าง Textarea กลับมา
+                if(summaryText.trim() !== "") {
+                    const tempDiv = document.getElementById('tempSummaryDiv');
+                    if(tempDiv) tempDiv.remove();
+                    summaryInput.style.display = "block";
+                }
+            }, 500);
         }
     </script>
 </body>
