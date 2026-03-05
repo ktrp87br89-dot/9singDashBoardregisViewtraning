@@ -679,7 +679,7 @@
                     if (parts.length === 2 && parts[0].includes('/')) {
                         const dParts = parts[0].split('/');
                         
-                        // ดึง ปี ค.ศ. 
+                        // ดึง ปี ค.ศ. จาก timestamp ตอนลงทะเบียน
                         let year = new Date().getFullYear();
                         if (timestamp) {
                             const rDate = parseToDateObj(timestamp);
@@ -689,7 +689,7 @@
                         const dd = String(dParts[0]).padStart(2, '0');
                         const mm = String(dParts[1]).padStart(2, '0');
                         
-                        // คืนค่าแบบ 04-03-2026 09:13 คลีนๆ
+                        // คืนค่าแบบ 04-03-2026 09:13
                         return `${dd}-${mm}-${year} ${parts[1]}`;
                     }
                     return val; 
@@ -705,8 +705,8 @@
                     
                     tr.className = isDropout ? "transition border-b border-[var(--status-alert-text)] bg-[var(--status-alert-bg)]" : "hover:bg-[var(--glass-border)] transition border-b border-theme-border";
                     
-                    // เรียกใช้ title ฟังก์ชันที่จะโชว์แค่ตัวเลขตามที่คุณรีเควส
-                    const icon = (v) => v ? `<i class="fa-solid fa-circle-check text-[var(--status-passed-text)] text-sm cursor-help hover:scale-125 transition-transform" title="${formatCheckinHover(v, row.timestamp)}"></i>` : `<i class="fa-regular fa-circle text-theme-muted text-sm opacity-50 cursor-not-allowed" title="-"></i>`;
+                    // 🟢 เรียกใช้ title ฟังก์ชันที่จะโชว์แค่ตัวเลข 04-03-2026 09:13 และส่งค่า row.timestamp เข้าไปคำนวณด้วย
+                    const icon = (v, ts) => v ? `<i class="fa-solid fa-circle-check text-[var(--status-passed-text)] text-sm cursor-help hover:scale-125 transition-transform" title="${formatCheckinHover(v, ts)}"></i>` : `<i class="fa-regular fa-circle text-theme-muted text-sm opacity-50 cursor-not-allowed" title="-"></i>`;
                     
                     let badge = "status-default"; if(safeStatus==='Active') badge="status-active"; if(safeStatus==='Passed') badge="status-passed"; if(['Resigned','New Job'].includes(safeStatus)) badge="status-alert";
                     let dayColor = attendedDays === 3 ? 'var(--status-passed-text)' : (isDropout ? 'var(--status-alert-text)' : 'var(--accent)');
@@ -731,10 +731,10 @@
                             
                             <div class="mt-3 flex items-center gap-3 bg-theme-panel px-3 py-1.5 rounded-lg border border-theme-border w-fit shadow-inner">
                                 <span class="text-[10px] text-theme-main font-bold uppercase tracking-wide">เข้าเรียน <span class="text-lg mx-1 leading-none font-digital drop-shadow-md" style="color: ${dayColor}">${attendedDays}</span>/ 3 วัน</span>
-                                <div class="flex gap-1.5 border-l border-theme-border pl-3">${icon(row.d1)}${icon(row.d2)}${icon(row.d3)}</div>
+                                <div class="flex gap-1.5 border-l border-theme-border pl-3">${icon(row.d1, row.timestamp)}${icon(row.d2, row.timestamp)}${icon(row.d3, row.timestamp)}</div>
                             </div>
                         </td>
-                        <td class="p-3 text-center hidden md:table-cell align-middle"><div class="flex justify-center gap-2">${icon(row.d1)}${icon(row.d2)}${icon(row.d3)}</div></td>
+                        <td class="p-3 text-center hidden md:table-cell align-middle"><div class="flex justify-center gap-2">${icon(row.d1, row.timestamp)}${icon(row.d2, row.timestamp)}${icon(row.d3, row.timestamp)}</div></td>
                         <td class="p-3 text-center align-top pt-5">
                             <div class="status-badge ${badge}">${safeStatus || '-'}</div>
                             ${isDropout ? `<div class="mt-2 inline-block bg-[var(--status-alert-bg)] border border-[var(--status-alert-text)] text-[var(--status-alert-text)] text-[9px] font-bold px-2 py-1 rounded shadow-lg animate-pulse"><i class="fa-solid fa-user-slash mr-1"></i>ออกระหว่างเทรน</div>` : ''}
