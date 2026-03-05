@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR Training Dashboard | Live Data & Print Report</title>
+    <title>HR Training Dashboard | Premium Interactive</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@400;500;600&display=swap');
@@ -33,27 +34,23 @@
         input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; transition: 0.2s; }
         input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 
-        /* --- Print Specific Styles (เพิ่มจาก v4.9) --- */
+        canvas { cursor: pointer; }
+
         #reportHeader, #signatureArea { display: none; }
 
         @media print {
             html, body { height: auto !important; overflow: visible !important; background: white !important; }
             .h-screen { height: auto !important; overflow: visible !important; }
             .overflow-hidden, .overflow-y-auto { overflow: visible !important; }
-            
             .no-print, aside, header { display: none !important; }
-            
             #main-content { margin-left: 0 !important; width: 100% !important; padding: 0 !important; background: white !important; height: auto !important; overflow: visible !important; position: static !important; }
             .card { box-shadow: none !important; border: 1px solid #ddd !important; page-break-inside: avoid; margin-bottom: 20px; border-radius: 8px; }
-            
             #reportHeader { display: block !important; text-align: center; margin-bottom: 25px; border-bottom: 2px solid #1e293b; padding-bottom: 15px; padding-top: 20px; }
             #reportHeader h1 { font-size: 22pt; color: #1e293b; font-weight: bold; font-family: 'Prompt', sans-serif; }
             #reportHeader p { font-size: 12pt; color: #475569; margin-top: 8px; }
-
             .grid { display: block !important; }
             .card { width: 100% !important; }
             canvas { max-height: 280px !important; width: 100% !important; margin: 0 auto; }
-            
             #signatureArea { display: flex !important; justify-content: space-around; margin-top: 40px; padding: 20px; page-break-inside: avoid; }
             .sig-box { text-align: center; width: 220px; border-top: 1px solid #333; padding-top: 10px; font-family: 'Prompt', sans-serif; }
         }
@@ -64,6 +61,36 @@
     <div id="loadingOverlay" class="fixed inset-0 bg-white/90 backdrop-blur-sm z-[60] flex items-center justify-center flex-col transition-all duration-300">
         <div class="loader mb-4"></div>
         <p class="text-lg font-prompt font-semibold text-slate-700">กำลังดึงข้อมูลล่าสุด...</p>
+    </div>
+
+    <div id="detailModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden items-center justify-center p-4 transition-opacity opacity-0 no-print">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] flex flex-col transform scale-95 transition-transform duration-300" id="detailModalContent">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-2xl">
+                <h3 class="font-prompt font-bold text-indigo-800 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-users-viewfinder"></i> <span id="modalTitle">รายชื่อพนักงาน</span>
+                </h3>
+                <button onclick="closeDetailModal()" class="text-slate-400 hover:text-rose-500 transition px-2 py-1 bg-white rounded-lg shadow-sm border border-slate-200">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1 bg-white">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-indigo-50/50 text-indigo-800 text-[11px] font-bold uppercase tracking-wider border-b border-indigo-100">
+                            <th class="py-3 px-4 rounded-tl-lg">ชื่อ-สกุล</th>
+                            <th class="py-3 px-4">แผนก/ทีม</th>
+                            <th class="py-3 px-4 text-center">สถานะ</th>
+                            <th class="py-3 px-4 rounded-tr-lg">หมายเหตุ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalTableBody" class="divide-y divide-slate-100 text-sm text-slate-600">
+                    </tbody>
+                </table>
+            </div>
+            <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 rounded-b-2xl flex justify-end">
+                <button onclick="closeDetailModal()" class="bg-slate-800 hover:bg-slate-700 text-white px-5 py-2.5 rounded-xl font-prompt font-medium transition shadow-lg shadow-slate-200">ปิดหน้าต่าง</button>
+            </div>
+        </div>
     </div>
 
     <aside class="w-72 bg-slate-900 text-slate-300 flex-shrink-0 hidden md:flex flex-col shadow-2xl z-20 print:hidden">
@@ -86,6 +113,9 @@
             <button onclick="prepareReport()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl bg-emerald-900/30 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-800 hover:text-white transition group">
                 <i class="fa-solid fa-print w-5 text-center"></i> <span class="font-medium">พิมพ์รายงาน (PDF)</span>
             </button>
+            <button onclick="exportToImage()" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl bg-cyan-900/30 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-800 hover:text-white transition group">
+                <i class="fa-solid fa-image w-5 text-center"></i> <span class="font-medium">แคปหน้าจอรูปภาพ</span>
+            </button>
             <button onclick="fetchAutoData(true)" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition group">
                 <i class="fa-solid fa-rotate w-5 text-center group-hover:rotate-180 transition duration-500"></i> <span class="font-medium">ดึงข้อมูลล่าสุด</span>
             </button>
@@ -105,7 +135,7 @@
             <p>จัดทำโดย: ฝ่ายบริหารทรัพยากรบุคคล (HR Management)</p>
         </div>
 
-        <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 px-8 py-4 flex justify-between items-center border-b border-slate-200 no-print">
+        <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 px-8 py-4 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 border-b border-slate-200 no-print">
             <div>
                 <h1 class="text-2xl font-prompt font-bold text-slate-800">สรุปผลการเข้าอบรมพนักงานใหม่</h1>
                 <p class="text-sm text-slate-500 mt-1 flex items-center gap-2">
@@ -113,33 +143,53 @@
                 </p>
             </div>
             
-            <div class="flex items-center gap-3">
+            <div class="flex flex-wrap items-center gap-3">
                 <div class="flex items-center bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-sm">
-                    <i class="fa-regular fa-calendar text-slate-400 mr-2"></i>
-                    <input type="date" id="startDate" class="text-sm text-slate-600 bg-transparent outline-none cursor-pointer">
-                    <span class="mx-2 text-slate-300">-</span>
+                    
+                    <i class="fa-solid fa-magnifying-glass text-slate-400 ml-1"></i>
+                    <input type="text" id="searchInput" onkeyup="if(event.key === 'Enter') applyDateFilter()" placeholder="ค้นหาชื่อ, แผนก..." class="text-sm text-slate-600 bg-transparent outline-none w-28 focus:w-40 transition-all ml-2" title="กด Enter เพื่อค้นหา">
+                    
+                    <div class="h-6 w-px bg-slate-200 mx-2"></div>
+                    
+                    <select id="statusFilter" onchange="applyDateFilter()" class="text-sm text-slate-600 bg-transparent outline-none cursor-pointer">
+                        <option value="all">ทุกสถานะ</option>
+                        <option value="active">กำลังเทรน</option>
+                        <option value="pass">ผ่านอบรม / Back Office</option>
+                        <option value="drop">ออก / ไม่ได้ไปต่อ</option>
+                    </select>
+
+                    <div class="h-6 w-px bg-slate-200 mx-2"></div>
+
+                    <i class="fa-regular fa-calendar text-slate-400"></i>
+                    <input type="date" id="startDate" class="text-sm text-slate-600 bg-transparent outline-none cursor-pointer ml-2">
+                    <span class="mx-1 text-slate-300">-</span>
                     <input type="date" id="endDate" class="text-sm text-slate-600 bg-transparent outline-none cursor-pointer">
                     
-                    <div class="h-6 w-px bg-slate-200 mx-3"></div>
+                    <div class="h-6 w-px bg-slate-200 mx-2"></div>
                     
                     <button onclick="applyDateFilter()" class="text-blue-600 hover:text-blue-700 font-bold text-sm px-2 py-1 rounded transition" title="กรองข้อมูล">
-                        <i class="fa-solid fa-filter"></i> ค้นหา
+                        <i class="fa-solid fa-filter"></i>
                     </button>
                     <button onclick="clearDateFilter()" class="text-slate-400 hover:text-red-500 text-sm px-2 py-1 rounded transition" title="ล้างตัวกรอง">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
-                <button onclick="prepareReport()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 text-sm font-prompt font-semibold flex items-center gap-2 transition transform hover:-translate-y-0.5">
-                    <i class="fa-solid fa-print"></i> พิมพ์
-                </button>
-                <button onclick="fetchAutoData(true)" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-indigo-500/30 text-sm font-prompt font-semibold flex items-center gap-2 transition transform hover:-translate-y-0.5">
-                    <i class="fa-solid fa-rotate"></i> Sync
-                </button>
+                <div class="flex gap-2">
+                    <button onclick="exportToImage()" class="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-cyan-500/30 text-sm font-prompt font-semibold flex items-center gap-2 transition transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-image"></i> แคปรูป
+                    </button>
+                    <button onclick="prepareReport()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 text-sm font-prompt font-semibold flex items-center gap-2 transition transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-print"></i> พิมพ์
+                    </button>
+                    <button onclick="fetchAutoData(true)" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-500/30 text-sm font-prompt font-semibold flex items-center gap-2 transition transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-rotate"></i> Sync
+                    </button>
+                </div>
             </div>
         </header>
 
-        <div class="p-8 space-y-8 max-w-[1600px] mx-auto w-full">
+        <div id="dashboard-content" class="p-8 space-y-8 max-w-[1600px] mx-auto w-full">
             
             <section class="card p-6 border-indigo-200 bg-indigo-50/50">
                 <div class="flex justify-between items-center mb-3">
@@ -148,7 +198,7 @@
                         <i class="fa-solid fa-robot"></i> AI ช่วยสรุปจากข้อมูล
                     </button>
                 </div>
-                <textarea id="reportSummaryInput" rows="4" class="w-full p-4 bg-white border border-indigo-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 leading-relaxed font-sarabun text-slate-700" placeholder="สามารถพิมพ์บทสรุปสั้นๆ ตรงนี้ หรือกดปุ่ม 'AI ช่วยสรุป' เพื่อให้ระบบประมวลผลให้อัตโนมัติ..."></textarea>
+                <textarea id="reportSummaryInput" rows="6" class="w-full p-4 bg-white border border-indigo-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 leading-relaxed font-sarabun text-slate-700 whitespace-pre-line" placeholder="สามารถพิมพ์บทสรุปสั้นๆ ตรงนี้ หรือกดปุ่ม 'AI ช่วยสรุป' เพื่อให้ระบบประมวลผลให้อัตโนมัติ..."></textarea>
             </section>
 
             <section class="grid grid-cols-2 md:grid-cols-5 gap-5">
@@ -175,12 +225,18 @@
             </section>
 
             <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="card p-6">
-                    <h3 class="font-prompt font-bold text-slate-700 text-lg mb-6"><i class="fa-solid fa-chart-pie text-indigo-500 mr-2"></i> สัดส่วนสถานะผู้เข้าอบรม</h3>
+                <div class="card p-6 group">
+                    <h3 class="font-prompt font-bold text-slate-700 text-lg mb-6 flex justify-between items-center">
+                        <span><i class="fa-solid fa-chart-pie text-indigo-500 mr-2"></i> สัดส่วนสถานะผู้เข้าอบรม</span>
+                        <span class="text-[10px] bg-indigo-50 text-indigo-500 px-2 py-1 rounded border border-indigo-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกที่กราฟเพื่อดูรายชื่อ</span>
+                    </h3>
                     <div class="h-64 relative"><canvas id="statusChart"></canvas></div>
                 </div>
-                <div class="card p-6">
-                    <h3 class="font-prompt font-bold text-slate-700 text-lg mb-6"><i class="fa-solid fa-chart-simple text-blue-500 mr-2"></i> จำนวนพนักงานแยกตามแผนก</h3>
+                <div class="card p-6 group">
+                    <h3 class="font-prompt font-bold text-slate-700 text-lg mb-6 flex justify-between items-center">
+                        <span><i class="fa-solid fa-chart-simple text-blue-500 mr-2"></i> จำนวนพนักงานแยกตามแผนก</span>
+                        <span class="text-[10px] bg-blue-50 text-blue-500 px-2 py-1 rounded border border-blue-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกที่แท่งกราฟเพื่อดูรายชื่อ</span>
+                    </h3>
                     <div class="h-64 relative"><canvas id="deptChart"></canvas></div>
                 </div>
             </section>
@@ -188,7 +244,12 @@
             <section class="card overflow-hidden flex flex-col">
                 <div class="px-6 py-5 border-b border-slate-100 bg-white flex justify-between items-center">
                     <h3 class="font-prompt font-bold text-slate-800 text-lg">ฐานข้อมูลผู้เข้าอบรม</h3>
-                    <span id="filterStatus" class="no-print text-xs bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-medium border border-slate-200">แสดงข้อมูลทั้งหมด</span>
+                    <div class="flex items-center gap-3">
+                        <span id="filterStatus" class="no-print text-xs bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-medium border border-slate-200">แสดงข้อมูลทั้งหมด</span>
+                        <button onclick="exportToCSV()" class="no-print text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-700 px-3 py-1.5 rounded-lg font-bold border border-emerald-300 transition flex items-center gap-1">
+                            <i class="fa-solid fa-file-excel"></i> ดาวน์โหลด CSV
+                        </button>
+                    </div>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -232,7 +293,7 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbyYYauRspNoRvkhUWKZh4c5Hp1TzhxWGu_T96TvPPMZ6p1DHJqh30Azzi_PrEcGn9dy/exec"; 
         // ************************************************************
 
-        let allData = []; // เก็บข้อมูลต้นฉบับทั้งหมด
+        let allData = []; 
         let charts = {};
 
         window.onload = () => {
@@ -300,26 +361,43 @@
         function applyDateFilter() {
             const startVal = document.getElementById('startDate').value;
             const endVal = document.getElementById('endDate').value;
+            const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+            const statusVal = document.getElementById('statusFilter').value;
             
-            if (!startVal && !endVal) {
-                document.getElementById('filterStatus').innerHTML = "แสดงข้อมูลทั้งหมด";
-                document.getElementById('filterStatus').className = "no-print text-xs bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-medium border border-slate-200";
-                updateDashboard(allData);
-                return;
-            }
-
             const startDate = startVal ? new Date(startVal) : new Date('2000-01-01');
             const endDate = endVal ? new Date(endVal) : new Date('2100-01-01');
             endDate.setHours(23, 59, 59, 999);
 
             const filteredData = allData.filter(d => {
                 const rowDate = parseThaiDate(d.timestamp);
-                if (!rowDate) return false; 
-                return rowDate >= startDate && rowDate <= endDate;
+                const matchDate = rowDate ? (rowDate >= startDate && rowDate <= endDate) : false;
+
+                const searchText = `${d.name} ${d.nickname} ${d.dept} ${d.team}`.toLowerCase();
+                const matchSearch = searchVal === '' || searchText.includes(searchVal);
+
+                let matchStatus = true;
+                if (statusVal !== 'all') {
+                    const s = d.status.toLowerCase();
+                    // อัปเดตตรรกะให้รวม Back Office อยู่ในหมวด Passed
+                    if (statusVal === 'pass') {
+                        matchStatus = s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
+                    } else if (statusVal === 'drop') {
+                        matchStatus = s.includes('drop') || s.includes('new job') || d.status.includes('ออก');
+                    } else if (statusVal === 'active') {
+                        matchStatus = s.includes('active') || d.status.includes('กำลัง') || (!s.includes('pass') && !s.includes('drop') && !s.includes('new job') && !d.status.includes('ผ่าน') && !d.status.includes('ออก') && !s.includes('back office') && !d.status.includes('แบ็คออฟฟิศ'));
+                    }
+                }
+
+                return matchDate && matchSearch && matchStatus;
             });
 
-            document.getElementById('filterStatus').innerHTML = `<i class="fa-solid fa-filter mr-1"></i> กรองแล้ว: พบ ${filteredData.length} รายการ`;
-            document.getElementById('filterStatus').className = "no-print text-xs bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-bold border border-blue-200";
+            if (!startVal && !endVal && searchVal === '' && statusVal === 'all') {
+                document.getElementById('filterStatus').innerHTML = "แสดงข้อมูลทั้งหมด";
+                document.getElementById('filterStatus').className = "no-print text-xs bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-medium border border-slate-200";
+            } else {
+                document.getElementById('filterStatus').innerHTML = `<i class="fa-solid fa-filter mr-1"></i> กรองแล้ว: พบ ${filteredData.length} รายการ`;
+                document.getElementById('filterStatus').className = "no-print text-xs bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-bold border border-blue-200";
+            }
 
             updateDashboard(filteredData);
         }
@@ -327,15 +405,29 @@
         function clearDateFilter() {
             document.getElementById('startDate').value = '';
             document.getElementById('endDate').value = '';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = 'all';
             applyDateFilter();
         }
 
         function updateDashboard(dataToRender) {
             const total = dataToRender.length;
             
-            const passed = dataToRender.filter(d => d.status.toLowerCase().includes('pass') || d.status.includes('ผ่าน')).length;
-            const dropped = dataToRender.filter(d => d.status.toLowerCase().includes('drop') || d.status.toLowerCase().includes('new job') || d.status.includes('ออก')).length;
-            const active = dataToRender.filter(d => d.status.toLowerCase().includes('active') || d.status.includes('กำลัง') || (!d.status.toLowerCase().includes('pass') && !d.status.toLowerCase().includes('drop') && !d.status.toLowerCase().includes('new job') && !d.status.includes('ผ่าน') && !d.status.includes('ออก'))).length;
+            // อัปเดตตรรกะการนับ KPI
+            const passed = dataToRender.filter(d => {
+                const s = d.status.toLowerCase();
+                return s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
+            }).length;
+            
+            const dropped = dataToRender.filter(d => {
+                const s = d.status.toLowerCase();
+                return s.includes('drop') || s.includes('new job') || d.status.includes('ออก');
+            }).length;
+            
+            const active = dataToRender.filter(d => {
+                const s = d.status.toLowerCase();
+                return s.includes('active') || d.status.includes('กำลัง') || (!s.includes('pass') && !s.includes('drop') && !s.includes('new job') && !d.status.includes('ผ่าน') && !d.status.includes('ออก') && !s.includes('back office') && !d.status.includes('แบ็คออฟฟิศ'));
+            }).length;
             
             const rate = total > 0 ? Math.round((passed / total) * 100) : 0;
 
@@ -349,14 +441,19 @@
             tbody.innerHTML = '';
             
             if(dataToRender.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="py-10 text-center text-slate-400 font-medium"><i class="fa-regular fa-folder-open text-2xl mb-2 block"></i> ไม่พบข้อมูลในช่วงวันที่เลือก</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="py-10 text-center text-slate-400 font-medium"><i class="fa-regular fa-folder-open text-2xl mb-2 block"></i> ไม่พบข้อมูลที่ค้นหา</td></tr>`;
             } else {
                 const sortedData = [...dataToRender].reverse();
                 sortedData.forEach(d => {
                     let badgeClass = "bg-amber-100 text-amber-700 border border-amber-200";
                     let s = d.status.toLowerCase();
-                    if (s.includes('pass') || d.status.includes('ผ่าน')) badgeClass = "bg-emerald-100 text-emerald-700 border border-emerald-200";
-                    else if (s.includes('drop') || s.includes('new job') || d.status.includes('ออก')) badgeClass = "bg-rose-100 text-rose-700 border border-rose-200";
+                    
+                    // ปรับสีป้ายในตารางให้ Back Office เป็นสีเขียว
+                    if (s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ')) {
+                        badgeClass = "bg-emerald-100 text-emerald-700 border border-emerald-200";
+                    } else if (s.includes('drop') || s.includes('new job') || d.status.includes('ออก')) {
+                        badgeClass = "bg-rose-100 text-rose-700 border border-rose-200";
+                    }
 
                     let daysCount = (d.d1 ? 1 : 0) + (d.d2 ? 1 : 0) + (d.d3 ? 1 : 0);
                     let dateStr = d.timestamp ? d.timestamp.split(' ')[0] : '-';
@@ -399,10 +496,42 @@
                     datasets: [{ 
                         data: [active, passed, dropped], 
                         backgroundColor: ['#f59e0b', '#10b981', '#f43f5e'],
-                        borderWidth: 2, borderColor: '#ffffff'
+                        borderWidth: 2, borderColor: '#ffffff',
+                        hoverOffset: 8
                     }] 
                 },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } } } }
+                options: { 
+                    responsive: true, maintainAspectRatio: false, cutout: '70%', 
+                    plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } } },
+                    onHover: (event, chartElement) => { event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default'; },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const label = charts['status'].data.labels[index];
+                            let filteredList = [];
+                            
+                            // อัปเดตตรรกะการคลิกกราฟ
+                            if (label.includes('กำลังเทรน')) {
+                                filteredList = dataToRender.filter(d => {
+                                    const s = d.status.toLowerCase();
+                                    return s.includes('active') || d.status.includes('กำลัง') || (!s.includes('pass') && !s.includes('drop') && !s.includes('new job') && !d.status.includes('ผ่าน') && !d.status.includes('ออก') && !s.includes('back office') && !d.status.includes('แบ็คออฟฟิศ'));
+                                });
+                            } else if (label.includes('ผ่าน')) {
+                                filteredList = dataToRender.filter(d => {
+                                    const s = d.status.toLowerCase();
+                                    return s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
+                                });
+                            } else if (label.includes('ออก')) {
+                                filteredList = dataToRender.filter(d => {
+                                    const s = d.status.toLowerCase();
+                                    return s.includes('drop') || s.includes('new job') || d.status.includes('ออก');
+                                });
+                            }
+                            
+                            showDetailModal(`กลุ่ม: ${label}`, filteredList);
+                        }
+                    }
+                }
             });
 
             const depts = {}; 
@@ -414,33 +543,111 @@
                 type: 'bar',
                 data: { 
                     labels: Object.keys(depts), 
-                    datasets: [{ label: 'จำนวนพนักงาน', data: Object.values(depts), backgroundColor: '#6366f1', borderRadius: 6 }] 
+                    datasets: [{ label: 'จำนวนพนักงาน', data: Object.values(depts), backgroundColor: '#6366f1', borderRadius: 6, hoverBackgroundColor: '#4f46e5' }] 
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: { grid: { display: false } } } }
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } }, 
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: { grid: { display: false } } },
+                    onHover: (event, chartElement) => { event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default'; },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const label = charts['dept'].data.labels[index];
+                            const filteredList = dataToRender.filter(d => (d.dept || 'ไม่ระบุ') === label);
+                            showDetailModal(`แผนก: ${label}`, filteredList);
+                        }
+                    }
+                }
             });
         }
 
-        /* =========================================================
-           ฟังก์ชันใหม่ที่เพิ่มเข้ามาสำหรับ AI Summary และ Print Report 
-           ========================================================= */
-
-        function generateAISummary() {
-            // ดึงค่าวันที่ที่กรองอยู่
-            const startVal = document.getElementById('startDate').value;
-            const endVal = document.getElementById('endDate').value;
+        function showDetailModal(title, dataList) {
+            document.getElementById('modalTitle').innerText = `${title} (${dataList.length} คน)`;
+            const tbody = document.getElementById('modalTableBody');
+            tbody.innerHTML = '';
             
-            // จำลองการ Filter เพื่อเอาข้อมูลชุดเดียวกับที่แสดงบนหน้าจอมาวิเคราะห์
-            let dataToAnalyze = allData;
-            if (startVal || endVal) {
-                const startDate = startVal ? new Date(startVal) : new Date('2000-01-01');
-                const endDate = endVal ? new Date(endVal) : new Date('2100-01-01');
-                endDate.setHours(23, 59, 59, 999);
-                dataToAnalyze = allData.filter(d => {
-                    const rowDate = parseThaiDate(d.timestamp);
-                    if (!rowDate) return false; 
-                    return rowDate >= startDate && rowDate <= endDate;
+            if(dataList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-slate-400 font-medium">ไม่พบรายชื่อในกลุ่มนี้</td></tr>`;
+            } else {
+                dataList.forEach(d => {
+                    let badgeClass = "bg-amber-100 text-amber-700 border border-amber-200";
+                    let s = d.status.toLowerCase();
+                    
+                    // ปรับสีป้ายใน Modal ด้วย
+                    if (s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ')) {
+                        badgeClass = "bg-emerald-100 text-emerald-700 border border-emerald-200";
+                    } else if (s.includes('drop') || s.includes('new job') || d.status.includes('ออก')) {
+                        badgeClass = "bg-rose-100 text-rose-700 border border-rose-200";
+                    }
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-50 transition duration-150">
+                            <td class="py-3 px-4">
+                                <div class="font-prompt font-semibold text-slate-800">${d.prefix || ''}${d.name}</div>
+                                <div class="text-[11px] text-slate-500">ชื่อเล่น: ${d.nickname || '-'}</div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="text-sm text-indigo-600 font-medium">${d.dept || '-'}</div>
+                                <div class="text-[11px] text-slate-400">ทีม: ${d.team || '-'}</div>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="px-2 py-1 rounded-full text-[10px] font-bold ${badgeClass}">${d.status || 'Active'}</span>
+                            </td>
+                            <td class="py-3 px-4 text-xs text-rose-500">${d.reason || '-'}</td>
+                        </tr>
+                    `;
                 });
             }
+
+            const modal = document.getElementById('detailModal');
+            const content = document.getElementById('detailModalContent');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeDetailModal() {
+            const modal = document.getElementById('detailModal');
+            const content = document.getElementById('detailModalContent');
+            
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        function generateAISummary() {
+            const startVal = document.getElementById('startDate').value;
+            const endVal = document.getElementById('endDate').value;
+            const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+            const statusVal = document.getElementById('statusFilter').value;
+            
+            const startDate = startVal ? new Date(startVal) : new Date('2000-01-01');
+            const endDate = endVal ? new Date(endVal) : new Date('2100-01-01');
+            endDate.setHours(23, 59, 59, 999);
+
+            const dataToAnalyze = allData.filter(d => {
+                const rowDate = parseThaiDate(d.timestamp);
+                const matchDate = rowDate ? (rowDate >= startDate && rowDate <= endDate) : false;
+                const searchText = `${d.name} ${d.nickname} ${d.dept} ${d.team}`.toLowerCase();
+                const matchSearch = searchVal === '' || searchText.includes(searchVal);
+                let matchStatus = true;
+                if (statusVal !== 'all') {
+                    const s = d.status.toLowerCase();
+                    if (statusVal === 'pass') matchStatus = s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
+                    else if (statusVal === 'drop') matchStatus = s.includes('drop') || s.includes('new job') || d.status.includes('ออก');
+                    else if (statusVal === 'active') matchStatus = s.includes('active') || d.status.includes('กำลัง') || (!s.includes('pass') && !s.includes('drop') && !s.includes('new job') && !d.status.includes('ผ่าน') && !d.status.includes('ออก') && !s.includes('back office') && !d.status.includes('แบ็คออฟฟิศ'));
+                }
+                return matchDate && matchSearch && matchStatus;
+            });
 
             const total = dataToAnalyze.length;
             if(total === 0) {
@@ -448,39 +655,81 @@
                 return;
             }
 
-            const passed = dataToAnalyze.filter(d => d.status.toLowerCase().includes('pass') || d.status.includes('ผ่าน')).length;
-            const dropped = dataToAnalyze.filter(d => d.status.toLowerCase().includes('drop') || d.status.toLowerCase().includes('new job') || d.status.includes('ออก')).length;
+            // AI ให้นับรวม Back Office เป็น Passed ด้วย
+            const passedData = dataToAnalyze.filter(d => {
+                const s = d.status.toLowerCase();
+                return s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
+            });
+            const passed = passedData.length;
+            
+            const droppedData = dataToAnalyze.filter(d => {
+                const s = d.status.toLowerCase();
+                return s.includes('drop') || s.includes('new job') || d.status.includes('ออก');
+            });
+            const dropped = droppedData.length;
+            
+            const active = total - passed - dropped;
             const rate = total > 0 ? Math.round((passed / total) * 100) : 0;
 
-            let dateRange = "ภาพรวมทั้งหมด";
-            if(startVal && endVal) {
-                const sDate = new Date(startVal);
-                const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-                dateRange = `ประจำเดือน ${monthNames[sDate.getMonth()]} ปี ${sDate.getFullYear() + 543}`;
+            let reasonText = "";
+            if (dropped > 0) {
+                const reasons = {};
+                droppedData.forEach(d => {
+                    const r = (d.reason && d.reason.trim() !== "") ? d.reason.trim() : "ไม่ระบุสาเหตุ";
+                    reasons[r] = (reasons[r] || 0) + 1;
+                });
+                const topReason = Object.keys(reasons).sort((a, b) => reasons[b] - reasons[a])[0];
+                const topReasonCount = reasons[topReason];
+                const reasonPercent = Math.round((topReasonCount / dropped) * 100);
+                reasonText = `\n\n[การวิเคราะห์สาเหตุการสละสิทธิ์/ไม่ผ่านประเมิน]\nพบผู้ไม่ผ่านเกณฑ์จำนวน ${dropped} ราย โดยสาเหตุหลักอันดับหนึ่งคือ "${topReason}" (จำนวน ${topReasonCount} ราย หรือคิดเป็น ${reasonPercent}% ของกลุ่มที่ไม่ผ่าน) ซึ่งเป็นจุดที่สามารถนำไปวิเคราะห์เพื่อปรับปรุงกระบวนการคัดกรองหรือเนื้อหาการอบรมต่อไป`;
+            } else {
+                reasonText = `\n\n[การวิเคราะห์สาเหตุการสละสิทธิ์/ไม่ผ่านประเมิน]\nในรอบการประเมินนี้ ไม่มีผู้สละสิทธิ์หรือตกประเมิน ถือเป็นเกณฑ์ที่ยอดเยี่ยมมาก`;
             }
 
-            const autoText = `เรียน ผู้บริหาร\n\nสรุปผลการดำเนินงานโครงการอบรมพนักงาน ${dateRange}\nมีผู้เข้าอบรมทั้งสิ้น ${total} ราย โดยแบ่งเป็น:\n- ผู้ผ่านการประเมิน: ${passed} ราย (คิดเป็นอัตราความสำเร็จ ${rate}%)\n- ผู้ที่ไม่ผ่าน/สละสิทธิ์: ${dropped} ราย\n\nจึงเรียนมาเพื่อโปรดทราบและพิจารณาประเมินผลในรอบถัดไป`;
+            let deptText = "";
+            if (passed > 0) {
+                const depts = {};
+                passedData.forEach(d => {
+                    const dept = (d.dept && d.dept.trim() !== "") ? d.dept.trim() : "ไม่ระบุแผนก";
+                    depts[dept] = (depts[dept] || 0) + 1;
+                });
+                const topDept = Object.keys(depts).sort((a, b) => depts[b] - depts[a])[0];
+                deptText = `\n\n[ข้อมูลเชิงลึกรายแผนก]\nแผนกที่มีผู้ผ่านการอบรม (และ Back Office) เข้าสู่ระบบงานมากที่สุดในรอบนี้คือ "${topDept}" (จำนวน ${depts[topDept]} ราย)`;
+            }
+
+            let dateRange = "ภาพรวมทั้งหมด (All Time)";
+            if(startVal && endVal) {
+                const sDate = new Date(startVal);
+                const eDate = new Date(endVal);
+                const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+                if (sDate.getMonth() === eDate.getMonth() && sDate.getFullYear() === eDate.getFullYear()) {
+                    dateRange = `ประจำเดือน ${monthNames[sDate.getMonth()]} ${sDate.getFullYear() + 543}`;
+                } else {
+                    dateRange = `ตั้งแต่วันที่ ${sDate.getDate()} ${monthNames[sDate.getMonth()]} ${sDate.getFullYear() + 543} ถึง ${eDate.getDate()} ${monthNames[eDate.getMonth()]} ${eDate.getFullYear() + 543}`;
+                }
+            }
+            if (searchVal !== '') dateRange += ` (ค้นหา: "${searchVal}")`;
+
+            const autoText = `** Executive Summary (บทสรุปผู้บริหาร) **\nเรื่อง: สรุปผลการดำเนินงานโครงการอบรมพนักงานใหม่ ${dateRange}\n\n[ภาพรวมการดำเนินงาน]\nมีผู้เข้าร่วมโครงการทั้งสิ้น ${total} ราย โดยมีสถานะปัจจุบันดังนี้:\n- ผ่านการประเมินและประจำการ (Passed / Back Office): ${passed} ราย (อัตราความสำเร็จ ${rate}%)\n- กำลังอยู่ในระหว่างการอบรม (Active): ${active} ราย\n- สละสิทธิ์/ไม่ผ่านเกณฑ์ (Dropped): ${dropped} ราย${reasonText}${deptText}\n\nข้อเสนอแนะเบื้องต้น:\nจากข้อมูลข้างต้น ฝ่ายทรัพยากรบุคคลควรนำประเด็นสาเหตุการออกหลักมาหารือร่วมกับหัวหน้างานเพื่อวางแผนการดูแลพนักงาน (Retention Plan) ในระยะยาวต่อไป\n\nจึงเรียนมาเพื่อโปรดทราบและพิจารณา`;
 
             document.getElementById('reportSummaryInput').value = autoText;
             
-            // สร้าง Effect ปุ่ม
             const btn = document.getElementById('btnAISummary');
             const originalText = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-check"></i> สร้างข้อความสำเร็จ!`;
-            btn.classList.replace('bg-indigo-600', 'bg-emerald-600');
-            btn.classList.replace('hover:bg-indigo-700', 'hover:bg-emerald-700');
+            btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> AI วิเคราะห์ข้อมูลสำเร็จ!`;
+            btn.classList.replace('bg-indigo-600', 'bg-purple-600');
+            btn.classList.replace('hover:bg-indigo-700', 'hover:bg-purple-700');
             setTimeout(() => {
                 btn.innerHTML = originalText;
-                btn.classList.replace('bg-emerald-600', 'bg-indigo-600');
-                btn.classList.replace('hover:bg-emerald-700', 'hover:bg-indigo-700');
-            }, 2500);
+                btn.classList.replace('bg-purple-600', 'bg-indigo-600');
+                btn.classList.replace('hover:bg-purple-700', 'hover:bg-indigo-700');
+            }, 3000);
         }
 
         function prepareReport() {
             const start = document.getElementById('startDate').value;
             const end = document.getElementById('endDate').value;
             
-            // แจ้งเตือนถ้าไม่ได้เลือกวันที่
             if(!start || !end) {
                 Swal.fire({
                     icon: 'warning',
@@ -491,7 +740,6 @@
                 return;
             }
 
-            // จัดรูปแบบวันที่ภาษาไทยลงใน Header
             const formatThai = (dStr) => {
                 const d = new Date(dStr);
                 const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
@@ -499,7 +747,6 @@
             };
             document.getElementById('reportDateRange').innerText = `${formatThai(start)} ถึง ${formatThai(end)}`;
             
-            // เปลี่ยน Textarea เป็น Text ธรรมดาก่อนพิมพ์ให้สวยงาม
             const summaryInput = document.getElementById('reportSummaryInput');
             const summaryText = summaryInput.value;
             if(summaryText.trim() !== "") {
@@ -511,20 +758,113 @@
                 summaryInput.parentNode.insertBefore(div, summaryInput.nextSibling);
             }
 
-            // เลื่อนขึ้นบนสุด
             window.scrollTo({ top: 0, behavior: 'smooth' });
             
-            // หน่วงเวลาให้กราฟและ UI โหลดเสร็จก่อนสั่งพิมพ์
             setTimeout(() => { 
                 window.print(); 
-                
-                // หลังพิมพ์เสร็จ คืนร่าง Textarea กลับมา
                 if(summaryText.trim() !== "") {
                     const tempDiv = document.getElementById('tempSummaryDiv');
                     if(tempDiv) tempDiv.remove();
                     summaryInput.style.display = "block";
                 }
             }, 500);
+        }
+
+        function exportToCSV() {
+            const startVal = document.getElementById('startDate').value;
+            const endVal = document.getElementById('endDate').value;
+            const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+            const statusVal = document.getElementById('statusFilter').value;
+            
+            const startDate = startVal ? new Date(startVal) : new Date('2000-01-01');
+            const endDate = endVal ? new Date(endVal) : new Date('2100-01-01');
+            endDate.setHours(23, 59, 59, 999);
+
+            const dataToExport = allData.filter(d => {
+                const rowDate = parseThaiDate(d.timestamp);
+                const matchDate = rowDate ? (rowDate >= startDate && rowDate <= endDate) : false;
+                const searchText = `${d.name} ${d.nickname} ${d.dept} ${d.team}`.toLowerCase();
+                const matchSearch = searchVal === '' || searchText.includes(searchVal);
+                let matchStatus = true;
+                if (statusVal !== 'all') {
+                    const s = d.status.toLowerCase();
+                    if (statusVal === 'pass') matchStatus = s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
+                    else if (statusVal === 'drop') matchStatus = s.includes('drop') || s.includes('new job') || d.status.includes('ออก');
+                    else if (statusVal === 'active') matchStatus = s.includes('active') || d.status.includes('กำลัง') || (!s.includes('pass') && !s.includes('drop') && !s.includes('new job') && !d.status.includes('ผ่าน') && !d.status.includes('ออก') && !s.includes('back office') && !d.status.includes('แบ็คออฟฟิศ'));
+                }
+                return matchDate && matchSearch && matchStatus;
+            });
+
+            if(dataToExport.length === 0) {
+                Swal.fire('ไม่พบข้อมูล', 'ไม่มีข้อมูลสำหรับดาวน์โหลดในช่วงเวลานี้', 'warning');
+                return;
+            }
+
+            let csvContent = "\uFEFF";
+            csvContent += "วันที่ลงทะเบียน,คำนำหน้า,ชื่อ,ชื่อเล่น,ทีม,แผนก,ผู้แนะนำ,มาวันที่ 1,มาวันที่ 2,มาวันที่ 3,สถานะ,หมายเหตุ\n";
+
+            dataToExport.forEach(d => {
+                let row = [
+                    d.timestamp, d.prefix, d.name, d.nickname, d.team, 
+                    d.dept, d.recruiter, d.d1, d.d2, d.d3, d.status, d.reason
+                ];
+                let csvRow = row.map(v => `"${String(v || '').replace(/"/g, '""')}"`).join(",");
+                csvContent += csvRow + "\n";
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "Training_Report_Data.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportToImage() {
+            Swal.fire({
+                title: 'กำลังเตรียมรูปภาพ...',
+                text: 'กรุณารอสักครู่ ระบบกำลังประมวลผลหน้าจอ',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            const noPrintElements = document.querySelectorAll('.no-print');
+            noPrintElements.forEach(el => el.style.display = 'none');
+            
+            const mainContent = document.getElementById('main-content');
+            mainContent.style.height = 'auto';
+            mainContent.style.overflow = 'visible';
+
+            html2canvas(document.getElementById('dashboard-content'), {
+                scale: 2, 
+                useCORS: true,
+                backgroundColor: '#f8fafc'
+            }).then(canvas => {
+                noPrintElements.forEach(el => el.style.display = '');
+                mainContent.style.height = '';
+                mainContent.style.overflow = '';
+
+                const link = document.createElement('a');
+                link.download = 'Training_Dashboard_Infographic.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+                Swal.close();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'บันทึกรูปภาพสำเร็จ!',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }).catch(err => {
+                Swal.close();
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถสร้างรูปภาพได้', 'error');
+                noPrintElements.forEach(el => el.style.display = '');
+                mainContent.style.height = '';
+                mainContent.style.overflow = '';
+            });
         }
     </script>
 </body>
