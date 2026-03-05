@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR Training Dashboard | Ultimate AI Report</title>
+    <title>HR Training Dashboard | Stable & Ultimate AI</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -197,7 +197,7 @@
                         <i class="fa-solid fa-bolt text-amber-500"></i> Executive Analytical Summary (รายงานวิเคราะห์เชิงลึกอัจฉริยะแบบละเอียด)
                     </label>
                     <button id="btnAISummary" onclick="generateAISummary()" class="no-print text-sm bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-5 py-2.5 rounded-xl transition shadow-md shadow-indigo-500/30 flex items-center gap-2 font-medium transform hover:-translate-y-0.5">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> AI วิเคราะห์ข้อมูลระดับบริหาร
+                        <span id="aiBtnText"><i class="fa-solid fa-wand-magic-sparkles"></i> AI วิเคราะห์ข้อมูลระดับบริหาร</span>
                     </button>
                 </div>
                 <textarea id="reportSummaryInput" rows="18" class="w-full p-6 bg-white border border-indigo-100 rounded-xl text-[14.5px] focus:ring-2 focus:ring-indigo-500 leading-relaxed font-sarabun text-slate-700 whitespace-pre-line shadow-inner resize-y" placeholder="กดปุ่ม 'AI วิเคราะห์ข้อมูลระดับบริหาร' เพื่อประมวลผลจัดอันดับ Top 3 เชิงลึกในทุกมิติ ทั้งแผนกยอดเยี่ยม สาเหตุที่ควรระวัง และข้อเสนอแนะ..."></textarea>
@@ -306,6 +306,13 @@
         let allData = []; 
         let charts = {};
 
+        // ฟังก์ชันช่วยเหลือ (Helper) ป้องกันข้อมูลจาก Sheet ที่ผิดเพี้ยน
+        const safeString = (val) => val === null || val === undefined ? '' : String(val).trim();
+        const checkDay = (val) => {
+            const v = safeString(val).toLowerCase();
+            return (v && v !== '0' && v !== 'false' && v !== 'ลา' && v !== 'ขาด') ? 1 : 0;
+        };
+
         window.onload = () => {
             fetchAutoData(true);
         };
@@ -321,21 +328,22 @@
                 if(result.status === "success") {
                     const rows = result.data;
                     
+                    // ป้องกันความผิดพลาดจากชนิดข้อมูลตัวเลข
                     allData = rows.map(row => ({
-                        id: row[0] || '',
-                        timestamp: row[1] || '',
-                        prefix: row[2] || '',
-                        name: row[3] || '',
-                        nickname: row[4] || '',
-                        team: row[5] || '',
-                        phone: row[6] || '',
-                        dept: row[7] || '',
-                        recruiter: row[8] || '',
-                        d1: row[9] || '',
-                        d2: row[10] || '',
-                        d3: row[11] || '',
-                        status: row[12] || 'Active', 
-                        reason: row[13] || ''
+                        id: safeString(row[0]),
+                        timestamp: safeString(row[1]),
+                        prefix: safeString(row[2]),
+                        name: safeString(row[3]),
+                        nickname: safeString(row[4]),
+                        team: safeString(row[5]),
+                        phone: safeString(row[6]),
+                        dept: safeString(row[7]),
+                        recruiter: safeString(row[8]),
+                        d1: safeString(row[9]),
+                        d2: safeString(row[10]),
+                        d3: safeString(row[11]),
+                        status: safeString(row[12]) || 'Active', 
+                        reason: safeString(row[13])
                     })).filter(d => d.name !== '');
 
                     applyDateFilter();
@@ -358,13 +366,21 @@
             }
         }
 
+        // แก้ไข Date Parser ให้ฉลาดขึ้น ป้องกันแถวหายเวลาข้อมูลจาก Sheet ผิดฟอร์แมต
         function parseThaiDate(dateStr) {
             if (!dateStr) return null;
-            let datePart = dateStr.split(' ')[0]; 
-            let parts = datePart.split('/'); 
-            if (parts.length === 3) {
-                return new Date(parts[2], parseInt(parts[1]) - 1, parts[0]); 
+            let str = String(dateStr).trim();
+            if (str.includes('/')) {
+                let datePart = str.split(' ')[0]; 
+                let parts = datePart.split('/'); 
+                if (parts.length === 3) {
+                    let year = parseInt(parts[2]);
+                    if (year > 2500) year -= 543; 
+                    return new Date(year, parseInt(parts[1]) - 1, parseInt(parts[0])); 
+                }
             }
+            let d = new Date(str);
+            if (!isNaN(d.getTime())) return d;
             return null;
         }
 
@@ -380,7 +396,8 @@
 
             const filteredData = allData.filter(d => {
                 const rowDate = parseThaiDate(d.timestamp);
-                const matchDate = rowDate ? (rowDate >= startDate && rowDate <= endDate) : false;
+                // ถ้าวันที่ใน Sheet บัค ให้โชว์ข้อมูลไว้ก่อนหากไม่ได้สั่งกรองวันที่
+                const matchDate = rowDate ? (rowDate >= startDate && rowDate <= endDate) : (!startVal && !endVal);
 
                 const searchText = `${d.name} ${d.nickname} ${d.dept} ${d.team}`.toLowerCase();
                 const matchSearch = searchVal === '' || searchText.includes(searchVal);
@@ -388,13 +405,12 @@
                 let matchStatus = true;
                 if (statusVal !== 'all') {
                     const s = d.status.toLowerCase();
-                    if (statusVal === 'pass') {
-                        matchStatus = s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
-                    } else if (statusVal === 'drop') {
-                        matchStatus = s.includes('drop') || s.includes('new job') || d.status.includes('ออก');
-                    } else if (statusVal === 'active') {
-                        matchStatus = s.includes('active') || d.status.includes('กำลัง') || (!s.includes('pass') && !s.includes('drop') && !s.includes('new job') && !d.status.includes('ผ่าน') && !d.status.includes('ออก') && !s.includes('back office') && !d.status.includes('แบ็คออฟฟิศ'));
-                    }
+                    const passedCheck = s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
+                    const dropCheck = s.includes('drop') || s.includes('new job') || d.status.includes('ออก');
+                    
+                    if (statusVal === 'pass') { matchStatus = passedCheck; } 
+                    else if (statusVal === 'drop') { matchStatus = dropCheck; } 
+                    else if (statusVal === 'active') { matchStatus = s.includes('active') || d.status.includes('กำลัง') || (!passedCheck && !dropCheck); }
                 }
 
                 return matchDate && matchSearch && matchStatus;
@@ -432,11 +448,7 @@
                 return s.includes('drop') || s.includes('new job') || d.status.includes('ออก');
             }).length;
             
-            const active = dataToRender.filter(d => {
-                const s = d.status.toLowerCase();
-                return s.includes('active') || d.status.includes('กำลัง') || (!s.includes('pass') && !s.includes('drop') && !s.includes('new job') && !d.status.includes('ผ่าน') && !d.status.includes('ออก') && !s.includes('back office') && !d.status.includes('แบ็คออฟฟิศ'));
-            }).length;
-            
+            const active = total - passed - dropped;
             const rate = total > 0 ? Math.round((passed / total) * 100) : 0;
 
             document.getElementById("kpi-total").innerText = total;
@@ -462,7 +474,8 @@
                         badgeClass = "bg-rose-100 text-rose-700 border border-rose-200";
                     }
 
-                    let daysCount = (d.d1 ? 1 : 0) + (d.d2 ? 1 : 0) + (d.d3 ? 1 : 0);
+                    // ใช้ Helper function ป้องกันบัคการนับวัน
+                    let daysCount = checkDay(d.d1) + checkDay(d.d2) + checkDay(d.d3);
                     let dateStr = d.timestamp ? d.timestamp.split(' ')[0] : '-';
 
                     tbody.innerHTML += `
@@ -680,9 +693,13 @@
         }
 
         /* =========================================================
-           ULTIMATE PRO AI SUMMARY FUNCTION (เจาะลึก Top 3 ทุกมิติ)
+           STABILIZED AI SUMMARY (ป้องกัน Bug ทั้งหมด)
            ========================================================= */
         function generateAISummary() {
+            const btn = document.getElementById('btnAISummary');
+            if (btn.disabled) return; // ป้องกันการกดปุ่มเบิ้ล (Spam click lock)
+            btn.disabled = true;
+
             const startVal = document.getElementById('startDate').value;
             const endVal = document.getElementById('endDate').value;
             const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -694,15 +711,17 @@
 
             const dataToAnalyze = allData.filter(d => {
                 const rowDate = parseThaiDate(d.timestamp);
-                const matchDate = rowDate ? (rowDate >= startDate && rowDate <= endDate) : false;
+                const matchDate = rowDate ? (rowDate >= startDate && rowDate <= endDate) : (!startVal && !endVal);
                 const searchText = `${d.name} ${d.nickname} ${d.dept} ${d.team}`.toLowerCase();
                 const matchSearch = searchVal === '' || searchText.includes(searchVal);
                 let matchStatus = true;
                 if (statusVal !== 'all') {
                     const s = d.status.toLowerCase();
-                    if (statusVal === 'pass') matchStatus = s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
-                    else if (statusVal === 'drop') matchStatus = s.includes('drop') || s.includes('new job') || d.status.includes('ออก');
-                    else if (statusVal === 'active') matchStatus = s.includes('active') || d.status.includes('กำลัง') || (!s.includes('pass') && !s.includes('drop') && !s.includes('new job') && !d.status.includes('ผ่าน') && !d.status.includes('ออก') && !s.includes('back office') && !d.status.includes('แบ็คออฟฟิศ'));
+                    const passedCheck = s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
+                    const dropCheck = s.includes('drop') || s.includes('new job') || d.status.includes('ออก');
+                    if (statusVal === 'pass') matchStatus = passedCheck;
+                    else if (statusVal === 'drop') matchStatus = dropCheck;
+                    else if (statusVal === 'active') matchStatus = s.includes('active') || d.status.includes('กำลัง') || (!passedCheck && !dropCheck);
                 }
                 return matchDate && matchSearch && matchStatus;
             });
@@ -710,6 +729,7 @@
             const total = dataToAnalyze.length;
             if(total === 0) {
                 document.getElementById('reportSummaryInput').value = "ระบบวิเคราะห์: ไม่พบข้อมูลภายใต้เงื่อนไขการค้นหา/ช่วงเวลาที่กำหนด";
+                btn.disabled = false;
                 return;
             }
 
@@ -729,15 +749,13 @@
             const rate = total > 0 ? Math.round((passed / total) * 100) : 0;
             const dropRate = total > 0 ? Math.round((dropped / total) * 100) : 0;
 
-            // --- 1. วิเคราะห์แผนกและผู้แนะนำ (Top 3) ---
             let deptText = "  • ยังไม่มีข้อมูลแผนกที่ผ่านเกณฑ์เพียงพอ";
             let recruiterText = "  • ยังไม่มีข้อมูลผู้แนะนำเพียงพอ";
             
             if (passed > 0) {
-                // Top 3 Departments
                 const depts = {};
                 passedData.forEach(d => {
-                    const dept = (d.dept && d.dept.trim() !== "") ? d.dept.trim() : "ไม่ระบุแผนก";
+                    const dept = (d.dept && d.dept !== "") ? d.dept : "ไม่ระบุแผนก";
                     depts[dept] = (depts[dept] || 0) + 1;
                 });
                 const sortedDepts = Object.entries(depts).sort((a,b) => b[1] - a[1]);
@@ -746,10 +764,9 @@
                     deptText += `  ${index+1}. ${item[0]} (ผ่านงาน ${item[1]} ราย)\n`;
                 });
 
-                // Top 3 Recruiters
                 const recruiters = {};
                 passedData.forEach(d => {
-                    const r = (d.recruiter && d.recruiter.trim() !== "" && d.recruiter !== "-") ? d.recruiter.trim() : "Walk-in/จัดหาทั่วไป";
+                    const r = (d.recruiter && d.recruiter !== "" && d.recruiter !== "-") ? d.recruiter : "Walk-in/จัดหาทั่วไป";
                     recruiters[r] = (recruiters[r] || 0) + 1;
                 });
                 const sortedRecruiters = Object.entries(recruiters).sort((a,b) => b[1] - a[1]);
@@ -764,15 +781,14 @@
                 if(recruiterText === "") recruiterText = "  • ผู้ผ่านงานส่วนใหญ่มาจาก Walk-in หรือการจัดหาทั่วไป\n";
             }
 
-            // --- 2. วิเคราะห์พฤติกรรมการมาเรียน (Attendance Engagement) ---
             let attendanceInsight = "";
             let perfectAttendancePass = 0;
-            passedData.forEach(d => { if((d.d1?1:0)+(d.d2?1:0)+(d.d3?1:0) === 3) perfectAttendancePass++; });
+            passedData.forEach(d => { 
+                if(checkDay(d.d1) + checkDay(d.d2) + checkDay(d.d3) === 3) perfectAttendancePass++; 
+            });
             const perfectPct = passed > 0 ? Math.round((perfectAttendancePass / passed) * 100) : 0;
-            
             attendanceInsight = `  • ${perfectPct}% ของผู้ที่สอบผ่าน มีประวัติการเข้าเรียนครบถ้วน 3 วันเต็ม บ่งชี้ว่าความสม่ำเสมอคือปัจจัยสำคัญของความสำเร็จ`;
 
-            // --- 3. วิเคราะห์สาเหตุการออก (Top 3) และทีมที่ต้องเฝ้าระวัง ---
             let reasonText = "  • ไม่มีข้อมูลผู้สละสิทธิ์ในรอบนี้ ถือเป็นผลงานการอบรมที่ยอดเยี่ยม (0% Attrition Rate)\n";
             let teamDropText = "";
             let strategicAdvice = "ดำเนินการคัดกรองและอบรมในมาตรฐานปัจจุบันต่อไป พร้อมทั้งจัดทำแบบสอบถามความพึงพอใจเพื่อรักษามาตรฐาน";
@@ -781,15 +797,14 @@
             if (dropRate >= 30) riskAlert = `\n[⚠️ ข้อควรระวังระดับสูง: อัตราการสูญเสียพนักงาน (Attrition Rate) พุ่งสูงถึง ${dropRate}%]`;
 
             if (dropped > 0) {
-                // Top 3 Reasons
                 const reasons = {};
                 const teamDrops = {};
                 
                 droppedData.forEach(d => {
-                    const r = (d.reason && d.reason.trim() !== "") ? d.reason.trim() : "ไม่ระบุสาเหตุ";
+                    const r = (d.reason && d.reason !== "") ? d.reason : "ไม่ระบุสาเหตุ";
                     reasons[r] = (reasons[r] || 0) + 1;
                     
-                    const t = (d.team && d.team.trim() !== "") ? d.team.trim() : "ไม่ระบุทีม";
+                    const t = (d.team && d.team !== "") ? d.team : "ไม่ระบุทีม";
                     teamDrops[t] = (teamDrops[t] || 0) + 1;
                 });
                 
@@ -800,7 +815,6 @@
                     reasonText += `  ${index+1}. ${item[0]} - จำนวน ${item[1]} ราย (${pct}%)\n`;
                 });
 
-                // Top 2 Teams to watch
                 const sortedTeams = Object.entries(teamDrops).sort((a,b) => b[1] - a[1]);
                 if(sortedTeams.length > 0 && sortedTeams[0][1] > 1) {
                     teamDropText = `\n  ⚠️ [ทีมที่ควรเฝ้าระวังการลาออกสูงสุด]:\n`;
@@ -809,7 +823,6 @@
                     });
                 }
 
-                // Dynamic Action Plan based on #1 Reason
                 const topReasonStr = sortedReasons[0][0].toLowerCase();
                 if (topReasonStr.includes('งานใหม่') || topReasonStr.includes('เงิน') || topReasonStr.includes('offer')) {
                     strategicAdvice = `เนื่องจากสาเหตุอันดับ 1 คือเรื่องของผลตอบแทน/ได้งานใหม่ ฝ่าย HR ควรประเมินความสามารถในการแข่งขันทางด้านสวัสดิการ (Market Benchmarking) หรือสื่อสารให้พนักงานใหม่เห็นถึง Career Path ที่ชัดเจนตั้งแต่วันแรก`;
@@ -865,16 +878,18 @@ ${reasonText}${teamDropText}
 
             document.getElementById('reportSummaryInput').value = autoText;
             
-            const btn = document.getElementById('btnAISummary');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-check-double"></i> ระบบวิเคราะห์เชิงลึกเสร็จสมบูรณ์!`;
+            // Animation และการปลดล็อคปุ่ม
+            const btnTextSpan = document.getElementById('aiBtnText');
+            btnTextSpan.innerHTML = `<i class="fa-solid fa-check-double"></i> ระบบวิเคราะห์เชิงลึกเสร็จสมบูรณ์!`;
             btn.classList.replace('from-indigo-600', 'from-emerald-600');
             btn.classList.replace('to-purple-600', 'to-teal-600');
+            
             setTimeout(() => {
-                btn.innerHTML = originalText;
+                btnTextSpan.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> AI วิเคราะห์ข้อมูลระดับบริหาร`;
                 btn.classList.replace('from-emerald-600', 'from-indigo-600');
                 btn.classList.replace('to-teal-600', 'to-purple-600');
-            }, 3500);
+                btn.disabled = false; // ปลดล็อคปุ่มให้กดใหม่ได้
+            }, 3000);
         }
 
         function prepareReport() {
@@ -933,15 +948,17 @@ ${reasonText}${teamDropText}
 
             const dataToExport = allData.filter(d => {
                 const rowDate = parseThaiDate(d.timestamp);
-                const matchDate = rowDate ? (rowDate >= startDate && rowDate <= endDate) : false;
+                const matchDate = rowDate ? (rowDate >= startDate && rowDate <= endDate) : (!startVal && !endVal);
                 const searchText = `${d.name} ${d.nickname} ${d.dept} ${d.team}`.toLowerCase();
                 const matchSearch = searchVal === '' || searchText.includes(searchVal);
                 let matchStatus = true;
                 if (statusVal !== 'all') {
                     const s = d.status.toLowerCase();
-                    if (statusVal === 'pass') matchStatus = s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
-                    else if (statusVal === 'drop') matchStatus = s.includes('drop') || s.includes('new job') || d.status.includes('ออก');
-                    else if (statusVal === 'active') matchStatus = s.includes('active') || d.status.includes('กำลัง') || (!s.includes('pass') && !s.includes('drop') && !s.includes('new job') && !d.status.includes('ผ่าน') && !d.status.includes('ออก') && !s.includes('back office') && !d.status.includes('แบ็คออฟฟิศ'));
+                    const passedCheck = s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
+                    const dropCheck = s.includes('drop') || s.includes('new job') || d.status.includes('ออก');
+                    if (statusVal === 'pass') matchStatus = passedCheck;
+                    else if (statusVal === 'drop') matchStatus = dropCheck;
+                    else if (statusVal === 'active') matchStatus = s.includes('active') || d.status.includes('กำลัง') || (!passedCheck && !dropCheck);
                 }
                 return matchDate && matchSearch && matchStatus;
             });
