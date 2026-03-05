@@ -147,7 +147,7 @@
                 <div class="flex items-center bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-sm">
                     
                     <i class="fa-solid fa-magnifying-glass text-slate-400 ml-1"></i>
-                    <input type="text" id="searchInput" onkeyup="if(event.key === 'Enter') applyDateFilter()" placeholder="ค้นหาชื่อ, แผนก..." class="text-sm text-slate-600 bg-transparent outline-none w-28 focus:w-40 transition-all ml-2" title="กด Enter เพื่อค้นหา">
+                    <input type="text" id="searchInput" onkeyup="if(event.key === 'Enter') applyDateFilter()" placeholder="ค้นหาชื่อ, ทีม, แผนก..." class="text-sm text-slate-600 bg-transparent outline-none w-28 focus:w-40 transition-all ml-2" title="กด Enter เพื่อค้นหา">
                     
                     <div class="h-6 w-px bg-slate-200 mx-2"></div>
                     
@@ -226,21 +226,29 @@
                 </div>
             </section>
 
-            <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="card p-6 group">
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="card p-6 group lg:col-span-1">
                     <h3 class="font-prompt font-bold text-slate-700 text-lg mb-6 flex justify-between items-center">
-                        <span><i class="fa-solid fa-chart-pie text-indigo-500 mr-2"></i> สัดส่วนสถานะผู้เข้าอบรม</span>
-                        <span class="text-[10px] bg-indigo-50 text-indigo-500 px-2 py-1 rounded border border-indigo-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกที่กราฟเพื่อดูรายชื่อ</span>
+                        <span><i class="fa-solid fa-chart-pie text-indigo-500 mr-2"></i> สถานะผู้เข้าอบรม</span>
+                        <span class="text-[10px] bg-indigo-50 text-indigo-500 px-2 py-1 rounded border border-indigo-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกกราฟ</span>
                     </h3>
                     <div class="h-64 relative"><canvas id="statusChart"></canvas></div>
                 </div>
-                <div class="card p-6 group">
+                <div class="card p-6 group lg:col-span-2">
                     <h3 class="font-prompt font-bold text-slate-700 text-lg mb-6 flex justify-between items-center">
-                        <span><i class="fa-solid fa-chart-simple text-blue-500 mr-2"></i> จำนวนพนักงานแยกตามแผนก</span>
-                        <span class="text-[10px] bg-blue-50 text-blue-500 px-2 py-1 rounded border border-blue-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกที่แท่งกราฟเพื่อดูรายชื่อ</span>
+                        <span><i class="fa-solid fa-building-user text-blue-500 mr-2"></i> จำนวนพนักงานแยกตามแผนก (Department)</span>
+                        <span class="text-[10px] bg-blue-50 text-blue-500 px-2 py-1 rounded border border-blue-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกแท่งกราฟ</span>
                     </h3>
                     <div class="h-64 relative"><canvas id="deptChart"></canvas></div>
                 </div>
+            </section>
+
+            <section class="card p-6 group">
+                <h3 class="font-prompt font-bold text-slate-700 text-lg mb-6 flex justify-between items-center">
+                    <span><i class="fa-solid fa-users-gear text-emerald-500 mr-2"></i> อัตราการรอดและลาออก แยกตามทีม (Team Attrition & Retention)</span>
+                    <span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-1 rounded border border-emerald-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกแท่งกราฟเพื่อดูรายชื่อทีม</span>
+                </h3>
+                <div class="h-80 relative"><canvas id="teamChart"></canvas></div>
             </section>
 
             <section class="card overflow-hidden flex flex-col">
@@ -486,6 +494,7 @@
             Chart.defaults.font.family = "'Prompt', sans-serif";
             Chart.defaults.color = '#64748b';
 
+            // 1. กราฟโดนัท (สถานะ)
             if(charts['status']) charts['status'].destroy();
             const ctxStatus = document.getElementById('statusChart').getContext('2d');
             charts['status'] = new Chart(ctxStatus, {
@@ -532,6 +541,7 @@
                 }
             });
 
+            // 2. กราฟแท่ง (แผนก)
             const depts = {}; 
             dataToRender.forEach(d => { const k = d.dept || 'ไม่ระบุ'; depts[k] = (depts[k] || 0) + 1; });
 
@@ -554,6 +564,57 @@
                             const label = charts['dept'].data.labels[index];
                             const filteredList = dataToRender.filter(d => (d.dept || 'ไม่ระบุ') === label);
                             showDetailModal(`แผนก: ${label}`, filteredList);
+                        }
+                    }
+                }
+            });
+
+            // 3. กราฟใหม่: กราฟแท่งซ้อนทับ (ทีม - เข้า vs ออก)
+            const teamStats = {};
+            dataToRender.forEach(d => {
+                const k = d.team || 'ไม่ระบุทีม';
+                if(!teamStats[k]) teamStats[k] = { successActive: 0, dropped: 0 };
+                
+                const s = d.status.toLowerCase();
+                if (s.includes('drop') || s.includes('new job') || d.status.includes('ออก')) {
+                    teamStats[k].dropped++;
+                } else {
+                    teamStats[k].successActive++;
+                }
+            });
+
+            const teamLabels = Object.keys(teamStats);
+            const teamSuccessData = teamLabels.map(k => teamStats[k].successActive);
+            const teamDropData = teamLabels.map(k => teamStats[k].dropped);
+
+            if(charts['team']) charts['team'].destroy();
+            const ctxTeam = document.getElementById('teamChart').getContext('2d');
+            charts['team'] = new Chart(ctxTeam, {
+                type: 'bar',
+                data: {
+                    labels: teamLabels,
+                    datasets: [
+                        { label: 'รอด (ผ่าน/กำลังเทรน)', data: teamSuccessData, backgroundColor: '#10b981', borderRadius: 4, hoverBackgroundColor: '#059669' },
+                        { label: 'ออก (ลาออก/ไม่ผ่าน)', data: teamDropData, backgroundColor: '#f43f5e', borderRadius: 4, hoverBackgroundColor: '#e11d48' }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { position: 'top', labels: { usePointStyle: true, padding: 15 } },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        x: { stacked: true, grid: { display: false } },
+                        y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } }
+                    },
+                    onHover: (event, chartElement) => { event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default'; },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const label = charts['team'].data.labels[index];
+                            const filteredList = dataToRender.filter(d => (d.team || 'ไม่ระบุทีม') === label);
+                            showDetailModal(`ข้อมูลลูกทีม: ${label}`, filteredList);
                         }
                     }
                 }
@@ -622,7 +683,7 @@
         }
 
         /* =========================================================
-           ULTRA PRO AI SUMMARY FUNCTION
+           ULTRA PRO AI SUMMARY FUNCTION (เพิ่มการวิเคราะห์ระดับทีม)
            ========================================================= */
         function generateAISummary() {
             const startVal = document.getElementById('startDate').value;
@@ -655,7 +716,6 @@
                 return;
             }
 
-            // --- แยกกลุ่มข้อมูล ---
             const passedData = dataToAnalyze.filter(d => {
                 const s = d.status.toLowerCase();
                 return s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
@@ -672,11 +732,9 @@
             const rate = total > 0 ? Math.round((passed / total) * 100) : 0;
             const dropRate = total > 0 ? Math.round((dropped / total) * 100) : 0;
 
-            // --- 1. วิเคราะห์ปัจจัยความสำเร็จ (Success Factors) ---
             let deptText = "";
             let recruiterText = "";
             if (passed > 0) {
-                // หาแผนก Top Performer
                 const depts = {};
                 passedData.forEach(d => {
                     const dept = (d.dept && d.dept.trim() !== "") ? d.dept.trim() : "ไม่ระบุแผนก";
@@ -685,7 +743,6 @@
                 const topDept = Object.keys(depts).sort((a, b) => depts[b] - depts[a])[0];
                 deptText = `\n  • แผนกที่มีอัตราการผ่านเข้าสู่ระบบงานสูงสุดคือ "${topDept}" (จำนวน ${depts[topDept]} ราย)`;
 
-                // หาช้างเผือก (Top Recruiter)
                 const recruiters = {};
                 passedData.forEach(d => {
                     const r = (d.recruiter && d.recruiter.trim() !== "" && d.recruiter !== "-") ? d.recruiter.trim() : "Walk-in/จัดหา";
@@ -697,7 +754,6 @@
                 }
             }
 
-            // --- 2. วิเคราะห์ความเชื่อมโยงการเข้าเรียน (Attendance Correlation) ---
             let attendanceInsight = "";
             let passDays = 0; passedData.forEach(d => passDays += (d.d1?1:0)+(d.d2?1:0)+(d.d3?1:0));
             let dropDays = 0; droppedData.forEach(d => dropDays += (d.d1?1:0)+(d.d2?1:0)+(d.d3?1:0));
@@ -709,8 +765,8 @@
                 attendanceInsight = `\n  • ความเชื่อมโยงการเรียน: กลุ่มผู้ผ่านเกณฑ์มีอัตราเข้าเรียนเฉลี่ย ${avgPassDays} วัน ซึ่งสูงกว่ากลุ่มที่ไม่ผ่าน (เฉลี่ย ${avgDropDays} วัน) บ่งชี้ว่า "ความสม่ำเสมอในการเข้าคลาสมีผลต่อความสำเร็จอย่างมีนัยสำคัญ"`;
             }
 
-            // --- 3. วิเคราะห์ความเสี่ยงและคำแนะนำ (Root Cause & Strategic Advice) ---
             let reasonText = "";
+            let teamDropText = "";
             let strategicAdvice = "ควรติดตามผลการปฏิบัติงานของพนักงานกลุ่มที่ผ่านการอบรมอย่างใกล้ชิด (Performance Monitoring) เพื่อประเมินผลสัมฤทธิ์ของหลักสูตรอย่างต่อเนื่อง";
             let riskAlert = "";
 
@@ -718,17 +774,28 @@
 
             if (dropped > 0) {
                 const reasons = {};
+                const teamDrops = {};
+                
                 droppedData.forEach(d => {
                     const r = (d.reason && d.reason.trim() !== "") ? d.reason.trim() : "ไม่ระบุสาเหตุ";
                     reasons[r] = (reasons[r] || 0) + 1;
+                    
+                    const t = (d.team && d.team.trim() !== "") ? d.team.trim() : "ไม่ระบุทีม";
+                    teamDrops[t] = (teamDrops[t] || 0) + 1;
                 });
+                
+                // วิเคราะห์สาเหตุ
                 const topReason = Object.keys(reasons).sort((a, b) => reasons[b] - reasons[a])[0];
                 const topReasonCount = reasons[topReason];
                 const reasonPercent = Math.round((topReasonCount / dropped) * 100);
-                
                 reasonText = `\n  • สาเหตุหลักอันดับ 1 ที่ทำให้สูญเสียพนักงานคือ "${topReason}" (พบ ${topReasonCount} ราย หรือคิดเป็น ${reasonPercent}% ของกลุ่มที่ไม่ผ่านประเมิน)`;
 
-                // Dynamic Advice (AI คิดแทนให้ตามสาเหตุ)
+                // วิเคราะห์ทีมที่คนออกเยอะสุด (ตามที่คุณกรขอเพิ่ม)
+                const topTeamDrop = Object.keys(teamDrops).sort((a,b) => teamDrops[b] - teamDrops[a])[0];
+                if(teamDrops[topTeamDrop] > 1) {
+                    teamDropText = `\n  • ⚠️ ทีมที่พบอัตราการออกสูงสุดคือทีม "${topTeamDrop}" (สูญเสีย ${teamDrops[topTeamDrop]} ราย) ควรให้ความสำคัญในการสอบถามและปรับปรุงกระบวนการดูแลของทีมนี้เป็นพิเศษ`;
+                }
+
                 const tr = topReason.toLowerCase();
                 if (tr.includes('งานใหม่') || tr.includes('เงิน') || tr.includes('offer')) {
                     strategicAdvice = `อัตราการสูญเสียหลักเกิดจากปัจจัยภายนอก ("${topReason}") ขอเสนอแนะให้ฝ่าย HR ทบทวนโครงสร้างผลตอบแทนเปรียบเทียบกับตลาด (Market Benchmarking) เพื่อเพิ่มอัตราการรักษาพนักงาน (Retention Rate)`;
@@ -743,7 +810,6 @@
                 reasonText = `\n  • ในรอบการประเมินนี้ ไม่มีผู้สละสิทธิ์หรือตกประเมิน ถือเป็นผลลัพธ์การคัดกรองและอบรมที่ยอดเยี่ยม (0% Attrition Rate)`;
             }
 
-            // --- 4. ระบุช่วงเวลา ---
             let dateRange = "ภาพรวมสะสมทั้งหมด (All Time)";
             if(startVal && endVal) {
                 const sDate = new Date(startVal);
@@ -757,12 +823,10 @@
             }
             if (searchVal !== '') dateRange += ` (กรองข้อมูลด้วยคำค้นหา: "${searchVal}")`;
 
-            // --- 5. ประกอบร่างข้อความ (Executive Tone) ---
-            const autoText = `📊 รายงานวิเคราะห์เชิงลึก (Executive Analytical Summary)\nเรื่อง: ผลการดำเนินงานโครงการอบรมพนักงานใหม่ ${dateRange}\n\n1. ภาพรวมประสิทธิภาพ (Performance Overview)\nมีผู้เข้าร่วมโครงการทั้งสิ้น ${total} ราย โดยแบ่งผลลัพธ์เป็น:\n  • ผ่านประเมินเข้าสู่ระบบงาน (รวม Back Office): ${passed} ราย (Success Rate: ${rate}%)\n  • อยู่ในระหว่างการอบรม (Active): ${active} ราย\n  • สละสิทธิ์/ไม่ผ่านประเมิน (Dropped): ${dropped} ราย (Drop Rate: ${dropRate}%)${riskAlert}\n\n2. ข้อมูลเชิงลึก & ปัจจัยความสำเร็จ (Key Insights)${deptText}${recruiterText}${attendanceInsight}\n\n3. การวิเคราะห์ความเสี่ยง (Attrition Analysis)${reasonText}\n\n💡 4. ข้อเสนอแนะเชิงกลยุทธ์จากระบบ (Strategic Recommendations)\n" ${strategicAdvice} "\n\nจึงเรียนมาเพื่อโปรดพิจารณา`;
+            const autoText = `📊 รายงานวิเคราะห์เชิงลึก (Executive Analytical Summary)\nเรื่อง: ผลการดำเนินงานโครงการอบรมพนักงานใหม่ ${dateRange}\n\n1. ภาพรวมประสิทธิภาพ (Performance Overview)\nมีผู้เข้าร่วมโครงการทั้งสิ้น ${total} ราย โดยแบ่งผลลัพธ์เป็น:\n  • ผ่านประเมินเข้าสู่ระบบงาน (รวม Back Office): ${passed} ราย (Success Rate: ${rate}%)\n  • อยู่ในระหว่างการอบรม (Active): ${active} ราย\n  • สละสิทธิ์/ไม่ผ่านประเมิน (Dropped): ${dropped} ราย (Drop Rate: ${dropRate}%)${riskAlert}\n\n2. ข้อมูลเชิงลึก & ปัจจัยความสำเร็จ (Key Insights)${deptText}${recruiterText}${attendanceInsight}\n\n3. การวิเคราะห์ความเสี่ยง (Attrition Analysis)${reasonText}${teamDropText}\n\n💡 4. ข้อเสนอแนะเชิงกลยุทธ์จากระบบ (Strategic Recommendations)\n" ${strategicAdvice} "\n\nจึงเรียนมาเพื่อโปรดพิจารณา`;
 
             document.getElementById('reportSummaryInput').value = autoText;
             
-            // Effect ปลุกเสก AI
             const btn = document.getElementById('btnAISummary');
             const originalText = btn.innerHTML;
             btn.innerHTML = `<i class="fa-solid fa-check-double"></i> ระบบวิเคราะห์เชิงลึกเสร็จสมบูรณ์!`;
