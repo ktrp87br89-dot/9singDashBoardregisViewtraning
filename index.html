@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR Training Dashboard | Premium Interactive</title>
+    <title>HR Training Dashboard | Ultra Pro AI</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -191,14 +191,16 @@
 
         <div id="dashboard-content" class="p-8 space-y-8 max-w-[1600px] mx-auto w-full">
             
-            <section class="card p-6 border-indigo-200 bg-indigo-50/50">
-                <div class="flex justify-between items-center mb-3">
-                    <label class="block text-sm font-prompt font-bold text-indigo-800">บทสรุปเพิ่มเติมสำหรับผู้บริหาร (Executive Summary)</label>
-                    <button id="btnAISummary" onclick="generateAISummary()" class="no-print text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition shadow-sm flex items-center gap-2 font-medium">
-                        <i class="fa-solid fa-robot"></i> AI ช่วยสรุปจากข้อมูล
+            <section class="card p-6 border-indigo-200 bg-gradient-to-br from-indigo-50 to-blue-50/50">
+                <div class="flex justify-between items-center mb-4">
+                    <label class="block text-base font-prompt font-bold text-indigo-900 flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-amber-500"></i> Executive Analytical Summary (รายงานวิเคราะห์เชิงลึกอัจฉริยะ)
+                    </label>
+                    <button id="btnAISummary" onclick="generateAISummary()" class="no-print text-sm bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-5 py-2.5 rounded-xl transition shadow-md shadow-indigo-500/30 flex items-center gap-2 font-medium transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> AI วิเคราะห์ข้อมูลเชิงลึก
                     </button>
                 </div>
-                <textarea id="reportSummaryInput" rows="6" class="w-full p-4 bg-white border border-indigo-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 leading-relaxed font-sarabun text-slate-700 whitespace-pre-line" placeholder="สามารถพิมพ์บทสรุปสั้นๆ ตรงนี้ หรือกดปุ่ม 'AI ช่วยสรุป' เพื่อให้ระบบประมวลผลให้อัตโนมัติ..."></textarea>
+                <textarea id="reportSummaryInput" rows="11" class="w-full p-5 bg-white border border-indigo-100 rounded-xl text-[14.5px] focus:ring-2 focus:ring-indigo-500 leading-relaxed font-sarabun text-slate-700 whitespace-pre-line shadow-inner resize-y" placeholder="กดปุ่ม 'AI วิเคราะห์ข้อมูลเชิงลึก' เพื่อให้ระบบประมวลผลปัจจัยความสำเร็จ ความเสี่ยง และข้อเสนอแนะเชิงกลยุทธ์ให้อัตโนมัติ..."></textarea>
             </section>
 
             <section class="grid grid-cols-2 md:grid-cols-5 gap-5">
@@ -378,7 +380,6 @@
                 let matchStatus = true;
                 if (statusVal !== 'all') {
                     const s = d.status.toLowerCase();
-                    // อัปเดตตรรกะให้รวม Back Office อยู่ในหมวด Passed
                     if (statusVal === 'pass') {
                         matchStatus = s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
                     } else if (statusVal === 'drop') {
@@ -413,7 +414,6 @@
         function updateDashboard(dataToRender) {
             const total = dataToRender.length;
             
-            // อัปเดตตรรกะการนับ KPI
             const passed = dataToRender.filter(d => {
                 const s = d.status.toLowerCase();
                 return s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
@@ -448,7 +448,6 @@
                     let badgeClass = "bg-amber-100 text-amber-700 border border-amber-200";
                     let s = d.status.toLowerCase();
                     
-                    // ปรับสีป้ายในตารางให้ Back Office เป็นสีเขียว
                     if (s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ')) {
                         badgeClass = "bg-emerald-100 text-emerald-700 border border-emerald-200";
                     } else if (s.includes('drop') || s.includes('new job') || d.status.includes('ออก')) {
@@ -510,7 +509,6 @@
                             const label = charts['status'].data.labels[index];
                             let filteredList = [];
                             
-                            // อัปเดตตรรกะการคลิกกราฟ
                             if (label.includes('กำลังเทรน')) {
                                 filteredList = dataToRender.filter(d => {
                                     const s = d.status.toLowerCase();
@@ -574,7 +572,6 @@
                     let badgeClass = "bg-amber-100 text-amber-700 border border-amber-200";
                     let s = d.status.toLowerCase();
                     
-                    // ปรับสีป้ายใน Modal ด้วย
                     if (s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ')) {
                         badgeClass = "bg-emerald-100 text-emerald-700 border border-emerald-200";
                     } else if (s.includes('drop') || s.includes('new job') || d.status.includes('ออก')) {
@@ -624,6 +621,9 @@
             }, 300);
         }
 
+        /* =========================================================
+           ULTRA PRO AI SUMMARY FUNCTION
+           ========================================================= */
         function generateAISummary() {
             const startVal = document.getElementById('startDate').value;
             const endVal = document.getElementById('endDate').value;
@@ -651,11 +651,11 @@
 
             const total = dataToAnalyze.length;
             if(total === 0) {
-                document.getElementById('reportSummaryInput').value = "ไม่พบข้อมูลในช่วงเวลาที่เลือก";
+                document.getElementById('reportSummaryInput').value = "ระบบวิเคราะห์: ไม่พบข้อมูลภายใต้เงื่อนไขการค้นหา/ช่วงเวลาที่กำหนด";
                 return;
             }
 
-            // AI ให้นับรวม Back Office เป็น Passed ด้วย
+            // --- แยกกลุ่มข้อมูล ---
             const passedData = dataToAnalyze.filter(d => {
                 const s = d.status.toLowerCase();
                 return s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
@@ -670,8 +670,52 @@
             
             const active = total - passed - dropped;
             const rate = total > 0 ? Math.round((passed / total) * 100) : 0;
+            const dropRate = total > 0 ? Math.round((dropped / total) * 100) : 0;
 
+            // --- 1. วิเคราะห์ปัจจัยความสำเร็จ (Success Factors) ---
+            let deptText = "";
+            let recruiterText = "";
+            if (passed > 0) {
+                // หาแผนก Top Performer
+                const depts = {};
+                passedData.forEach(d => {
+                    const dept = (d.dept && d.dept.trim() !== "") ? d.dept.trim() : "ไม่ระบุแผนก";
+                    depts[dept] = (depts[dept] || 0) + 1;
+                });
+                const topDept = Object.keys(depts).sort((a, b) => depts[b] - depts[a])[0];
+                deptText = `\n  • แผนกที่มีอัตราการผ่านเข้าสู่ระบบงานสูงสุดคือ "${topDept}" (จำนวน ${depts[topDept]} ราย)`;
+
+                // หาช้างเผือก (Top Recruiter)
+                const recruiters = {};
+                passedData.forEach(d => {
+                    const r = (d.recruiter && d.recruiter.trim() !== "" && d.recruiter !== "-") ? d.recruiter.trim() : "Walk-in/จัดหา";
+                    recruiters[r] = (recruiters[r] || 0) + 1;
+                });
+                const topRecruiter = Object.keys(recruiters).sort((a,b) => recruiters[b] - recruiters[a])[0];
+                if (topRecruiter !== "Walk-in/จัดหา" && recruiters[topRecruiter] > 1) {
+                    recruiterText = `\n  • ผู้แนะนำที่สร้างพนักงานคุณภาพ (Top Recruiter) ได้มากที่สุดคือ "${topRecruiter}" (ผ่านงาน ${recruiters[topRecruiter]} ราย)`;
+                }
+            }
+
+            // --- 2. วิเคราะห์ความเชื่อมโยงการเข้าเรียน (Attendance Correlation) ---
+            let attendanceInsight = "";
+            let passDays = 0; passedData.forEach(d => passDays += (d.d1?1:0)+(d.d2?1:0)+(d.d3?1:0));
+            let dropDays = 0; droppedData.forEach(d => dropDays += (d.d1?1:0)+(d.d2?1:0)+(d.d3?1:0));
+            
+            const avgPassDays = passed > 0 ? (passDays/passed).toFixed(1) : 0;
+            const avgDropDays = dropped > 0 ? (dropDays/dropped).toFixed(1) : 0;
+            
+            if (avgPassDays > avgDropDays && dropped > 0) {
+                attendanceInsight = `\n  • ความเชื่อมโยงการเรียน: กลุ่มผู้ผ่านเกณฑ์มีอัตราเข้าเรียนเฉลี่ย ${avgPassDays} วัน ซึ่งสูงกว่ากลุ่มที่ไม่ผ่าน (เฉลี่ย ${avgDropDays} วัน) บ่งชี้ว่า "ความสม่ำเสมอในการเข้าคลาสมีผลต่อความสำเร็จอย่างมีนัยสำคัญ"`;
+            }
+
+            // --- 3. วิเคราะห์ความเสี่ยงและคำแนะนำ (Root Cause & Strategic Advice) ---
             let reasonText = "";
+            let strategicAdvice = "ควรติดตามผลการปฏิบัติงานของพนักงานกลุ่มที่ผ่านการอบรมอย่างใกล้ชิด (Performance Monitoring) เพื่อประเมินผลสัมฤทธิ์ของหลักสูตรอย่างต่อเนื่อง";
+            let riskAlert = "";
+
+            if (dropRate >= 30) riskAlert = `\n[⚠️ ข้อควรระวัง: อัตราการสูญเสียพนักงาน (Attrition Rate) พุ่งสูงถึง ${dropRate}%]`;
+
             if (dropped > 0) {
                 const reasons = {};
                 droppedData.forEach(d => {
@@ -681,23 +725,26 @@
                 const topReason = Object.keys(reasons).sort((a, b) => reasons[b] - reasons[a])[0];
                 const topReasonCount = reasons[topReason];
                 const reasonPercent = Math.round((topReasonCount / dropped) * 100);
-                reasonText = `\n\n[การวิเคราะห์สาเหตุการสละสิทธิ์/ไม่ผ่านประเมิน]\nพบผู้ไม่ผ่านเกณฑ์จำนวน ${dropped} ราย โดยสาเหตุหลักอันดับหนึ่งคือ "${topReason}" (จำนวน ${topReasonCount} ราย หรือคิดเป็น ${reasonPercent}% ของกลุ่มที่ไม่ผ่าน) ซึ่งเป็นจุดที่สามารถนำไปวิเคราะห์เพื่อปรับปรุงกระบวนการคัดกรองหรือเนื้อหาการอบรมต่อไป`;
+                
+                reasonText = `\n  • สาเหตุหลักอันดับ 1 ที่ทำให้สูญเสียพนักงานคือ "${topReason}" (พบ ${topReasonCount} ราย หรือคิดเป็น ${reasonPercent}% ของกลุ่มที่ไม่ผ่านประเมิน)`;
+
+                // Dynamic Advice (AI คิดแทนให้ตามสาเหตุ)
+                const tr = topReason.toLowerCase();
+                if (tr.includes('งานใหม่') || tr.includes('เงิน') || tr.includes('offer')) {
+                    strategicAdvice = `อัตราการสูญเสียหลักเกิดจากปัจจัยภายนอก ("${topReason}") ขอเสนอแนะให้ฝ่าย HR ทบทวนโครงสร้างผลตอบแทนเปรียบเทียบกับตลาด (Market Benchmarking) เพื่อเพิ่มอัตราการรักษาพนักงาน (Retention Rate)`;
+                } else if (tr.includes('ไม่ผ่าน') || tr.includes('ทัศนคติ') || tr.includes('เกณฑ์')) {
+                    strategicAdvice = `สาเหตุหลักเกิดจากปัจจัยความเหมาะสม ("${topReason}") ขอเสนอแนะให้ปรับปรุงเกณฑ์การคัดกรอง (Screening Criteria) ตั้งแต่ขั้นตอนการสัมภาษณ์ให้รัดกุมยิ่งขึ้น เพื่อลด Cost & Time ในการเทรนบุคลากรที่ไม่ตรงกับ Core Values`;
+                } else if (tr.includes('ครอบครัว') || tr.includes('สุขภาพ') || tr.includes('ป่วย')) {
+                    strategicAdvice = `สาเหตุหลักเกิดจากปัญหาส่วนตัว/สุขภาพ ขอเสนอแนะให้พิจารณาเพิ่มความยืดหยุ่นในการทำงาน หรือทบทวนสวัสดิการด้านสุขภาพเพื่อช่วยเหลือและดึงดูดพนักงานในระยะยาว`;
+                } else if (tr.includes('เดินทาง') || tr.includes('ไกล')) {
+                    strategicAdvice = `พนักงานมีปัญหาเรื่องการเดินทาง ขอเสนอแนะให้พิจารณาเกณฑ์ค่าเดินทาง (Transportation Allowance) หรือคัดกรองพื้นที่พักอาศัยของผู้สมัครให้รอบคอบยิ่งขึ้น`;
+                }
             } else {
-                reasonText = `\n\n[การวิเคราะห์สาเหตุการสละสิทธิ์/ไม่ผ่านประเมิน]\nในรอบการประเมินนี้ ไม่มีผู้สละสิทธิ์หรือตกประเมิน ถือเป็นเกณฑ์ที่ยอดเยี่ยมมาก`;
+                reasonText = `\n  • ในรอบการประเมินนี้ ไม่มีผู้สละสิทธิ์หรือตกประเมิน ถือเป็นผลลัพธ์การคัดกรองและอบรมที่ยอดเยี่ยม (0% Attrition Rate)`;
             }
 
-            let deptText = "";
-            if (passed > 0) {
-                const depts = {};
-                passedData.forEach(d => {
-                    const dept = (d.dept && d.dept.trim() !== "") ? d.dept.trim() : "ไม่ระบุแผนก";
-                    depts[dept] = (depts[dept] || 0) + 1;
-                });
-                const topDept = Object.keys(depts).sort((a, b) => depts[b] - depts[a])[0];
-                deptText = `\n\n[ข้อมูลเชิงลึกรายแผนก]\nแผนกที่มีผู้ผ่านการอบรม (และ Back Office) เข้าสู่ระบบงานมากที่สุดในรอบนี้คือ "${topDept}" (จำนวน ${depts[topDept]} ราย)`;
-            }
-
-            let dateRange = "ภาพรวมทั้งหมด (All Time)";
+            // --- 4. ระบุช่วงเวลา ---
+            let dateRange = "ภาพรวมสะสมทั้งหมด (All Time)";
             if(startVal && endVal) {
                 const sDate = new Date(startVal);
                 const eDate = new Date(endVal);
@@ -708,22 +755,24 @@
                     dateRange = `ตั้งแต่วันที่ ${sDate.getDate()} ${monthNames[sDate.getMonth()]} ${sDate.getFullYear() + 543} ถึง ${eDate.getDate()} ${monthNames[eDate.getMonth()]} ${eDate.getFullYear() + 543}`;
                 }
             }
-            if (searchVal !== '') dateRange += ` (ค้นหา: "${searchVal}")`;
+            if (searchVal !== '') dateRange += ` (กรองข้อมูลด้วยคำค้นหา: "${searchVal}")`;
 
-            const autoText = `** Executive Summary (บทสรุปผู้บริหาร) **\nเรื่อง: สรุปผลการดำเนินงานโครงการอบรมพนักงานใหม่ ${dateRange}\n\n[ภาพรวมการดำเนินงาน]\nมีผู้เข้าร่วมโครงการทั้งสิ้น ${total} ราย โดยมีสถานะปัจจุบันดังนี้:\n- ผ่านการประเมินและประจำการ (Passed / Back Office): ${passed} ราย (อัตราความสำเร็จ ${rate}%)\n- กำลังอยู่ในระหว่างการอบรม (Active): ${active} ราย\n- สละสิทธิ์/ไม่ผ่านเกณฑ์ (Dropped): ${dropped} ราย${reasonText}${deptText}\n\nข้อเสนอแนะเบื้องต้น:\nจากข้อมูลข้างต้น ฝ่ายทรัพยากรบุคคลควรนำประเด็นสาเหตุการออกหลักมาหารือร่วมกับหัวหน้างานเพื่อวางแผนการดูแลพนักงาน (Retention Plan) ในระยะยาวต่อไป\n\nจึงเรียนมาเพื่อโปรดทราบและพิจารณา`;
+            // --- 5. ประกอบร่างข้อความ (Executive Tone) ---
+            const autoText = `📊 รายงานวิเคราะห์เชิงลึก (Executive Analytical Summary)\nเรื่อง: ผลการดำเนินงานโครงการอบรมพนักงานใหม่ ${dateRange}\n\n1. ภาพรวมประสิทธิภาพ (Performance Overview)\nมีผู้เข้าร่วมโครงการทั้งสิ้น ${total} ราย โดยแบ่งผลลัพธ์เป็น:\n  • ผ่านประเมินเข้าสู่ระบบงาน (รวม Back Office): ${passed} ราย (Success Rate: ${rate}%)\n  • อยู่ในระหว่างการอบรม (Active): ${active} ราย\n  • สละสิทธิ์/ไม่ผ่านประเมิน (Dropped): ${dropped} ราย (Drop Rate: ${dropRate}%)${riskAlert}\n\n2. ข้อมูลเชิงลึก & ปัจจัยความสำเร็จ (Key Insights)${deptText}${recruiterText}${attendanceInsight}\n\n3. การวิเคราะห์ความเสี่ยง (Attrition Analysis)${reasonText}\n\n💡 4. ข้อเสนอแนะเชิงกลยุทธ์จากระบบ (Strategic Recommendations)\n" ${strategicAdvice} "\n\nจึงเรียนมาเพื่อโปรดพิจารณา`;
 
             document.getElementById('reportSummaryInput').value = autoText;
             
+            // Effect ปลุกเสก AI
             const btn = document.getElementById('btnAISummary');
             const originalText = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> AI วิเคราะห์ข้อมูลสำเร็จ!`;
-            btn.classList.replace('bg-indigo-600', 'bg-purple-600');
-            btn.classList.replace('hover:bg-indigo-700', 'hover:bg-purple-700');
+            btn.innerHTML = `<i class="fa-solid fa-check-double"></i> ระบบวิเคราะห์เชิงลึกเสร็จสมบูรณ์!`;
+            btn.classList.replace('from-indigo-600', 'from-emerald-600');
+            btn.classList.replace('to-purple-600', 'to-teal-600');
             setTimeout(() => {
                 btn.innerHTML = originalText;
-                btn.classList.replace('bg-purple-600', 'bg-indigo-600');
-                btn.classList.replace('hover:bg-purple-700', 'hover:bg-indigo-700');
-            }, 3000);
+                btn.classList.replace('from-emerald-600', 'from-indigo-600');
+                btn.classList.replace('to-teal-600', 'to-purple-600');
+            }, 3500);
         }
 
         function prepareReport() {
