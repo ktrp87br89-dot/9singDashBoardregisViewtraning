@@ -306,7 +306,6 @@
         let allData = []; 
         let charts = {};
 
-        // ฟังก์ชันช่วยเหลือ (Helper) ป้องกันข้อมูลจาก Sheet ที่ผิดเพี้ยน
         const safeString = (val) => val === null || val === undefined ? '' : String(val).trim();
         const checkDay = (val) => {
             const v = safeString(val).toLowerCase();
@@ -328,7 +327,6 @@
                 if(result.status === "success") {
                     const rows = result.data;
                     
-                    // ป้องกันความผิดพลาดจากชนิดข้อมูลตัวเลข
                     allData = rows.map(row => ({
                         id: safeString(row[0]),
                         timestamp: safeString(row[1]),
@@ -366,7 +364,6 @@
             }
         }
 
-        // แก้ไข Date Parser ให้ฉลาดขึ้น ป้องกันแถวหายเวลาข้อมูลจาก Sheet ผิดฟอร์แมต
         function parseThaiDate(dateStr) {
             if (!dateStr) return null;
             let str = String(dateStr).trim();
@@ -396,7 +393,6 @@
 
             const filteredData = allData.filter(d => {
                 const rowDate = parseThaiDate(d.timestamp);
-                // ถ้าวันที่ใน Sheet บัค ให้โชว์ข้อมูลไว้ก่อนหากไม่ได้สั่งกรองวันที่
                 const matchDate = rowDate ? (rowDate >= startDate && rowDate <= endDate) : (!startVal && !endVal);
 
                 const searchText = `${d.name} ${d.nickname} ${d.dept} ${d.team}`.toLowerCase();
@@ -474,7 +470,6 @@
                         badgeClass = "bg-rose-100 text-rose-700 border border-rose-200";
                     }
 
-                    // ใช้ Helper function ป้องกันบัคการนับวัน
                     let daysCount = checkDay(d.d1) + checkDay(d.d2) + checkDay(d.d3);
                     let dateStr = d.timestamp ? d.timestamp.split(' ')[0] : '-';
 
@@ -693,11 +688,11 @@
         }
 
         /* =========================================================
-           STABILIZED AI SUMMARY (ป้องกัน Bug ทั้งหมด)
+           STABILIZED AI SUMMARY (แก้ลอจิกการนับ Recruiter ใหม่ทั้งหมด)
            ========================================================= */
         function generateAISummary() {
             const btn = document.getElementById('btnAISummary');
-            if (btn.disabled) return; // ป้องกันการกดปุ่มเบิ้ล (Spam click lock)
+            if (btn.disabled) return; 
             btn.disabled = true;
 
             const startVal = document.getElementById('startDate').value;
@@ -749,36 +744,55 @@
             const rate = total > 0 ? Math.round((passed / total) * 100) : 0;
             const dropRate = total > 0 ? Math.round((dropped / total) * 100) : 0;
 
-            let deptText = "  • ยังไม่มีข้อมูลแผนกที่ผ่านเกณฑ์เพียงพอ";
+            // --- 1. วิเคราะห์แผนกและผู้แนะนำ (Top 3) ---
+            let deptText = "  • ยังไม่มีข้อมูลแผนกเพียงพอ";
             let recruiterText = "  • ยังไม่มีข้อมูลผู้แนะนำเพียงพอ";
             
-            if (passed > 0) {
-                const depts = {};
-                passedData.forEach(d => {
+            if (total > 0) {
+                // Top 3 Departments (เรียงตามคนเข้าอบรมทั้งหมด แล้วบอกว่าผ่านกี่คน)
+                const deptsTotal = {};
+                const deptsPassed = {};
+                dataToAnalyze.forEach(d => {
                     const dept = (d.dept && d.dept !== "") ? d.dept : "ไม่ระบุแผนก";
-                    depts[dept] = (depts[dept] || 0) + 1;
+                    deptsTotal[dept] = (deptsTotal[dept] || 0) + 1;
+                    
+                    const s = d.status.toLowerCase();
+                    if (s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ')) {
+                        deptsPassed[dept] = (deptsPassed[dept] || 0) + 1;
+                    }
                 });
-                const sortedDepts = Object.entries(depts).sort((a,b) => b[1] - a[1]);
+                
+                const sortedDepts = Object.entries(deptsTotal).sort((a,b) => b[1] - a[1]);
                 deptText = "";
                 sortedDepts.slice(0, 3).forEach((item, index) => {
-                    deptText += `  ${index+1}. ${item[0]} (ผ่านงาน ${item[1]} ราย)\n`;
+                    const pCount = deptsPassed[item[0]] || 0;
+                    deptText += `  ${index+1}. ${item[0]} (เข้าอบรม ${item[1]} ราย, ผ่านงาน ${pCount} ราย)\n`;
                 });
 
-                const recruiters = {};
-                passedData.forEach(d => {
+                // Top 3 Recruiters (เรียงตามจำนวนคนที่หามาได้ทั้งหมด)
+                const recTotal = {};
+                const recPassed = {};
+                dataToAnalyze.forEach(d => {
                     const r = (d.recruiter && d.recruiter !== "" && d.recruiter !== "-") ? d.recruiter : "Walk-in/จัดหาทั่วไป";
-                    recruiters[r] = (recruiters[r] || 0) + 1;
+                    recTotal[r] = (recTotal[r] || 0) + 1;
+                    
+                    const s = d.status.toLowerCase();
+                    if (s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ')) {
+                        recPassed[r] = (recPassed[r] || 0) + 1;
+                    }
                 });
-                const sortedRecruiters = Object.entries(recruiters).sort((a,b) => b[1] - a[1]);
+                
+                const sortedRecruiters = Object.entries(recTotal).sort((a,b) => b[1] - a[1]);
                 recruiterText = "";
                 let countRec = 0;
                 sortedRecruiters.forEach((item) => {
                     if(item[0] !== "Walk-in/จัดหาทั่วไป" && countRec < 3) {
                         countRec++;
-                        recruiterText += `  ${countRec}. ${item[0]} (แนะนำผ่าน ${item[1]} ราย)\n`;
+                        const pCount = recPassed[item[0]] || 0;
+                        recruiterText += `  ${countRec}. ${item[0]} (หาได้ ${item[1]} ราย, ผ่านเกณฑ์ ${pCount} ราย)\n`;
                     }
                 });
-                if(recruiterText === "") recruiterText = "  • ผู้ผ่านงานส่วนใหญ่มาจาก Walk-in หรือการจัดหาทั่วไป\n";
+                if(recruiterText === "") recruiterText = "  • ผู้แนะนำส่วนใหญ่มาจาก Walk-in หรือการจัดหาทั่วไป\n";
             }
 
             let attendanceInsight = "";
@@ -860,11 +874,10 @@
   • สละสิทธิ์/ไม่ผ่านประเมิน (Dropped): ${dropped} ราย (Drop Rate: ${dropRate}%)${riskAlert}
 
 🎯 2. ประสิทธิภาพรายแผนก และแหล่งที่มา (Department & Source)
-[Top 3 แผนกที่สอบผ่านสูงสุด]
+[Top 3 แผนกที่มีพนักงานเข้าอบรมสูงสุด]
 ${deptText}
-[Top 3 ผู้แนะนำ (Recruiter) ที่สร้างพนักงานคุณภาพ]
+[Top 3 ผู้แนะนำ (Recruiter) ที่หาพนักงานเข้าอบรมสูงสุด]
 ${recruiterText}
-
 📈 3. พฤติกรรมการเข้าเรียน (Engagement & Attendance)
 ${attendanceInsight}
 
@@ -888,7 +901,7 @@ ${reasonText}${teamDropText}
                 btnTextSpan.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> AI วิเคราะห์ข้อมูลระดับบริหาร`;
                 btn.classList.replace('from-emerald-600', 'from-indigo-600');
                 btn.classList.replace('to-teal-600', 'to-purple-600');
-                btn.disabled = false; // ปลดล็อคปุ่มให้กดใหม่ได้
+                btn.disabled = false;
             }, 3000);
         }
 
