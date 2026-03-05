@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR Training Dashboard | Ultra Pro AI</title>
+    <title>HR Training Dashboard | Ultimate AI Report</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -194,13 +194,13 @@
             <section class="card p-6 border-indigo-200 bg-gradient-to-br from-indigo-50 to-blue-50/50">
                 <div class="flex justify-between items-center mb-4">
                     <label class="block text-base font-prompt font-bold text-indigo-900 flex items-center gap-2">
-                        <i class="fa-solid fa-bolt text-amber-500"></i> Executive Analytical Summary (รายงานวิเคราะห์เชิงลึกอัจฉริยะ)
+                        <i class="fa-solid fa-bolt text-amber-500"></i> Executive Analytical Summary (รายงานวิเคราะห์เชิงลึกอัจฉริยะแบบละเอียด)
                     </label>
                     <button id="btnAISummary" onclick="generateAISummary()" class="no-print text-sm bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-5 py-2.5 rounded-xl transition shadow-md shadow-indigo-500/30 flex items-center gap-2 font-medium transform hover:-translate-y-0.5">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> AI วิเคราะห์ข้อมูลเชิงลึก
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> AI วิเคราะห์ข้อมูลระดับบริหาร
                     </button>
                 </div>
-                <textarea id="reportSummaryInput" rows="11" class="w-full p-5 bg-white border border-indigo-100 rounded-xl text-[14.5px] focus:ring-2 focus:ring-indigo-500 leading-relaxed font-sarabun text-slate-700 whitespace-pre-line shadow-inner resize-y" placeholder="กดปุ่ม 'AI วิเคราะห์ข้อมูลเชิงลึก' เพื่อให้ระบบประมวลผลปัจจัยความสำเร็จ ความเสี่ยง และข้อเสนอแนะเชิงกลยุทธ์ให้อัตโนมัติ..."></textarea>
+                <textarea id="reportSummaryInput" rows="18" class="w-full p-6 bg-white border border-indigo-100 rounded-xl text-[14.5px] focus:ring-2 focus:ring-indigo-500 leading-relaxed font-sarabun text-slate-700 whitespace-pre-line shadow-inner resize-y" placeholder="กดปุ่ม 'AI วิเคราะห์ข้อมูลระดับบริหาร' เพื่อประมวลผลจัดอันดับ Top 3 เชิงลึกในทุกมิติ ทั้งแผนกยอดเยี่ยม สาเหตุที่ควรระวัง และข้อเสนอแนะ..."></textarea>
             </section>
 
             <section class="grid grid-cols-2 md:grid-cols-5 gap-5">
@@ -494,7 +494,6 @@
             Chart.defaults.font.family = "'Prompt', sans-serif";
             Chart.defaults.color = '#64748b';
 
-            // 1. กราฟโดนัท (สถานะ)
             if(charts['status']) charts['status'].destroy();
             const ctxStatus = document.getElementById('statusChart').getContext('2d');
             charts['status'] = new Chart(ctxStatus, {
@@ -541,7 +540,6 @@
                 }
             });
 
-            // 2. กราฟแท่ง (แผนก)
             const depts = {}; 
             dataToRender.forEach(d => { const k = d.dept || 'ไม่ระบุ'; depts[k] = (depts[k] || 0) + 1; });
 
@@ -569,7 +567,6 @@
                 }
             });
 
-            // 3. กราฟใหม่: กราฟแท่งซ้อนทับ (ทีม - เข้า vs ออก)
             const teamStats = {};
             dataToRender.forEach(d => {
                 const k = d.team || 'ไม่ระบุทีม';
@@ -683,7 +680,7 @@
         }
 
         /* =========================================================
-           ULTRA PRO AI SUMMARY FUNCTION (เพิ่มการวิเคราะห์ระดับทีม)
+           ULTIMATE PRO AI SUMMARY FUNCTION (เจาะลึก Top 3 ทุกมิติ)
            ========================================================= */
         function generateAISummary() {
             const startVal = document.getElementById('startDate').value;
@@ -732,47 +729,59 @@
             const rate = total > 0 ? Math.round((passed / total) * 100) : 0;
             const dropRate = total > 0 ? Math.round((dropped / total) * 100) : 0;
 
-            let deptText = "";
-            let recruiterText = "";
+            // --- 1. วิเคราะห์แผนกและผู้แนะนำ (Top 3) ---
+            let deptText = "  • ยังไม่มีข้อมูลแผนกที่ผ่านเกณฑ์เพียงพอ";
+            let recruiterText = "  • ยังไม่มีข้อมูลผู้แนะนำเพียงพอ";
+            
             if (passed > 0) {
+                // Top 3 Departments
                 const depts = {};
                 passedData.forEach(d => {
                     const dept = (d.dept && d.dept.trim() !== "") ? d.dept.trim() : "ไม่ระบุแผนก";
                     depts[dept] = (depts[dept] || 0) + 1;
                 });
-                const topDept = Object.keys(depts).sort((a, b) => depts[b] - depts[a])[0];
-                deptText = `\n  • แผนกที่มีอัตราการผ่านเข้าสู่ระบบงานสูงสุดคือ "${topDept}" (จำนวน ${depts[topDept]} ราย)`;
+                const sortedDepts = Object.entries(depts).sort((a,b) => b[1] - a[1]);
+                deptText = "";
+                sortedDepts.slice(0, 3).forEach((item, index) => {
+                    deptText += `  ${index+1}. ${item[0]} (ผ่านงาน ${item[1]} ราย)\n`;
+                });
 
+                // Top 3 Recruiters
                 const recruiters = {};
                 passedData.forEach(d => {
-                    const r = (d.recruiter && d.recruiter.trim() !== "" && d.recruiter !== "-") ? d.recruiter.trim() : "Walk-in/จัดหา";
+                    const r = (d.recruiter && d.recruiter.trim() !== "" && d.recruiter !== "-") ? d.recruiter.trim() : "Walk-in/จัดหาทั่วไป";
                     recruiters[r] = (recruiters[r] || 0) + 1;
                 });
-                const topRecruiter = Object.keys(recruiters).sort((a,b) => recruiters[b] - recruiters[a])[0];
-                if (topRecruiter !== "Walk-in/จัดหา" && recruiters[topRecruiter] > 1) {
-                    recruiterText = `\n  • ผู้แนะนำที่สร้างพนักงานคุณภาพ (Top Recruiter) ได้มากที่สุดคือ "${topRecruiter}" (ผ่านงาน ${recruiters[topRecruiter]} ราย)`;
-                }
+                const sortedRecruiters = Object.entries(recruiters).sort((a,b) => b[1] - a[1]);
+                recruiterText = "";
+                let countRec = 0;
+                sortedRecruiters.forEach((item) => {
+                    if(item[0] !== "Walk-in/จัดหาทั่วไป" && countRec < 3) {
+                        countRec++;
+                        recruiterText += `  ${countRec}. ${item[0]} (แนะนำผ่าน ${item[1]} ราย)\n`;
+                    }
+                });
+                if(recruiterText === "") recruiterText = "  • ผู้ผ่านงานส่วนใหญ่มาจาก Walk-in หรือการจัดหาทั่วไป\n";
             }
 
+            // --- 2. วิเคราะห์พฤติกรรมการมาเรียน (Attendance Engagement) ---
             let attendanceInsight = "";
-            let passDays = 0; passedData.forEach(d => passDays += (d.d1?1:0)+(d.d2?1:0)+(d.d3?1:0));
-            let dropDays = 0; droppedData.forEach(d => dropDays += (d.d1?1:0)+(d.d2?1:0)+(d.d3?1:0));
+            let perfectAttendancePass = 0;
+            passedData.forEach(d => { if((d.d1?1:0)+(d.d2?1:0)+(d.d3?1:0) === 3) perfectAttendancePass++; });
+            const perfectPct = passed > 0 ? Math.round((perfectAttendancePass / passed) * 100) : 0;
             
-            const avgPassDays = passed > 0 ? (passDays/passed).toFixed(1) : 0;
-            const avgDropDays = dropped > 0 ? (dropDays/dropped).toFixed(1) : 0;
-            
-            if (avgPassDays > avgDropDays && dropped > 0) {
-                attendanceInsight = `\n  • ความเชื่อมโยงการเรียน: กลุ่มผู้ผ่านเกณฑ์มีอัตราเข้าเรียนเฉลี่ย ${avgPassDays} วัน ซึ่งสูงกว่ากลุ่มที่ไม่ผ่าน (เฉลี่ย ${avgDropDays} วัน) บ่งชี้ว่า "ความสม่ำเสมอในการเข้าคลาสมีผลต่อความสำเร็จอย่างมีนัยสำคัญ"`;
-            }
+            attendanceInsight = `  • ${perfectPct}% ของผู้ที่สอบผ่าน มีประวัติการเข้าเรียนครบถ้วน 3 วันเต็ม บ่งชี้ว่าความสม่ำเสมอคือปัจจัยสำคัญของความสำเร็จ`;
 
-            let reasonText = "";
+            // --- 3. วิเคราะห์สาเหตุการออก (Top 3) และทีมที่ต้องเฝ้าระวัง ---
+            let reasonText = "  • ไม่มีข้อมูลผู้สละสิทธิ์ในรอบนี้ ถือเป็นผลงานการอบรมที่ยอดเยี่ยม (0% Attrition Rate)\n";
             let teamDropText = "";
-            let strategicAdvice = "ควรติดตามผลการปฏิบัติงานของพนักงานกลุ่มที่ผ่านการอบรมอย่างใกล้ชิด (Performance Monitoring) เพื่อประเมินผลสัมฤทธิ์ของหลักสูตรอย่างต่อเนื่อง";
+            let strategicAdvice = "ดำเนินการคัดกรองและอบรมในมาตรฐานปัจจุบันต่อไป พร้อมทั้งจัดทำแบบสอบถามความพึงพอใจเพื่อรักษามาตรฐาน";
             let riskAlert = "";
 
-            if (dropRate >= 30) riskAlert = `\n[⚠️ ข้อควรระวัง: อัตราการสูญเสียพนักงาน (Attrition Rate) พุ่งสูงถึง ${dropRate}%]`;
+            if (dropRate >= 30) riskAlert = `\n[⚠️ ข้อควรระวังระดับสูง: อัตราการสูญเสียพนักงาน (Attrition Rate) พุ่งสูงถึง ${dropRate}%]`;
 
             if (dropped > 0) {
+                // Top 3 Reasons
                 const reasons = {};
                 const teamDrops = {};
                 
@@ -784,30 +793,35 @@
                     teamDrops[t] = (teamDrops[t] || 0) + 1;
                 });
                 
-                // วิเคราะห์สาเหตุ
-                const topReason = Object.keys(reasons).sort((a, b) => reasons[b] - reasons[a])[0];
-                const topReasonCount = reasons[topReason];
-                const reasonPercent = Math.round((topReasonCount / dropped) * 100);
-                reasonText = `\n  • สาเหตุหลักอันดับ 1 ที่ทำให้สูญเสียพนักงานคือ "${topReason}" (พบ ${topReasonCount} ราย หรือคิดเป็น ${reasonPercent}% ของกลุ่มที่ไม่ผ่านประเมิน)`;
+                const sortedReasons = Object.entries(reasons).sort((a,b) => b[1] - a[1]);
+                reasonText = "";
+                sortedReasons.slice(0, 3).forEach((item, index) => {
+                    let pct = Math.round((item[1]/dropped)*100);
+                    reasonText += `  ${index+1}. ${item[0]} - จำนวน ${item[1]} ราย (${pct}%)\n`;
+                });
 
-                // วิเคราะห์ทีมที่คนออกเยอะสุด (ตามที่คุณกรขอเพิ่ม)
-                const topTeamDrop = Object.keys(teamDrops).sort((a,b) => teamDrops[b] - teamDrops[a])[0];
-                if(teamDrops[topTeamDrop] > 1) {
-                    teamDropText = `\n  • ⚠️ ทีมที่พบอัตราการออกสูงสุดคือทีม "${topTeamDrop}" (สูญเสีย ${teamDrops[topTeamDrop]} ราย) ควรให้ความสำคัญในการสอบถามและปรับปรุงกระบวนการดูแลของทีมนี้เป็นพิเศษ`;
+                // Top 2 Teams to watch
+                const sortedTeams = Object.entries(teamDrops).sort((a,b) => b[1] - a[1]);
+                if(sortedTeams.length > 0 && sortedTeams[0][1] > 1) {
+                    teamDropText = `\n  ⚠️ [ทีมที่ควรเฝ้าระวังการลาออกสูงสุด]:\n`;
+                    sortedTeams.slice(0, 2).forEach((item, index) => {
+                        teamDropText += `    ${index+1}. ทีม "${item[0]}" (สูญเสีย ${item[1]} ราย)\n`;
+                    });
                 }
 
-                const tr = topReason.toLowerCase();
-                if (tr.includes('งานใหม่') || tr.includes('เงิน') || tr.includes('offer')) {
-                    strategicAdvice = `อัตราการสูญเสียหลักเกิดจากปัจจัยภายนอก ("${topReason}") ขอเสนอแนะให้ฝ่าย HR ทบทวนโครงสร้างผลตอบแทนเปรียบเทียบกับตลาด (Market Benchmarking) เพื่อเพิ่มอัตราการรักษาพนักงาน (Retention Rate)`;
-                } else if (tr.includes('ไม่ผ่าน') || tr.includes('ทัศนคติ') || tr.includes('เกณฑ์')) {
-                    strategicAdvice = `สาเหตุหลักเกิดจากปัจจัยความเหมาะสม ("${topReason}") ขอเสนอแนะให้ปรับปรุงเกณฑ์การคัดกรอง (Screening Criteria) ตั้งแต่ขั้นตอนการสัมภาษณ์ให้รัดกุมยิ่งขึ้น เพื่อลด Cost & Time ในการเทรนบุคลากรที่ไม่ตรงกับ Core Values`;
-                } else if (tr.includes('ครอบครัว') || tr.includes('สุขภาพ') || tr.includes('ป่วย')) {
-                    strategicAdvice = `สาเหตุหลักเกิดจากปัญหาส่วนตัว/สุขภาพ ขอเสนอแนะให้พิจารณาเพิ่มความยืดหยุ่นในการทำงาน หรือทบทวนสวัสดิการด้านสุขภาพเพื่อช่วยเหลือและดึงดูดพนักงานในระยะยาว`;
-                } else if (tr.includes('เดินทาง') || tr.includes('ไกล')) {
-                    strategicAdvice = `พนักงานมีปัญหาเรื่องการเดินทาง ขอเสนอแนะให้พิจารณาเกณฑ์ค่าเดินทาง (Transportation Allowance) หรือคัดกรองพื้นที่พักอาศัยของผู้สมัครให้รอบคอบยิ่งขึ้น`;
+                // Dynamic Action Plan based on #1 Reason
+                const topReasonStr = sortedReasons[0][0].toLowerCase();
+                if (topReasonStr.includes('งานใหม่') || topReasonStr.includes('เงิน') || topReasonStr.includes('offer')) {
+                    strategicAdvice = `เนื่องจากสาเหตุอันดับ 1 คือเรื่องของผลตอบแทน/ได้งานใหม่ ฝ่าย HR ควรประเมินความสามารถในการแข่งขันทางด้านสวัสดิการ (Market Benchmarking) หรือสื่อสารให้พนักงานใหม่เห็นถึง Career Path ที่ชัดเจนตั้งแต่วันแรก`;
+                } else if (topReasonStr.includes('ไม่ผ่าน') || topReasonStr.includes('ทัศนคติ') || topReasonStr.includes('เกณฑ์')) {
+                    strategicAdvice = `เนื่องจากสาเหตุอันดับ 1 คือการไม่ผ่านเกณฑ์การประเมิน ฝ่าย HR ควรพิจารณาปรับปรุงเครื่องมือหรือคำถามในขั้นตอนการคัดกรอง (Screening) ให้สามารถแยกแยะ Competency และ Attitude ได้แม่นยำขึ้นก่อนรับเข้าเทรน`;
+                } else if (topReasonStr.includes('ครอบครัว') || topReasonStr.includes('สุขภาพ') || topReasonStr.includes('ป่วย')) {
+                    strategicAdvice = `เนื่องจากสาเหตุหลักมาจากปัญหาส่วนตัวและสุขภาพ ฝ่าย HR อาจพิจารณาเพิ่มชั่วโมงการทำงานที่ยืดหยุ่น หรือจัดหาโปรแกรมสวัสดิการดูแลสุขภาพเพื่อเป็นจุดขายในการรักษาพนักงานระยะยาว`;
+                } else if (topReasonStr.includes('เดินทาง') || topReasonStr.includes('ไกล')) {
+                    strategicAdvice = `เนื่องจากสาเหตุหลักคือปัญหาการเดินทาง ฝ่าย HR ควรเพิ่มความเข้มงวดในการคัดกรองพื้นที่พักอาศัยของผู้สมัคร หรือนำเสนอแผนช่วยเหลือค่าเดินทาง (Transportation Allowance) หากเป็นตำแหน่งที่ขาดแคลน`;
+                } else {
+                     strategicAdvice = `ควรจัดทำ Exit Interview เชิงลึกกับพนักงานกลุ่มที่สละสิทธิ์จากสาเหตุ "${sortedReasons[0][0]}" เพื่อนำข้อมูลดิบมาออกแบบแนวทางแก้ไขปัญหาร่วมกับหัวหน้างานสายตรง`;
                 }
-            } else {
-                reasonText = `\n  • ในรอบการประเมินนี้ ไม่มีผู้สละสิทธิ์หรือตกประเมิน ถือเป็นผลลัพธ์การคัดกรองและอบรมที่ยอดเยี่ยม (0% Attrition Rate)`;
             }
 
             let dateRange = "ภาพรวมสะสมทั้งหมด (All Time)";
@@ -823,7 +837,31 @@
             }
             if (searchVal !== '') dateRange += ` (กรองข้อมูลด้วยคำค้นหา: "${searchVal}")`;
 
-            const autoText = `📊 รายงานวิเคราะห์เชิงลึก (Executive Analytical Summary)\nเรื่อง: ผลการดำเนินงานโครงการอบรมพนักงานใหม่ ${dateRange}\n\n1. ภาพรวมประสิทธิภาพ (Performance Overview)\nมีผู้เข้าร่วมโครงการทั้งสิ้น ${total} ราย โดยแบ่งผลลัพธ์เป็น:\n  • ผ่านประเมินเข้าสู่ระบบงาน (รวม Back Office): ${passed} ราย (Success Rate: ${rate}%)\n  • อยู่ในระหว่างการอบรม (Active): ${active} ราย\n  • สละสิทธิ์/ไม่ผ่านประเมิน (Dropped): ${dropped} ราย (Drop Rate: ${dropRate}%)${riskAlert}\n\n2. ข้อมูลเชิงลึก & ปัจจัยความสำเร็จ (Key Insights)${deptText}${recruiterText}${attendanceInsight}\n\n3. การวิเคราะห์ความเสี่ยง (Attrition Analysis)${reasonText}${teamDropText}\n\n💡 4. ข้อเสนอแนะเชิงกลยุทธ์จากระบบ (Strategic Recommendations)\n" ${strategicAdvice} "\n\nจึงเรียนมาเพื่อโปรดพิจารณา`;
+            const autoText = `📊 รายงานวิเคราะห์ข้อมูลเชิงลึกแบบละเอียด (Comprehensive Executive Analytics)
+เรื่อง: สรุปประเมินผลโครงการอบรมพนักงานใหม่ ${dateRange}
+
+📌 1. สรุปภาพรวมโครงการ (Project Overview)
+  • ผู้เข้าร่วมทั้งหมด: ${total} ราย
+  • ผ่านการประเมินเข้าสู่ระบบงาน (รวม Back Office): ${passed} ราย (Success Rate: ${rate}%)
+  • กำลังดำเนินการอบรม (Active): ${active} ราย
+  • สละสิทธิ์/ไม่ผ่านประเมิน (Dropped): ${dropped} ราย (Drop Rate: ${dropRate}%)${riskAlert}
+
+🎯 2. ประสิทธิภาพรายแผนก และแหล่งที่มา (Department & Source)
+[Top 3 แผนกที่สอบผ่านสูงสุด]
+${deptText}
+[Top 3 ผู้แนะนำ (Recruiter) ที่สร้างพนักงานคุณภาพ]
+${recruiterText}
+
+📈 3. พฤติกรรมการเข้าเรียน (Engagement & Attendance)
+${attendanceInsight}
+
+⚠️ 4. การวิเคราะห์สาเหตุการลาออก (Attrition Analysis)
+[Top 3 สาเหตุหลักที่พนักงานไม่ไปต่อ]
+${reasonText}${teamDropText}
+💡 5. ข้อเสนอแนะเชิงกลยุทธ์ (Strategic Action Plan)
+" ${strategicAdvice} "
+
+จึงเรียนมาเพื่อโปรดพิจารณาและใช้เป็นข้อมูลในการตัดสินใจเชิงนโยบายต่อไป`;
 
             document.getElementById('reportSummaryInput').value = autoText;
             
