@@ -671,19 +671,28 @@
                 updateActionBar(); return;
             }
 
-            const formatCheckinHover = (val) => {
+            // 🟢 ปรับฟอร์แมตให้ออกมาเป็น "04-03-2026 09:13" ตรงๆ แบบไม่มีข้อความไทยเลย
+            const formatCheckinHover = (val, timestamp) => {
                 if (!val) return "";
                 try {
-                    const parts = String(val).split(' ');
+                    const parts = String(val).trim().split(/\s+/);
                     if (parts.length === 2 && parts[0].includes('/')) {
                         const dParts = parts[0].split('/');
-                        const m = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
-                        const monthIdx = parseInt(dParts[1]) - 1;
-                        if(monthIdx >= 0 && monthIdx < 12) {
-                            return `เช็คชื่อเมื่อ: ${parseInt(dParts[0])} ${m[monthIdx]} เวลา ${parts[1]} น.`;
+                        
+                        // ดึง ปี ค.ศ. 
+                        let year = new Date().getFullYear();
+                        if (timestamp) {
+                            const rDate = parseToDateObj(timestamp);
+                            if (rDate) year = rDate.getFullYear();
                         }
+                        
+                        const dd = String(dParts[0]).padStart(2, '0');
+                        const mm = String(dParts[1]).padStart(2, '0');
+                        
+                        // คืนค่าแบบ 04-03-2026 09:13 คลีนๆ
+                        return `${dd}-${mm}-${year} ${parts[1]}`;
                     }
-                    return `เช็คชื่อเมื่อ: ${val}`; 
+                    return val; 
                 } catch(e) { return val; }
             };
 
@@ -696,7 +705,8 @@
                     
                     tr.className = isDropout ? "transition border-b border-[var(--status-alert-text)] bg-[var(--status-alert-bg)]" : "hover:bg-[var(--glass-border)] transition border-b border-theme-border";
                     
-                    const icon = (v) => v ? `<i class="fa-solid fa-circle-check text-[var(--status-passed-text)] text-sm cursor-help hover:scale-125 transition-transform" title="${formatCheckinHover(v)}"></i>` : `<i class="fa-regular fa-circle text-theme-muted text-sm opacity-50 cursor-not-allowed" title="ยังไม่ได้เช็คชื่อ"></i>`;
+                    // เรียกใช้ title ฟังก์ชันที่จะโชว์แค่ตัวเลขตามที่คุณรีเควส
+                    const icon = (v) => v ? `<i class="fa-solid fa-circle-check text-[var(--status-passed-text)] text-sm cursor-help hover:scale-125 transition-transform" title="${formatCheckinHover(v, row.timestamp)}"></i>` : `<i class="fa-regular fa-circle text-theme-muted text-sm opacity-50 cursor-not-allowed" title="-"></i>`;
                     
                     let badge = "status-default"; if(safeStatus==='Active') badge="status-active"; if(safeStatus==='Passed') badge="status-passed"; if(['Resigned','New Job'].includes(safeStatus)) badge="status-alert";
                     let dayColor = attendedDays === 3 ? 'var(--status-passed-text)' : (isDropout ? 'var(--status-alert-text)' : 'var(--accent)');
