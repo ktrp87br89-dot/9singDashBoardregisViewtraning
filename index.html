@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR Training Dashboard | Masterpiece AI</title>
+    <title>HR Training Dashboard | Ultimate AI & Re-Train Tracking</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -238,31 +238,31 @@
                         <span id="aiBtnText"><i class="fa-solid fa-wand-magic-sparkles"></i> AI จัดอันดับข้อมูลทุกมิติ</span>
                     </button>
                 </div>
-                <textarea id="reportSummaryInput" rows="26" class="w-full p-6 bg-white border border-indigo-100 rounded-xl text-[14.5px] focus:ring-2 focus:ring-indigo-500 leading-relaxed font-sarabun text-slate-700 whitespace-pre-line shadow-inner resize-y" placeholder="กดปุ่ม 'AI จัดอันดับข้อมูลทุกมิติ' เพื่อประมวลผลจัดอันดับยอดผู้เข้าอบรม อัตราการผ่านงาน และอัตราการลาออกของทุกทีม และผู้แนะนำทั้งหมด..."></textarea>
+                <textarea id="reportSummaryInput" rows="26" class="w-full p-6 bg-white border border-indigo-100 rounded-xl text-[14.5px] focus:ring-2 focus:ring-indigo-500 leading-relaxed font-sarabun text-slate-700 whitespace-pre-line shadow-inner resize-y" placeholder="กดปุ่ม 'AI จัดอันดับข้อมูลทุกมิติ' เพื่อประมวลผลจัดอันดับยอดผู้เข้าอบรม อัตราการผ่านงาน อัตราการลาออกของทุกทีม วิเคราะห์คนกลับมาเทรนซ้ำ และผู้แนะนำทั้งหมด..."></textarea>
             </section>
 
             <section class="grid grid-cols-2 md:grid-cols-5 gap-5">
                 <div class="card p-6 border-b-4 border-blue-500 relative overflow-hidden">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">ลงทะเบียนรวม</p>
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2" title="นับจากบุคคลจริง (ไม่นับซ้ำถ้ารีเทรน)">จำนวนคน (เข้าร่วมจริง)</p>
                     <h3 class="text-4xl font-prompt font-bold text-slate-700" id="kpi-total">0</h3>
                 </div>
                 <div class="card p-6 border-b-4 border-emerald-500 relative overflow-hidden">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">ผ่านอบรม</p>
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2" title="นับจากสถานะล่าสุดของแต่ละบุคคล">ผ่านอบรม</p>
                     <h3 class="text-4xl font-prompt font-bold text-emerald-600" id="kpi-passed">0</h3>
                 </div>
                 <div class="card p-6 border-b-4 border-rose-500 relative overflow-hidden">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">ออก/ได้งานใหม่</p>
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2" title="นับจากสถานะล่าสุดของแต่ละบุคคล">ออก/ได้งานใหม่</p>
                     <h3 class="text-4xl font-prompt font-bold text-rose-600" id="kpi-dropped">0</h3>
                 </div>
                 <div class="card p-6 border-b-4 border-amber-500 relative overflow-hidden cursor-pointer hover:bg-amber-50 hover:-translate-y-2 transition-all duration-300 group shadow-sm hover:shadow-amber-500/20" onclick="showActiveTrainees()" title="คลิกเพื่อดูรายละเอียดผู้กำลังเทรนทั้งหมด">
-                    <p class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2 flex justify-between items-center">
+                    <p class="text-[11px] font-bold text-amber-500 uppercase tracking-widest mb-2 flex justify-between items-center">
                         กำลังเทรน 
-                        <span class="text-[10px] bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full flex items-center gap-1 group-hover:bg-amber-500 group-hover:text-white transition"><i class="fa-solid fa-arrow-pointer"></i> คลิกเพื่อดู</span>
+                        <span class="text-[9px] bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full flex items-center gap-1 group-hover:bg-amber-500 group-hover:text-white transition"><i class="fa-solid fa-arrow-pointer"></i> คลิกเพื่อดู</span>
                     </p>
                     <h3 class="text-4xl font-prompt font-bold text-amber-600" id="kpi-active">0</h3>
                 </div>
                 <div class="card p-6 border-b-4 border-indigo-500 relative overflow-hidden bg-indigo-50">
-                    <p class="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-2">อัตราการผ่าน</p>
+                    <p class="text-[11px] font-bold text-indigo-400 uppercase tracking-widest mb-2">อัตราการผ่าน</p>
                     <h3 class="text-4xl font-prompt font-bold text-indigo-600" id="kpi-rate">0%</h3>
                 </div>
             </section>
@@ -277,7 +277,7 @@
                 </div>
                 <div class="card p-6 group lg:col-span-2">
                     <h3 class="font-prompt font-bold text-slate-700 text-lg mb-6 flex justify-between items-center">
-                        <span><i class="fa-solid fa-building-user text-blue-500 mr-2"></i> จำนวนพนักงานแยกตามแผนก (Department)</span>
+                        <span><i class="fa-solid fa-building-user text-blue-500 mr-2"></i> จำนวนพนักงานแยกตามแผนก</span>
                         <span class="text-[10px] bg-blue-50 text-blue-500 px-2 py-1 rounded border border-blue-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกแท่งกราฟ</span>
                     </h3>
                     <div class="h-64 relative"><canvas id="deptChart"></canvas></div>
@@ -286,7 +286,7 @@
 
             <section class="card p-6 group">
                 <h3 class="font-prompt font-bold text-slate-700 text-lg mb-6 flex justify-between items-center">
-                    <span><i class="fa-solid fa-users-gear text-emerald-500 mr-2"></i> อัตราการรอดและลาออก แยกตามทีม (Team Attrition & Retention)</span>
+                    <span><i class="fa-solid fa-users-gear text-emerald-500 mr-2"></i> อัตราการรอดและลาออก แยกตามทีม</span>
                     <span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-1 rounded border border-emerald-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกแท่งกราฟเพื่อดูรายชื่อทีม</span>
                 </h3>
                 <div class="h-80 relative"><canvas id="teamChart"></canvas></div>
@@ -294,7 +294,10 @@
 
             <section class="card overflow-hidden flex flex-col">
                 <div class="px-6 py-5 border-b border-slate-100 bg-white flex justify-between items-center">
-                    <h3 class="font-prompt font-bold text-slate-800 text-lg">ฐานข้อมูลผู้เข้าอบรม</h3>
+                    <div>
+                        <h3 class="font-prompt font-bold text-slate-800 text-lg">ฐานข้อมูลการลงทะเบียนทั้งหมด</h3>
+                        <p class="text-[11px] text-slate-400 mt-0.5">ตารางนี้แสดงประวัติการลงทะเบียนแบบเต็ม (รวมข้อมูล Re-train)</p>
+                    </div>
                     <div class="flex items-center gap-3">
                         <span id="filterStatus" class="no-print text-xs bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-medium border border-slate-200">แสดงข้อมูลทั้งหมด</span>
                         <button onclick="exportToCSV()" class="no-print text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-700 px-3 py-1.5 rounded-lg font-bold border border-emerald-300 transition flex items-center gap-1">
@@ -309,7 +312,7 @@
                                 <th class="py-4 px-6">วันที่ลงทะเบียน</th>
                                 <th class="py-4 px-6">ชื่อ-สกุล / แผนก / ทีม</th>
                                 <th class="py-4 px-6 text-center">มาเรียน (วัน)</th>
-                                <th class="py-4 px-6">สถานะ</th>
+                                <th class="py-4 px-6">สถานะรอบนั้น</th>
                                 <th class="py-4 px-6">ผู้แนะนำ</th>
                                 <th class="py-4 px-6">หมายเหตุ</th>
                             </tr>
@@ -346,12 +349,29 @@
 
         let allData = []; 
         let charts = {};
+        
+        // ตัวแปรเก็บจำนวนคนที่ชื่อซ้ำ (เพื่อติดป้าย Re-train)
+        let allNameCounts = {}; 
 
         const safeString = (val) => val === null || val === undefined ? '' : String(val).trim();
         const checkDay = (val) => {
             const v = safeString(val).toLowerCase();
             return (v && v !== '0' && v !== 'false' && v !== 'ลา' && v !== 'ขาด') ? 1 : 0;
         };
+
+        // ฟังก์ชันช่วยดึงเฉพาะ "สถานะล่าสุด" ของแต่ละคน (แก้บัค Headcount แบบ 100%)
+        // โดยไม่ต้องใช้วันที่ในการเรียง แต่จะยึดตามบรรทัดของ Google Sheets (บรรทัดล่างสุดคือใหม่สุด)
+        function getLatestRecords(dataList) {
+            const groups = {};
+            dataList.forEach(d => {
+                // เอาชื่อ+ชื่อเล่น มารวมกัน เพื่อแยกแยะบุคคลให้แม่นยำขึ้น
+                const key = d.name.trim().toLowerCase() + '|' + d.nickname.trim().toLowerCase();
+                if (d.name.trim() !== '') {
+                    groups[key] = d; // เขียนทับค่าเก่าไปเรื่อยๆ จะได้ข้อมูลบรรทัดล่าสุดของคนนั้นเสมอ
+                }
+            });
+            return Object.values(groups);
+        }
 
         window.onload = () => {
             fetchAutoData(true);
@@ -367,23 +387,31 @@
                 
                 if(result.status === "success") {
                     const rows = result.data;
-                    
-                    allData = rows.map(row => ({
-                        id: safeString(row[0]),
-                        timestamp: safeString(row[1]),
-                        prefix: safeString(row[2]),
-                        name: safeString(row[3]),
-                        nickname: safeString(row[4]),
-                        team: safeString(row[5]),
-                        phone: safeString(row[6]),
-                        dept: safeString(row[7]),
-                        recruiter: safeString(row[8]),
-                        d1: safeString(row[9]),
-                        d2: safeString(row[10]),
-                        d3: safeString(row[11]),
-                        status: safeString(row[12]) || 'Active', 
-                        reason: safeString(row[13])
-                    })).filter(d => d.name !== '');
+                    allNameCounts = {}; // Reset
+
+                    allData = rows.map(row => {
+                        const n = safeString(row[3]).toLowerCase().trim();
+                        const nn = safeString(row[4]).toLowerCase().trim();
+                        const cleanKey = n + '|' + nn;
+                        if(n) allNameCounts[cleanKey] = (allNameCounts[cleanKey] || 0) + 1;
+
+                        return {
+                            id: safeString(row[0]),
+                            timestamp: safeString(row[1]),
+                            prefix: safeString(row[2]),
+                            name: safeString(row[3]),
+                            nickname: safeString(row[4]),
+                            team: safeString(row[5]),
+                            phone: safeString(row[6]),
+                            dept: safeString(row[7]),
+                            recruiter: safeString(row[8]),
+                            d1: safeString(row[9]),
+                            d2: safeString(row[10]),
+                            d3: safeString(row[11]),
+                            status: safeString(row[12]) || 'Active', 
+                            reason: safeString(row[13])
+                        };
+                    }).filter(d => d.name !== '');
 
                     applyDateFilter();
                     
@@ -473,27 +501,30 @@
         }
 
         function updateDashboard(dataToRender) {
-            const total = dataToRender.length;
+            // คำนวณ KPI โดยใช้ "จำนวนคนจริง (Headcount)" ที่ดึงสถานะล่าสุดมาแล้ว
+            const latestRecords = getLatestRecords(dataToRender);
             
-            const passed = dataToRender.filter(d => {
+            const headCount = latestRecords.length;
+            const passed = latestRecords.filter(d => {
                 const s = d.status.toLowerCase();
                 return s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
             }).length;
             
-            const dropped = dataToRender.filter(d => {
+            const dropped = latestRecords.filter(d => {
                 const s = d.status.toLowerCase();
                 return s.includes('drop') || s.includes('new job') || d.status.includes('ออก');
             }).length;
             
-            const active = total - passed - dropped;
-            const rate = total > 0 ? Math.round((passed / total) * 100) : 0;
+            const active = headCount - passed - dropped;
+            const rate = headCount > 0 ? Math.round((passed / headCount) * 100) : 0;
 
-            document.getElementById("kpi-total").innerText = total;
+            document.getElementById("kpi-total").innerText = headCount;
             document.getElementById("kpi-passed").innerText = passed;
             document.getElementById("kpi-dropped").innerText = dropped;
             document.getElementById("kpi-active").innerText = active;
             document.getElementById('kpi-rate').innerText = rate + "%";
 
+            // ตารางด้านล่างให้แสดง "ข้อมูลทั้งหมดแบบไม่ตัดออก" เพื่อดูประวัติ
             const tbody = document.getElementById('dataTableBody');
             tbody.innerHTML = '';
             
@@ -514,11 +545,17 @@
                     let daysCount = checkDay(d.d1) + checkDay(d.d2) + checkDay(d.d3);
                     let dateStr = d.timestamp ? d.timestamp.split(' ')[0] : '-';
 
+                    let retrainBadge = '';
+                    const cleanKey = d.name.trim().toLowerCase() + '|' + d.nickname.trim().toLowerCase();
+                    if (allNameCounts[cleanKey] > 1) {
+                        retrainBadge = `<span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-purple-100 text-purple-700 border border-purple-200 shadow-sm" title="บุคคลนี้มีประวัติการเข้าอบรมมากกว่า 1 ครั้ง"><i class="fa-solid fa-rotate-right mr-1"></i> Re-train</span>`;
+                    }
+
                     tbody.innerHTML += `
                         <tr class="hover:bg-slate-50/80 transition duration-150">
                             <td class="py-4 px-6 text-xs text-slate-500 font-medium">${dateStr}</td>
                             <td class="py-4 px-6">
-                                <div class="font-prompt font-semibold text-slate-800 text-sm">${d.prefix || ''}${d.name} <span class="text-slate-400 font-normal">(${d.nickname || '-'})</span></div>
+                                <div class="font-prompt font-semibold text-slate-800 text-sm">${d.prefix || ''}${d.name} ${retrainBadge}</div>
                                 <div class="text-[11px] text-indigo-500 font-medium mt-0.5">${d.dept || '-'} <span class="text-slate-300">|</span> ทีม: ${d.team || '-'}</div>
                             </td>
                             <td class="py-4 px-6 text-center">
@@ -536,11 +573,14 @@
                 });
             }
 
-            drawCharts(active, passed, dropped, dataToRender);
+            // กราฟทั้งหมดต้องคำนวณจาก Headcount ล่าสุดเท่านั้น
+            drawCharts(active, passed, dropped, latestRecords);
         }
 
         function showActiveTrainees() {
-            const activeList = allData.filter(d => {
+            // ดึงข้อมูลคนจริง (ล่าสุด) ที่สถานะ Active
+            const latestRecords = getLatestRecords(allData);
+            const activeList = latestRecords.filter(d => {
                 const s = d.status.toLowerCase();
                 const passedCheck = s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
                 const dropCheck = s.includes('drop') || s.includes('new job') || d.status.includes('ออก');
@@ -586,10 +626,16 @@
                         statusBadge = `<span class="text-xs text-slate-400">ไม่ระบุวันที่</span>`;
                     }
 
+                    let retrainBadge = '';
+                    const cleanKey = d.name.trim().toLowerCase() + '|' + d.nickname.trim().toLowerCase();
+                    if (allNameCounts[cleanKey] > 1) {
+                        retrainBadge = `<span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold bg-purple-100 text-purple-700">Re-train</span>`;
+                    }
+
                     tbody.innerHTML += `
                         <tr class="hover:bg-slate-50 transition duration-150 border-b border-slate-100 last:border-0">
                             <td class="py-4 px-6">
-                                <div class="font-prompt font-semibold text-slate-800 text-[15px]">${d.prefix || ''}${d.name} <span class="text-slate-400 font-normal">(${d.nickname || '-'})</span></div>
+                                <div class="font-prompt font-semibold text-slate-800 text-[15px]">${d.prefix || ''}${d.name} ${retrainBadge}</div>
                                 <div class="text-[11px] text-slate-500 mt-1"><i class="fa-regular fa-calendar mr-1"></i> เริ่ม: ${d.timestamp ? d.timestamp.split(' ')[0] : '-'}</div>
                             </td>
                             <td class="py-4 px-6">
@@ -686,7 +732,6 @@
                                     return s.includes('drop') || s.includes('new job') || d.status.includes('ออก');
                                 });
                             }
-                            
                             showDetailModal(`กลุ่ม: ${label}`, filteredList);
                         }
                     }
@@ -702,7 +747,7 @@
                 type: 'bar',
                 data: { 
                     labels: Object.keys(depts), 
-                    datasets: [{ label: 'จำนวนพนักงาน', data: Object.values(depts), backgroundColor: '#6366f1', borderRadius: 6, hoverBackgroundColor: '#4f46e5' }] 
+                    datasets: [{ label: 'จำนวนคน', data: Object.values(depts), backgroundColor: '#6366f1', borderRadius: 6, hoverBackgroundColor: '#4f46e5' }] 
                 },
                 options: { 
                     responsive: true, maintainAspectRatio: false, 
@@ -789,10 +834,16 @@
                         badgeClass = "bg-rose-100 text-rose-700 border border-rose-200";
                     }
 
+                    let retrainBadge = '';
+                    const cleanKey = d.name.trim().toLowerCase() + '|' + d.nickname.trim().toLowerCase();
+                    if (allNameCounts[cleanKey] > 1) {
+                        retrainBadge = `<span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold bg-purple-100 text-purple-700">Re-train</span>`;
+                    }
+
                     tbody.innerHTML += `
                         <tr class="hover:bg-slate-50 transition duration-150">
                             <td class="py-3 px-4">
-                                <div class="font-prompt font-semibold text-slate-800">${d.prefix || ''}${d.name}</div>
+                                <div class="font-prompt font-semibold text-slate-800">${d.prefix || ''}${d.name} ${retrainBadge}</div>
                                 <div class="text-[11px] text-slate-500">ชื่อเล่น: ${d.nickname || '-'}</div>
                             </td>
                             <td class="py-3 px-4">
@@ -833,7 +884,7 @@
         }
 
         /* =========================================================
-           MASTERPIECE AI SUMMARY (จัดอันดับทุกทีม, คนออก, สถิติ 3 แกน)
+           ULTIMATE PRO AI SUMMARY (อ้างอิงจากคนจริง Headcount เท่านั้น)
            ========================================================= */
         function generateAISummary() {
             const btn = document.getElementById('btnAISummary');
@@ -849,7 +900,7 @@
             const endDate = endVal ? new Date(endVal) : new Date('2100-01-01');
             endDate.setHours(23, 59, 59, 999);
 
-            const dataToAnalyze = allData.filter(d => {
+            const filteredRawData = allData.filter(d => {
                 const rowDate = parseThaiDate(d.timestamp);
                 const matchDate = rowDate ? (rowDate >= startDate && rowDate <= endDate) : (!startVal && !endVal);
                 const searchText = `${d.name} ${d.nickname} ${d.dept} ${d.team}`.toLowerCase();
@@ -866,8 +917,13 @@
                 return matchDate && matchSearch && matchStatus;
             });
 
-            const total = dataToAnalyze.length;
-            if(total === 0) {
+            // ดึงเฉพาะ Headcount ล่าสุดมาวิเคราะห์ให้ AI
+            const dataToAnalyze = getLatestRecords(filteredRawData);
+            
+            const headCount = dataToAnalyze.length;
+            const totalTransactions = filteredRawData.length; 
+
+            if(headCount === 0) {
                 document.getElementById('reportSummaryInput').value = "ระบบวิเคราะห์: ไม่พบข้อมูลภายใต้เงื่อนไขการค้นหา/ช่วงเวลาที่กำหนด";
                 btn.disabled = false;
                 return;
@@ -885,22 +941,38 @@
             });
             const dropped = droppedData.length;
             
-            const active = total - passed - dropped;
-            const rate = total > 0 ? Math.round((passed / total) * 100) : 0;
-            const dropRate = total > 0 ? Math.round((dropped / total) * 100) : 0;
+            const active = headCount - passed - dropped;
+            const rate = headCount > 0 ? Math.round((passed / headCount) * 100) : 0;
+            const dropRate = headCount > 0 ? Math.round((dropped / headCount) * 100) : 0;
+
+            const uniqueRetrainees = new Set();
+            let retrainPassCount = 0;
+            dataToAnalyze.forEach(d => {
+                const key = d.name.trim().toLowerCase() + '|' + d.nickname.trim().toLowerCase();
+                if (allNameCounts[key] > 1) {
+                    uniqueRetrainees.add(key);
+                    const s = d.status.toLowerCase();
+                    if (s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ')) {
+                        retrainPassCount++;
+                    }
+                }
+            });
+            
+            let retrainInsight = "";
+            if (uniqueRetrainees.size > 0) {
+                retrainInsight = `\n  • พบพนักงานกลับมาเทรนซ้ำ (Re-train) จำนวน ${uniqueRetrainees.size} คน และสามารถผ่านเกณฑ์ในรอบล่าสุดได้ ${retrainPassCount} คน`;
+            }
 
             let teamRankText = "  • ไม่มีข้อมูลทีม\n";
             let teamDropText = "  • ไม่มีข้อมูลผู้สละสิทธิ์ระดับทีม\n";
             let recruiterText = "  • ยังไม่มีข้อมูลผู้แนะนำเพียงพอ";
             
-            if (total > 0) {
-                // --- 1. จัดอันดับทีมที่รับคนเข้าอบรมทั้งหมด (มากไปน้อย) ---
+            if (headCount > 0) {
                 const teamsTotal = {};
                 const teamsPassed = {};
                 dataToAnalyze.forEach(d => {
                     const team = (d.team && d.team !== "") ? d.team : "ไม่ระบุทีม";
                     teamsTotal[team] = (teamsTotal[team] || 0) + 1;
-                    
                     const s = d.status.toLowerCase();
                     if (s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ')) {
                         teamsPassed[team] = (teamsPassed[team] || 0) + 1;
@@ -911,17 +983,15 @@
                 teamRankText = "";
                 sortedTeams.forEach((item, index) => {
                     const pCount = teamsPassed[item[0]] || 0;
-                    teamRankText += `  ${index+1}. ทีม "${item[0]}" (รับเข้าเทรน ${item[1]} ราย | ผ่านงาน ${pCount} ราย)\n`;
+                    teamRankText += `  ${index+1}. ทีม "${item[0]}" (รับเข้าเทรน ${item[1]} คน | ผ่านงาน ${pCount} คน)\n`;
                 });
 
-                // --- 2. จัดอันดับ Recruiter (3 แกน: ส่งเข้า | ผ่าน | ออก) ---
                 const recTotal = {};
                 const recPassed = {};
                 const recDropped = {};
                 dataToAnalyze.forEach(d => {
                     const r = (d.recruiter && d.recruiter !== "" && d.recruiter !== "-") ? d.recruiter : "Walk-in/จัดหาทั่วไป";
                     recTotal[r] = (recTotal[r] || 0) + 1;
-                    
                     const s = d.status.toLowerCase();
                     if (s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ')) {
                         recPassed[r] = (recPassed[r] || 0) + 1;
@@ -938,7 +1008,7 @@
                         countRec++;
                         const pCount = recPassed[item[0]] || 0;
                         const dCount = recDropped[item[0]] || 0;
-                        recruiterText += `  ${countRec}. ${item[0]} (หาได้ ${item[1]} ราย | ผ่าน ${pCount} | ออก ${dCount})\n`;
+                        recruiterText += `  ${countRec}. ${item[0]} (หาเข้า ${item[1]} คน | รอด ${pCount} | ออก ${dCount})\n`;
                     }
                 });
                 if(recruiterText === "") recruiterText = "  • ผู้แนะนำส่วนใหญ่มาจาก Walk-in หรือการจัดหาทั่วไป\n";
@@ -950,7 +1020,7 @@
                 if(checkDay(d.d1) + checkDay(d.d2) + checkDay(d.d3) === 3) perfectAttendancePass++; 
             });
             const perfectPct = passed > 0 ? Math.round((perfectAttendancePass / passed) * 100) : 0;
-            attendanceInsight = `  • ${perfectPct}% ของผู้ที่สอบผ่าน มีประวัติการเข้าเรียนครบถ้วน 3 วันเต็ม บ่งชี้ว่าความสม่ำเสมอคือปัจจัยสำคัญของความสำเร็จ`;
+            attendanceInsight = `  • ${perfectPct}% ของผู้ที่สอบผ่าน มีประวัติการเข้าเรียนครบถ้วน 3 วันเต็ม บ่งชี้ว่าความสม่ำเสมอคือปัจจัยสำคัญของความสำเร็จ${retrainInsight}`;
 
             let reasonText = "  • ไม่มีข้อมูลผู้สละสิทธิ์ในรอบนี้ ถือเป็นผลงานการอบรมที่ยอดเยี่ยม (0% Attrition Rate)\n";
             let strategicAdvice = "ดำเนินการคัดกรองและอบรมในมาตรฐานปัจจุบันต่อไป พร้อมทั้งจัดทำแบบสอบถามความพึงพอใจเพื่อรักษามาตรฐาน";
@@ -965,7 +1035,6 @@
                 droppedData.forEach(d => {
                     const r = (d.reason && d.reason !== "") ? d.reason : "ไม่ระบุสาเหตุ";
                     reasons[r] = (reasons[r] || 0) + 1;
-                    
                     const t = (d.team && d.team !== "") ? d.team : "ไม่ระบุทีม";
                     teamDropsObj[t] = (teamDropsObj[t] || 0) + 1;
                 });
@@ -974,14 +1043,13 @@
                 reasonText = "";
                 sortedReasons.slice(0, 3).forEach((item, index) => {
                     let pct = Math.round((item[1]/dropped)*100);
-                    reasonText += `  ${index+1}. ${item[0]} - จำนวน ${item[1]} ราย (${pct}%)\n`;
+                    reasonText += `  ${index+1}. ${item[0]} - จำนวน ${item[1]} คน (${pct}%)\n`;
                 });
 
-                // --- 3. จัดอันดับทีมที่มีคนออกเยอะสุด (เรียงจากมากไปน้อย) ---
                 const sortedTeamDrops = Object.entries(teamDropsObj).sort((a,b) => b[1] - a[1]);
                 teamDropText = "";
                 sortedTeamDrops.forEach((item, index) => {
-                    teamDropText += `  ${index+1}. ทีม "${item[0]}" (พนักงานลาออก/ไม่ผ่าน ${item[1]} ราย)\n`;
+                    teamDropText += `  ${index+1}. ทีม "${item[0]}" (พนักงานลาออก/ไม่ผ่าน ${item[1]} คน)\n`;
                 });
 
                 const topReasonStr = sortedReasons[0][0].toLowerCase();
@@ -1011,14 +1079,14 @@
             }
             if (searchVal !== '') dateRange += ` (กรองข้อมูลด้วยคำค้นหา: "${searchVal}")`;
 
-            const autoText = `📊 รายงานวิเคราะห์จัดอันดับข้อมูลเชิงลึก (Masterpiece Executive Analytics)
+            const autoText = `📊 รายงานวิเคราะห์ข้อมูลเชิงลึกระดับสูงสุด (Masterpiece Analytics)
 เรื่อง: สรุปประเมินผลโครงการอบรมพนักงานใหม่ ${dateRange}
 
 📌 1. สรุปภาพรวมโครงการ (Project Overview)
-  • ผู้เข้าร่วมทั้งหมด: ${total} ราย
-  • ผ่านประเมินเข้าสู่ระบบงาน (รวม Back Office): ${passed} ราย (Success Rate: ${rate}%)
-  • กำลังดำเนินการอบรม (Active): ${active} ราย
-  • สละสิทธิ์/ไม่ผ่านประเมิน (Dropped): ${dropped} ราย (Drop Rate: ${dropRate}%)${riskAlert}
+  • ผู้เข้าร่วมทั้งหมด: ${headCount} คน (จากประวัติลงทะเบียน ${totalTransactions} รายการ)
+  • ผ่านประเมินเข้าสู่ระบบงาน: ${passed} คน (Success Rate: ${rate}%)
+  • กำลังดำเนินการอบรม: ${active} คน
+  • สละสิทธิ์/ไม่ผ่านประเมิน: ${dropped} คน (Drop Rate: ${dropRate}%)${riskAlert}
 
 🎯 2. สถิติการรับคนเข้าทีม (Team Onboarding Ranking)
 [จัดอันดับทีมที่มีผู้เข้าอบรมจากมากไปน้อย]
@@ -1031,7 +1099,10 @@ ${recruiterText}
 ${teamDropText}
 [Top 3 สาเหตุหลักที่พนักงานไม่ไปต่อ]
 ${reasonText}
-💡 5. ข้อเสนอแนะเชิงกลยุทธ์ (Strategic Action Plan)
+📈 5. พฤติกรรมการเข้าเรียน (Engagement Insight)
+${attendanceInsight}
+
+💡 6. ข้อเสนอแนะเชิงกลยุทธ์ (Strategic Action Plan)
 " ${strategicAdvice} "`;
 
             document.getElementById('reportSummaryInput').value = autoText;
