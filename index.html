@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR Training Dashboard | Ultimate AI & Tracker</title>
+    <title>HR Training Dashboard | Ultimate AI & Interactive Charts</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -219,7 +219,6 @@
             
             <div class="flex flex-wrap items-center gap-3">
                 <div class="flex items-center bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-sm">
-                    
                     <i class="fa-solid fa-magnifying-glass text-slate-400 ml-1"></i>
                     <input type="text" id="searchInput" onkeyup="if(event.key === 'Enter') applyDateFilter()" placeholder="ค้นหาชื่อ, ทีม, แผนก..." class="text-sm text-slate-600 bg-transparent outline-none w-28 focus:w-40 transition-all ml-2" title="กด Enter เพื่อค้นหา">
                     
@@ -310,14 +309,14 @@
                 <div class="card p-6 group lg:col-span-1">
                     <h3 class="font-prompt font-bold text-slate-700 text-lg mb-6 flex justify-between items-center">
                         <span><i class="fa-solid fa-chart-pie text-indigo-500 mr-2"></i> สถานะผู้เข้าอบรม</span>
-                        <span class="text-[10px] bg-indigo-50 text-indigo-500 px-2 py-1 rounded border border-indigo-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกกราฟ</span>
+                        <span class="text-[10px] bg-indigo-50 text-indigo-500 px-2 py-1 rounded border border-indigo-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกที่กราฟ</span>
                     </h3>
                     <div class="h-64 relative"><canvas id="statusChart"></canvas></div>
                 </div>
                 <div class="card p-6 group lg:col-span-2">
                     <h3 class="font-prompt font-bold text-slate-700 text-lg mb-6 flex justify-between items-center">
                         <span><i class="fa-solid fa-building-user text-blue-500 mr-2"></i> จำนวนพนักงานแยกตามแผนก</span>
-                        <span class="text-[10px] bg-blue-50 text-blue-500 px-2 py-1 rounded border border-blue-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกแท่งกราฟ</span>
+                        <span class="text-[10px] bg-blue-50 text-blue-500 px-2 py-1 rounded border border-blue-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกที่แท่งกราฟ</span>
                     </h3>
                     <div class="h-64 relative"><canvas id="deptChart"></canvas></div>
                 </div>
@@ -326,7 +325,7 @@
             <section class="card p-6 group">
                 <h3 class="font-prompt font-bold text-slate-700 text-lg mb-6 flex justify-between items-center">
                     <span><i class="fa-solid fa-users-gear text-emerald-500 mr-2"></i> อัตราการรอดและลาออก แยกตามทีม</span>
-                    <span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-1 rounded border border-emerald-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกแท่งกราฟเพื่อดูรายชื่อทีม</span>
+                    <span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-1 rounded border border-emerald-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกที่สีของแท่งกราฟเพื่อกรองข้อมูล</span>
                 </h3>
                 <div class="h-80 relative"><canvas id="teamChart"></canvas></div>
             </section>
@@ -396,6 +395,7 @@
             return (v && v !== '0' && v !== 'false' && v !== 'ลา' && v !== 'ขาด') ? 1 : 0;
         };
 
+        // ฟังก์ชันดึงบรรทัดล่างสุด (ล่าสุด) ของแต่ละบุคคล
         function getLatestRecords(dataList) {
             const groups = {};
             dataList.forEach(d => {
@@ -608,7 +608,7 @@
             drawCharts(active, passed, dropped, latestRecords);
         }
 
-        /* --- ฟังก์ชันใหม่: แสดงรายชื่อคนออก/ไม่ได้ไปต่อ --- */
+        /* --- ฟังก์ชันแสดง Modal รายชื่อคนออก --- */
         function showDroppedTrainees() {
             const latestRecords = getLatestRecords(allData);
             const droppedList = latestRecords.filter(d => {
@@ -625,12 +625,11 @@
                 droppedList.sort((a, b) => {
                     const dateA = parseThaiDate(a.timestamp) || new Date(0);
                     const dateB = parseThaiDate(b.timestamp) || new Date(0);
-                    return dateB - dateA; // ใหม่สุดอยู่บน
+                    return dateB - dateA; 
                 });
 
                 droppedList.forEach(d => {
                     let daysAttended = checkDay(d.d1) + checkDay(d.d2) + checkDay(d.d3);
-                    
                     let retrainBadge = '';
                     const cleanKey = d.name.trim().toLowerCase() + '|' + d.nickname.trim().toLowerCase();
                     if (allNameCounts[cleanKey] > 1) {
@@ -659,7 +658,6 @@
                 });
             }
 
-            // วิเคราะห์ Insight สาเหตุที่ออกใน Modal นี้
             const insightEl = document.getElementById('droppedMiniInsight');
             if(droppedList.length > 0) {
                  const reasons = {};
@@ -699,6 +697,7 @@
             }, 300);
         }
 
+        /* --- ฟังก์ชันแสดง Modal รายชื่อกำลังเทรน --- */
         function showActiveTrainees() {
             const latestRecords = getLatestRecords(allData);
             const activeList = latestRecords.filter(d => {
@@ -810,10 +809,12 @@
             }, 300);
         }
 
+        /* --- วาดกราฟและผูกระบบคลิก --- */
         function drawCharts(active, passed, dropped, dataToRender) {
             Chart.defaults.font.family = "'Prompt', sans-serif";
             Chart.defaults.color = '#64748b';
 
+            // 1. กราฟโดนัท
             if(charts['status']) charts['status'].destroy();
             const ctxStatus = document.getElementById('statusChart').getContext('2d');
             charts['status'] = new Chart(ctxStatus, {
@@ -853,12 +854,13 @@
                                     return s.includes('drop') || s.includes('new job') || d.status.includes('ออก');
                                 });
                             }
-                            showDetailModal(`กลุ่ม: ${label}`, filteredList);
+                            showDetailModal(`สถานะ: ${label}`, filteredList);
                         }
                     }
                 }
             });
 
+            // 2. กราฟแผนก
             const depts = {}; 
             dataToRender.forEach(d => { const k = d.dept || 'ไม่ระบุ'; depts[k] = (depts[k] || 0) + 1; });
 
@@ -886,6 +888,7 @@
                 }
             });
 
+            // 3. กราฟทีม (อัปเกรดให้คลิกแยกสีได้)
             const teamStats = {};
             dataToRender.forEach(d => {
                 const k = d.team || 'ไม่ระบุทีม';
@@ -928,13 +931,102 @@
                     onClick: (event, elements) => {
                         if (elements.length > 0) {
                             const index = elements[0].index;
+                            const datasetIndex = elements[0].datasetIndex; // รู้ว่ากดสีเขียวหรือสีแดง
                             const label = charts['team'].data.labels[index];
-                            const filteredList = dataToRender.filter(d => (d.team || 'ไม่ระบุทีม') === label);
-                            showDetailModal(`ข้อมูลลูกทีม: ${label}`, filteredList);
+                            
+                            let filteredList = dataToRender.filter(d => (d.team || 'ไม่ระบุทีม') === label);
+                            let subtitle = "ทั้งหมด";
+
+                            // ถ้ากดที่แท่งสีเขียว (รอด)
+                            if (datasetIndex === 0) {
+                                filteredList = filteredList.filter(d => {
+                                    const s = d.status.toLowerCase();
+                                    return !(s.includes('drop') || s.includes('new job') || d.status.includes('ออก'));
+                                });
+                                subtitle = "เฉพาะกลุ่มที่รอด (ผ่าน/กำลังเทรน)";
+                            } 
+                            // ถ้ากดที่แท่งสีแดง (ออก)
+                            else if (datasetIndex === 1) {
+                                filteredList = filteredList.filter(d => {
+                                    const s = d.status.toLowerCase();
+                                    return s.includes('drop') || s.includes('new job') || d.status.includes('ออก');
+                                });
+                                subtitle = "เฉพาะกลุ่มที่ลาออก/ไม่ผ่านประเมิน";
+                            }
+                            
+                            showDetailModal(`ทีม: ${label} (${subtitle})`, filteredList);
                         }
                     }
                 }
             });
+        }
+
+        /* --- ฟังก์ชันแสดง Modal รายชื่อทั่วไป --- */
+        function showDetailModal(title, dataList) {
+            document.getElementById('modalTitle').innerText = `${title} (พบ ${dataList.length} คน)`;
+            const tbody = document.getElementById('modalTableBody');
+            tbody.innerHTML = '';
+            
+            if(dataList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-slate-400 font-medium">ไม่พบรายชื่อในกลุ่มนี้</td></tr>`;
+            } else {
+                dataList.forEach(d => {
+                    let badgeClass = "bg-amber-100 text-amber-700 border border-amber-200";
+                    let s = d.status.toLowerCase();
+                    
+                    if (s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ')) {
+                        badgeClass = "bg-emerald-100 text-emerald-700 border border-emerald-200";
+                    } else if (s.includes('drop') || s.includes('new job') || d.status.includes('ออก')) {
+                        badgeClass = "bg-rose-100 text-rose-700 border border-rose-200";
+                    }
+
+                    let retrainBadge = '';
+                    const cleanKey = d.name.trim().toLowerCase() + '|' + d.nickname.trim().toLowerCase();
+                    if (allNameCounts[cleanKey] > 1) {
+                        retrainBadge = `<span class="ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold bg-purple-100 text-purple-700">Re-train</span>`;
+                    }
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-50 transition duration-150">
+                            <td class="py-3 px-4">
+                                <div class="font-prompt font-semibold text-slate-800">${d.prefix || ''}${d.name} ${retrainBadge}</div>
+                                <div class="text-[11px] text-slate-500">ชื่อเล่น: ${d.nickname || '-'}</div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="text-sm text-indigo-600 font-medium">${d.dept || '-'}</div>
+                                <div class="text-[11px] text-slate-400">ทีม: ${d.team || '-'}</div>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="px-2 py-1 rounded-full text-[10px] font-bold ${badgeClass}">${d.status || 'Active'}</span>
+                            </td>
+                            <td class="py-3 px-4 text-xs text-rose-500">${d.reason || '-'}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            const modal = document.getElementById('detailModal');
+            const content = document.getElementById('detailModalContent');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeDetailModal() {
+            const modal = document.getElementById('detailModal');
+            const content = document.getElementById('detailModalContent');
+            
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
         }
 
         /* =========================================================
