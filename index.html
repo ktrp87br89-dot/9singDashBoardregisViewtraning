@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR Training Dashboard | Ultimate AI & Interactive Charts</title>
+    <title>HR Training Dashboard | Ultimate AI & Tracker</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -219,6 +219,7 @@
             
             <div class="flex flex-wrap items-center gap-3">
                 <div class="flex items-center bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-sm">
+                    
                     <i class="fa-solid fa-magnifying-glass text-slate-400 ml-1"></i>
                     <input type="text" id="searchInput" onkeyup="if(event.key === 'Enter') applyDateFilter()" placeholder="ค้นหาชื่อ, ทีม, แผนก..." class="text-sm text-slate-600 bg-transparent outline-none w-28 focus:w-40 transition-all ml-2" title="กด Enter เพื่อค้นหา">
                     
@@ -264,16 +265,22 @@
 
         <div id="dashboard-content" class="p-8 space-y-8 max-w-[1600px] mx-auto w-full">
             
-            <section class="card p-6 border-indigo-200 bg-gradient-to-br from-indigo-50 to-blue-50/50">
-                <div class="flex justify-between items-center mb-4">
-                    <label class="block text-base font-prompt font-bold text-indigo-900 flex items-center gap-2">
-                        <i class="fa-solid fa-bolt text-amber-500"></i> Executive Analytical Summary (รายงานวิเคราะห์เชิงลึกอัจฉริยะแบบละเอียด)
+            <section class="card p-6 border-indigo-200 bg-gradient-to-br from-indigo-50 to-blue-50/50 relative">
+                <div class="flex justify-between items-center">
+                    <label class="text-base font-prompt font-bold text-indigo-900 flex items-center gap-2 cursor-pointer select-none" onclick="toggleAITextbox()">
+                        <i class="fa-solid fa-bolt text-amber-500"></i> Executive Analytical Summary 
+                        <span class="text-[11px] font-normal text-indigo-600 bg-white px-2 py-0.5 rounded-full border border-indigo-200 hover:bg-indigo-50 transition shadow-sm ml-2">
+                            (คลิกซ่อน/แสดง) <i id="toggleAIIcon" class="fa-solid fa-chevron-down ml-1"></i>
+                        </span>
                     </label>
                     <button id="btnAISummary" onclick="generateAISummary()" class="no-print text-sm bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-5 py-2.5 rounded-xl transition shadow-md shadow-indigo-500/30 flex items-center gap-2 font-medium transform hover:-translate-y-0.5">
                         <span id="aiBtnText"><i class="fa-solid fa-wand-magic-sparkles"></i> AI จัดอันดับข้อมูลทุกมิติ</span>
                     </button>
                 </div>
-                <textarea id="reportSummaryInput" rows="26" class="w-full p-6 bg-white border border-indigo-100 rounded-xl text-[14.5px] focus:ring-2 focus:ring-indigo-500 leading-relaxed font-sarabun text-slate-700 whitespace-pre-line shadow-inner resize-y" placeholder="กดปุ่ม 'AI จัดอันดับข้อมูลทุกมิติ' เพื่อประมวลผลจัดอันดับยอดผู้เข้าอบรม อัตราการผ่านงาน อัตราการลาออกของทุกทีม วิเคราะห์คนกลับมาเทรนซ้ำ และผู้แนะนำทั้งหมด..."></textarea>
+                
+                <div id="aiTextWrapper" class="hidden mt-4 transition-all duration-300">
+                    <textarea id="reportSummaryInput" rows="26" class="w-full p-6 bg-white border border-indigo-100 rounded-xl text-[14.5px] focus:ring-2 focus:ring-indigo-500 leading-relaxed font-sarabun text-slate-700 whitespace-pre-line shadow-inner resize-y" placeholder="กดปุ่ม 'AI จัดอันดับข้อมูลทุกมิติ' เพื่อประมวลผลจัดอันดับยอดผู้เข้าอบรม อัตราการผ่านงาน อัตราการลาออกของทุกทีม วิเคราะห์คนกลับมาเทรนซ้ำ และผู้แนะนำทั้งหมด..."></textarea>
+                </div>
             </section>
 
             <section class="grid grid-cols-2 md:grid-cols-5 gap-5">
@@ -309,14 +316,14 @@
                 <div class="card p-6 group lg:col-span-1">
                     <h3 class="font-prompt font-bold text-slate-700 text-lg mb-6 flex justify-between items-center">
                         <span><i class="fa-solid fa-chart-pie text-indigo-500 mr-2"></i> สถานะผู้เข้าอบรม</span>
-                        <span class="text-[10px] bg-indigo-50 text-indigo-500 px-2 py-1 rounded border border-indigo-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกที่กราฟ</span>
+                        <span class="text-[10px] bg-indigo-50 text-indigo-500 px-2 py-1 rounded border border-indigo-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกกราฟ</span>
                     </h3>
                     <div class="h-64 relative"><canvas id="statusChart"></canvas></div>
                 </div>
                 <div class="card p-6 group lg:col-span-2">
                     <h3 class="font-prompt font-bold text-slate-700 text-lg mb-6 flex justify-between items-center">
                         <span><i class="fa-solid fa-building-user text-blue-500 mr-2"></i> จำนวนพนักงานแยกตามแผนก</span>
-                        <span class="text-[10px] bg-blue-50 text-blue-500 px-2 py-1 rounded border border-blue-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกที่แท่งกราฟ</span>
+                        <span class="text-[10px] bg-blue-50 text-blue-500 px-2 py-1 rounded border border-blue-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกแท่งกราฟ</span>
                     </h3>
                     <div class="h-64 relative"><canvas id="deptChart"></canvas></div>
                 </div>
@@ -325,7 +332,7 @@
             <section class="card p-6 group">
                 <h3 class="font-prompt font-bold text-slate-700 text-lg mb-6 flex justify-between items-center">
                     <span><i class="fa-solid fa-users-gear text-emerald-500 mr-2"></i> อัตราการรอดและลาออก แยกตามทีม</span>
-                    <span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-1 rounded border border-emerald-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกที่สีของแท่งกราฟเพื่อกรองข้อมูล</span>
+                    <span class="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-1 rounded border border-emerald-100 opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-hand-pointer"></i> คลิกแท่งกราฟเพื่อดูรายชื่อทีม</span>
                 </h3>
                 <div class="h-80 relative"><canvas id="teamChart"></canvas></div>
             </section>
@@ -395,7 +402,6 @@
             return (v && v !== '0' && v !== 'false' && v !== 'ลา' && v !== 'ขาด') ? 1 : 0;
         };
 
-        // ฟังก์ชันดึงบรรทัดล่างสุด (ล่าสุด) ของแต่ละบุคคล
         function getLatestRecords(dataList) {
             const groups = {};
             dataList.forEach(d => {
@@ -405,6 +411,19 @@
                 }
             });
             return Object.values(groups);
+        }
+
+        /* --- ฟังก์ชันพับเก็บ/แสดงกล่อง AI --- */
+        function toggleAITextbox() {
+            const wrapper = document.getElementById('aiTextWrapper');
+            const icon = document.getElementById('toggleAIIcon');
+            if (wrapper.classList.contains('hidden')) {
+                wrapper.classList.remove('hidden');
+                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            } else {
+                wrapper.classList.add('hidden');
+                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            }
         }
 
         window.onload = () => {
@@ -608,7 +627,6 @@
             drawCharts(active, passed, dropped, latestRecords);
         }
 
-        /* --- ฟังก์ชันแสดง Modal รายชื่อคนออก --- */
         function showDroppedTrainees() {
             const latestRecords = getLatestRecords(allData);
             const droppedList = latestRecords.filter(d => {
@@ -697,7 +715,6 @@
             }, 300);
         }
 
-        /* --- ฟังก์ชันแสดง Modal รายชื่อกำลังเทรน --- */
         function showActiveTrainees() {
             const latestRecords = getLatestRecords(allData);
             const activeList = latestRecords.filter(d => {
@@ -809,12 +826,10 @@
             }, 300);
         }
 
-        /* --- วาดกราฟและผูกระบบคลิก --- */
         function drawCharts(active, passed, dropped, dataToRender) {
             Chart.defaults.font.family = "'Prompt', sans-serif";
             Chart.defaults.color = '#64748b';
 
-            // 1. กราฟโดนัท
             if(charts['status']) charts['status'].destroy();
             const ctxStatus = document.getElementById('statusChart').getContext('2d');
             charts['status'] = new Chart(ctxStatus, {
@@ -860,7 +875,6 @@
                 }
             });
 
-            // 2. กราฟแผนก
             const depts = {}; 
             dataToRender.forEach(d => { const k = d.dept || 'ไม่ระบุ'; depts[k] = (depts[k] || 0) + 1; });
 
@@ -888,7 +902,6 @@
                 }
             });
 
-            // 3. กราฟทีม (อัปเกรดให้คลิกแยกสีได้)
             const teamStats = {};
             dataToRender.forEach(d => {
                 const k = d.team || 'ไม่ระบุทีม';
@@ -931,13 +944,12 @@
                     onClick: (event, elements) => {
                         if (elements.length > 0) {
                             const index = elements[0].index;
-                            const datasetIndex = elements[0].datasetIndex; // รู้ว่ากดสีเขียวหรือสีแดง
+                            const datasetIndex = elements[0].datasetIndex;
                             const label = charts['team'].data.labels[index];
                             
                             let filteredList = dataToRender.filter(d => (d.team || 'ไม่ระบุทีม') === label);
                             let subtitle = "ทั้งหมด";
 
-                            // ถ้ากดที่แท่งสีเขียว (รอด)
                             if (datasetIndex === 0) {
                                 filteredList = filteredList.filter(d => {
                                     const s = d.status.toLowerCase();
@@ -945,7 +957,6 @@
                                 });
                                 subtitle = "เฉพาะกลุ่มที่รอด (ผ่าน/กำลังเทรน)";
                             } 
-                            // ถ้ากดที่แท่งสีแดง (ออก)
                             else if (datasetIndex === 1) {
                                 filteredList = filteredList.filter(d => {
                                     const s = d.status.toLowerCase();
@@ -961,9 +972,8 @@
             });
         }
 
-        /* --- ฟังก์ชันแสดง Modal รายชื่อทั่วไป --- */
         function showDetailModal(title, dataList) {
-            document.getElementById('modalTitle').innerText = `${title} (พบ ${dataList.length} คน)`;
+            document.getElementById('modalTitle').innerText = `${title} (${dataList.length} คน)`;
             const tbody = document.getElementById('modalTableBody');
             tbody.innerHTML = '';
             
@@ -1070,6 +1080,12 @@
             if(headCount === 0) {
                 document.getElementById('reportSummaryInput').value = "ระบบวิเคราะห์: ไม่พบข้อมูลภายใต้เงื่อนไขการค้นหา/ช่วงเวลาที่กำหนด";
                 btn.disabled = false;
+                
+                const wrapper = document.getElementById('aiTextWrapper');
+                const icon = document.getElementById('toggleAIIcon');
+                wrapper.classList.remove('hidden');
+                if (icon) icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                
                 return;
             }
 
@@ -1251,6 +1267,12 @@ ${attendanceInsight}
 
             document.getElementById('reportSummaryInput').value = autoText;
             
+            // กางกล่องข้อความออกอัตโนมัติเมื่อวิเคราะห์เสร็จ
+            const wrapper = document.getElementById('aiTextWrapper');
+            const icon = document.getElementById('toggleAIIcon');
+            wrapper.classList.remove('hidden');
+            if (icon) icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            
             const btnTextSpan = document.getElementById('aiBtnText');
             btnTextSpan.innerHTML = `<i class="fa-solid fa-check-double"></i> AI จัดอันดับเรียบร้อย!`;
             btn.classList.replace('from-indigo-600', 'from-emerald-600');
@@ -1284,6 +1306,10 @@ ${attendanceInsight}
                 return `${d.getDate()} ${monthNames[d.getMonth()]} ${d.getFullYear() + 543}`;
             };
             document.getElementById('reportDateRange').innerText = `${formatThai(start)} ถึง ${formatThai(end)}`;
+            
+            // กางกล่องข้อความก่อนพิมพ์เสมอ
+            const wrapper = document.getElementById('aiTextWrapper');
+            wrapper.classList.remove('hidden');
             
             const summaryInput = document.getElementById('reportSummaryInput');
             const summaryText = summaryInput.value;
