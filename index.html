@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR Training Dashboard | Ultimate AI & Tracker</title>
+    <title>HR Training Dashboard | Masterpiece AI & Auto Filter</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -221,7 +221,7 @@
                 <div class="flex items-center bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-sm">
                     
                     <i class="fa-solid fa-magnifying-glass text-slate-400 ml-1"></i>
-                    <input type="text" id="searchInput" onkeyup="if(event.key === 'Enter') applyDateFilter()" placeholder="ค้นหาชื่อ, ทีม, แผนก..." class="text-sm text-slate-600 bg-transparent outline-none w-28 focus:w-40 transition-all ml-2" title="กด Enter เพื่อค้นหา">
+                    <input type="text" id="searchInput" oninput="applyDateFilter()" placeholder="ค้นหาชื่อ, ทีม, แผนก..." class="text-sm text-slate-600 bg-transparent outline-none w-28 focus:w-40 transition-all ml-2" title="พิมพ์เพื่อค้นหาอัตโนมัติ">
                     
                     <div class="h-6 w-px bg-slate-200 mx-2"></div>
                     
@@ -235,16 +235,16 @@
                     <div class="h-6 w-px bg-slate-200 mx-2"></div>
 
                     <i class="fa-regular fa-calendar text-slate-400"></i>
-                    <input type="date" id="startDate" class="text-sm text-slate-600 bg-transparent outline-none cursor-pointer ml-2">
+                    <input type="date" id="startDate" onchange="applyDateFilter()" class="text-sm text-slate-600 bg-transparent outline-none cursor-pointer ml-2">
                     <span class="mx-1 text-slate-300">-</span>
-                    <input type="date" id="endDate" class="text-sm text-slate-600 bg-transparent outline-none cursor-pointer">
+                    <input type="date" id="endDate" onchange="applyDateFilter()" class="text-sm text-slate-600 bg-transparent outline-none cursor-pointer">
                     
                     <div class="h-6 w-px bg-slate-200 mx-2"></div>
                     
                     <button onclick="applyDateFilter()" class="text-blue-600 hover:text-blue-700 font-bold text-sm px-2 py-1 rounded transition" title="กรองข้อมูล">
                         <i class="fa-solid fa-filter"></i>
                     </button>
-                    <button onclick="clearDateFilter()" class="text-slate-400 hover:text-red-500 text-sm px-2 py-1 rounded transition" title="ล้างตัวกรอง">
+                    <button onclick="clearDateFilter()" class="text-slate-400 hover:text-red-500 text-sm px-2 py-1 rounded transition" title="ล้างตัวกรองทั้งหมด">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
@@ -256,7 +256,7 @@
                     <button onclick="prepareReport()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/30 text-sm font-prompt font-semibold flex items-center gap-2 transition transform hover:-translate-y-0.5">
                         <i class="fa-solid fa-print"></i> พิมพ์
                     </button>
-                    <button onclick="fetchAutoData(true)" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-500/30 text-sm font-prompt font-semibold flex items-center gap-2 transition transform hover:-translate-y-0.5">
+                    <button onclick="fetchAutoData(true)" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-500/30 text-sm font-prompt font-semibold flex items-center gap-2 transition transform hover:-translate-y-0.5" title="ดึงข้อมูลจาก Sheet ใหม่">
                         <i class="fa-solid fa-rotate"></i> Sync
                     </button>
                 </div>
@@ -388,7 +388,7 @@
 
     <script>
         // ************************************************************
-        // เอา URL ของเว็บแอปตัวเดิมของคุณ มาวางตรงนี้เหมือนเดิมครับ (ห้ามเปลี่ยนเด็ดขาด)
+        // เอา URL ของเว็บแอปตัวเดิมของคุณ มาวางตรงนี้เหมือนเดิมครับ
         const API_URL = "https://script.google.com/macros/s/AKfycbyYYauRspNoRvkhUWKZh4c5Hp1TzhxWGu_T96TvPPMZ6p1DHJqh30Azzi_PrEcGn9dy/exec"; 
         // ************************************************************
 
@@ -413,7 +413,6 @@
             return Object.values(groups);
         }
 
-        /* --- ฟังก์ชันพับเก็บ/แสดงกล่อง AI --- */
         function toggleAITextbox() {
             const wrapper = document.getElementById('aiTextWrapper');
             const icon = document.getElementById('toggleAIIcon');
@@ -1267,7 +1266,6 @@ ${attendanceInsight}
 
             document.getElementById('reportSummaryInput').value = autoText;
             
-            // กางกล่องข้อความออกอัตโนมัติเมื่อวิเคราะห์เสร็จ
             const wrapper = document.getElementById('aiTextWrapper');
             const icon = document.getElementById('toggleAIIcon');
             wrapper.classList.remove('hidden');
@@ -1307,7 +1305,6 @@ ${attendanceInsight}
             };
             document.getElementById('reportDateRange').innerText = `${formatThai(start)} ถึง ${formatThai(end)}`;
             
-            // กางกล่องข้อความก่อนพิมพ์เสมอ
             const wrapper = document.getElementById('aiTextWrapper');
             wrapper.classList.remove('hidden');
             
