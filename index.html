@@ -1228,12 +1228,18 @@
             if (headCount > 0) {
                 const teamsTotal = {};
                 const teamsPassed = {};
+                const teamsActive = {};
+                const teamsDropped = {};
                 dataToAnalyze.forEach(d => {
                     const team = (d.team && d.team !== "") ? d.team : "ไม่ระบุทีม";
                     teamsTotal[team] = (teamsTotal[team] || 0) + 1;
                     const s = d.status.toLowerCase();
                     if (s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ')) {
                         teamsPassed[team] = (teamsPassed[team] || 0) + 1;
+                    } else if (s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก')) {
+                        teamsDropped[team] = (teamsDropped[team] || 0) + 1;
+                    } else {
+                        teamsActive[team] = (teamsActive[team] || 0) + 1;
                     }
                 });
 
@@ -1241,11 +1247,14 @@
                 teamRankText = "";
                 sortedTeams.forEach((item, index) => {
                     const pCount = teamsPassed[item[0]] || 0;
-                    teamRankText += `  ${index+1}. ทีม "${item[0]}" (รับเข้าเทรน ${item[1]} คน | ผ่านงาน ${pCount} คน)\n`;
+                    const aCount = teamsActive[item[0]] || 0;
+                    const dCount = teamsDropped[item[0]] || 0;
+                    teamRankText += `  ${index+1}. ทีม "${item[0]}" (รับเข้า ${item[1]} คน | ผ่าน ${pCount} | เทรน ${aCount} | ออก ${dCount})\n`;
                 });
 
                 const recTotal = {};
                 const recPassed = {};
+                const recActive = {};
                 const recDropped = {};
                 dataToAnalyze.forEach(d => {
                     const r = (d.recruiter && d.recruiter !== "" && d.recruiter !== "-") ? d.recruiter : "Walk-in/จัดหาทั่วไป";
@@ -1255,6 +1264,8 @@
                         recPassed[r] = (recPassed[r] || 0) + 1;
                     } else if (s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก')) { 
                         recDropped[r] = (recDropped[r] || 0) + 1;
+                    } else {
+                        recActive[r] = (recActive[r] || 0) + 1;
                     }
                 });
                 
@@ -1265,8 +1276,9 @@
                     if(item[0] !== "Walk-in/จัดหาทั่วไป") {
                         countRec++;
                         const pCount = recPassed[item[0]] || 0;
+                        const aCount = recActive[item[0]] || 0;
                         const dCount = recDropped[item[0]] || 0;
-                        recruiterText += `  ${countRec}. ${item[0]} (หาเข้า ${item[1]} คน | รอด ${pCount} | ออก ${dCount})\n`;
+                        recruiterText += `  ${countRec}. ${item[0]} (หาเข้า ${item[1]} คน | ผ่าน ${pCount} | เทรน ${aCount} | ออก ${dCount})\n`;
                     }
                 });
                 if(recruiterText === "") recruiterText = "  • ผู้แนะนำส่วนใหญ่มาจาก Walk-in หรือการจัดหาทั่วไป\n";
@@ -1350,7 +1362,7 @@
 [จัดอันดับทีมที่มีผู้เข้าอบรมจากมากไปน้อย]
 ${teamRankText}
 🏆 3. ประสิทธิภาพผู้แนะนำ (Recruiter Performance)
-[สถิติ: หาเข้า | รอด | ออก]
+[สถิติ: หาเข้า | ผ่าน | เทรน | ออก]
 ${recruiterText}
 📉 4. การวิเคราะห์ปัญหาและการสูญเสีย (Attrition Ranking)
 [จัดอันดับทีมที่มีพนักงานออกสูงสุด]
