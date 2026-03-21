@@ -1196,6 +1196,14 @@
             }
         }
 
+        // ========== DATE INPUT PARSER (Local Time — แก้ Timezone Bug) ==========
+        function parseDateInputLocal(val) {
+            // new Date("2026-02-17") แปลงเป็น UTC ทำให้คลาดเคลื่อน 7 ชั่วโมงใน Bangkok (UTC+7)
+            // ใช้วิธีนี้แทนเพื่อให้ได้ Local midnight ตรงกับ parseThaiDate
+            const [y, m, d] = val.split('-').map(Number);
+            return new Date(y, m - 1, d);
+        }
+
         // ========== DATE PARSER ==========
         function parseThaiDate(dateStr) {
             if (!dateStr) return null;
@@ -1235,8 +1243,8 @@
             const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
             const statusVal = document.getElementById('statusFilter').value;
 
-            const startDate = startVal ? new Date(startVal) : new Date('2000-01-01');
-            const endDate = endVal ? new Date(endVal) : new Date('2100-01-01');
+            const startDate = startVal ? parseDateInputLocal(startVal) : new Date('2000-01-01');
+            const endDate = endVal ? parseDateInputLocal(endVal) : new Date('2100-01-01');
             endDate.setHours(23, 59, 59, 999);
 
             const filteredData = allData.filter(d => {
@@ -2060,8 +2068,8 @@ ${attendanceInsight}
             const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
             const statusVal = document.getElementById('statusFilter').value;
 
-            const startDate = startVal ? new Date(startVal) : new Date('2000-01-01');
-            const endDate = endVal ? new Date(endVal) : new Date('2100-01-01');
+            const startDate = startVal ? parseDateInputLocal(startVal) : new Date('2000-01-01');
+            const endDate = endVal ? parseDateInputLocal(endVal) : new Date('2100-01-01');
             endDate.setHours(23, 59, 59, 999);
 
             const dataToExport = allData.filter(d => {
