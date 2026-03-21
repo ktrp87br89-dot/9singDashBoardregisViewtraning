@@ -138,6 +138,11 @@
 
         .kpi-card:hover { border-color: var(--border-bright); transform: translateY(-2px); }
         .kpi-card.clickable { cursor: pointer; }
+        .kpi-card.clickable:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+        .kpi-card.blue.clickable:hover { border-color: rgba(59,130,246,0.4); box-shadow: 0 8px 32px rgba(59,130,246,0.12); }
+        .kpi-card.emerald.clickable:hover { border-color: rgba(16,185,129,0.4); box-shadow: 0 8px 32px rgba(16,185,129,0.12); }
+        .kpi-card.rose.clickable:hover { border-color: rgba(244,63,94,0.4); box-shadow: 0 8px 32px rgba(244,63,94,0.12); }
+        .kpi-card.amber.clickable:hover { border-color: rgba(245,158,11,0.4); box-shadow: 0 8px 32px rgba(245,158,11,0.12); }
 
         .kpi-icon {
             width: 42px; height: 42px;
@@ -215,6 +220,7 @@
             white-space: nowrap;
         }
         .btn:hover { transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
         .btn-blue { background: var(--accent); color: #fff; border-color: var(--accent); }
         .btn-blue:hover { background: #2563eb; box-shadow: 0 0 20px var(--accent-glow); }
         .btn-emerald { background: var(--emerald); color: #fff; border-color: var(--emerald); }
@@ -256,6 +262,14 @@
         }
         .data-table tbody tr:last-child td { border-bottom: none; }
 
+        /* Sortable column header */
+        .sortable-th {
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.15s;
+        }
+        .sortable-th:hover { color: var(--text) !important; }
+
         /* ========== BADGES ========== */
         .badge {
             display: inline-flex;
@@ -285,8 +299,9 @@
 
         /* ========== STATUS DOT ========== */
         .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
-        .status-online { background: var(--emerald); box-shadow: 0 0 6px var(--emerald); }
+        .status-online { background: var(--emerald); box-shadow: 0 0 6px var(--emerald); animation: pulse-dot 2s ease-in-out infinite; }
         .status-offline { background: var(--text-dim); }
+        .status-warning { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
 
         /* ========== MODAL ========== */
         .modal-overlay {
@@ -414,9 +429,96 @@
         /* Progress bar */
         .progress-bar { height: 4px; background: rgba(255,255,255,0.07); border-radius: 4px; overflow: hidden; margin-top: 8px; }
         .progress-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+
+        /* ========== AUTO REFRESH BADGE ========== */
+        #autoRefreshBadge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-dim);
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.03);
+        }
+
+        /* ========== MOBILE SIDEBAR OVERLAY ========== */
+        #mobileSidebarOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 30;
+            backdrop-filter: blur(4px);
+        }
+        #mobileSidebarOverlay.visible { display: block; }
+
+        /* Mobile sidebar slide-in */
+        @media (max-width: 767px) {
+            aside.mobile-open {
+                display: flex !important;
+                position: fixed;
+                top: 0; left: 0; bottom: 0;
+                width: 260px;
+                z-index: 40;
+                animation: slideInSidebar 0.25s ease;
+            }
+            @keyframes slideInSidebar {
+                from { transform: translateX(-100%); }
+                to { transform: translateX(0); }
+            }
+        }
+
+        /* ========== TOAST NOTIFICATION ========== */
+        #toastContainer {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .toast {
+            background: var(--surface2);
+            border: 1px solid var(--border-bright);
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-size: 13px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 220px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            animation: toastIn 0.3s ease;
+            pointer-events: auto;
+        }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes toastOut { to { opacity: 0; transform: translateX(30px); } }
+
+        /* ========== SORT INDICATOR ========== */
+        .sort-asc::after { content: ' ↑'; }
+        .sort-desc::after { content: ' ↓'; }
+
+        /* Escape hint */
+        .modal-escape-hint {
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-top: 6px;
+        }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden print:h-auto print:overflow-visible print:block">
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div id="toastContainer"></div>
+
+    <!-- ===== MOBILE SIDEBAR OVERLAY ===== -->
+    <div id="mobileSidebarOverlay" onclick="toggleMobileSidebar()"></div>
 
     <!-- ===== LOADING OVERLAY ===== -->
     <div id="loadingOverlay" class="fixed inset-0 z-[60] flex items-center justify-center flex-col transition-all duration-300" style="background: rgba(13,17,23,0.97);">
@@ -433,10 +535,13 @@
     <div id="detailModal" class="fixed inset-0 modal-overlay z-[100] hidden items-center justify-center p-4 transition-opacity opacity-0 no-print">
         <div class="modal-box w-full max-w-4xl max-h-[85vh] flex flex-col transform scale-95 transition-transform duration-300" id="detailModalContent">
             <div class="modal-header">
-                <h3 class="font-semibold flex items-center gap-2 text-base" style="color:var(--text);">
-                    <i class="fa-solid fa-users-viewfinder" style="color:var(--accent)"></i>
-                    <span id="modalTitle">รายชื่อพนักงาน</span>
-                </h3>
+                <div>
+                    <h3 class="font-semibold flex items-center gap-2 text-base" style="color:var(--text);">
+                        <i class="fa-solid fa-users-viewfinder" style="color:var(--accent)"></i>
+                        <span id="modalTitle">รายชื่อพนักงาน</span>
+                    </h3>
+                    <p class="modal-escape-hint"><i class="fa-solid fa-keyboard mr-1"></i> กด Esc หรือคลิกนอกกรอบเพื่อปิด</p>
+                </div>
                 <button onclick="closeDetailModal()" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="overflow-y-auto flex-1" style="background:var(--surface);">
@@ -547,7 +652,7 @@
     </div>
 
     <!-- ===== SIDEBAR ===== -->
-    <aside class="w-64 flex-shrink-0 hidden md:flex flex-col z-20 print:hidden" style="background:var(--surface); border-right:1px solid var(--border);">
+    <aside id="sidebar" class="w-64 flex-shrink-0 hidden md:flex flex-col z-20 print:hidden" style="background:var(--surface); border-right:1px solid var(--border);">
         <!-- Logo -->
         <div class="p-6 border-b" style="border-color:var(--border);">
             <div class="flex items-center gap-3">
@@ -582,10 +687,28 @@
                 <i class="fa-solid fa-rotate w-4 text-center"></i>
                 <span>ดึงข้อมูลล่าสุด</span>
             </button>
+            <button onclick="exportToCSV()" class="nav-item slate w-full">
+                <i class="fa-solid fa-file-csv w-4 text-center"></i>
+                <span>ดาวน์โหลด CSV</span>
+            </button>
         </nav>
 
         <!-- Connection Status -->
         <div class="p-4 border-t" style="border-color:var(--border);">
+            <!-- Auto Refresh Status -->
+            <div class="flex items-center justify-between text-xs mb-3">
+                <span style="color:var(--text-dim);">
+                    <i class="fa-solid fa-clock-rotate-left mr-1"></i>Auto Sync
+                </span>
+                <span id="autoRefreshBadge">
+                    <i class="fa-solid fa-circle-notch fa-spin" style="font-size:9px;"></i>
+                    <span id="autoRefreshCountdown">5:00</span>
+                </span>
+            </div>
+            <!-- Last Sync Time -->
+            <div class="text-[10px] mb-3" style="color:var(--text-dim);">
+                <i class="fa-regular fa-clock mr-1"></i>อัปเดตล่าสุด: <span id="lastSyncTime">-</span>
+            </div>
             <div class="flex items-center justify-between text-xs">
                 <span style="color:var(--text-dim);"><i class="fa-brands fa-google mr-1.5"></i>Apps Script API</span>
                 <span id="connectionStatus" class="flex items-center font-semibold" style="color:var(--text-muted);">
@@ -606,18 +729,24 @@
         </div>
 
         <!-- ===== STICKY HEADER ===== -->
-        <header class="sticky top-0 z-40 px-6 py-4 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 no-print">
-            <div>
-                <h1 class="text-xl font-bold" style="color:var(--text); font-family:'Space Grotesk',sans-serif;">สรุปผลการเข้าอบรมพนักงานใหม่</h1>
-                <p class="text-xs mt-0.5 flex items-center gap-1.5" style="color:var(--text-muted);">
-                    <span class="status-dot status-offline" id="headerStatusDot" style="margin:0;"></span>
-                    เชื่อมต่อ Google Sheets Web App (100% Sync)
-                </p>
+        <header class="sticky top-0 z-40 px-4 md:px-6 py-4 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 no-print">
+            <div class="flex items-center gap-3 w-full xl:w-auto">
+                <!-- Mobile hamburger -->
+                <button onclick="toggleMobileSidebar()" class="md:hidden btn btn-ghost p-2" style="padding:8px 10px;">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div>
+                    <h1 class="text-xl font-bold" style="color:var(--text); font-family:'Space Grotesk',sans-serif;">สรุปผลการเข้าอบรมพนักงานใหม่</h1>
+                    <p class="text-xs mt-0.5 flex items-center gap-1.5" style="color:var(--text-muted);">
+                        <span class="status-dot status-offline" id="headerStatusDot" style="margin:0;"></span>
+                        เชื่อมต่อ Google Sheets Web App (100% Sync)
+                    </p>
+                </div>
             </div>
 
-            <div class="flex flex-wrap items-center gap-3">
+            <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
                 <!-- Filter Bar -->
-                <div class="filter-bar">
+                <div class="filter-bar flex-wrap gap-y-1">
                     <i class="fa-solid fa-magnifying-glass text-xs" style="color:var(--text-dim)"></i>
                     <input type="text" id="searchInput" oninput="applyDateFilter()" placeholder="ค้นหาชื่อ, ทีม, แผนก..." class="ml-2 w-32 focus:w-44 transition-all" title="พิมพ์เพื่อค้นหา">
                     <div class="divider"></div>
@@ -644,12 +773,12 @@
                 <!-- Action Buttons -->
                 <div class="flex gap-2">
                     <button onclick="exportToImage()" class="btn btn-cyan no-print">
-                        <i class="fa-solid fa-image"></i> แคปรูป
+                        <i class="fa-solid fa-image"></i> <span class="hidden sm:inline">แคปรูป</span>
                     </button>
                     <button onclick="prepareReport()" class="btn btn-emerald no-print">
-                        <i class="fa-solid fa-print"></i> พิมพ์
+                        <i class="fa-solid fa-print"></i> <span class="hidden sm:inline">พิมพ์</span>
                     </button>
-                    <button onclick="fetchAutoData(true)" class="btn btn-blue no-print">
+                    <button onclick="fetchAutoData(true)" class="btn btn-blue no-print" id="syncBtn">
                         <i class="fa-solid fa-rotate"></i> Sync
                     </button>
                 </div>
@@ -657,11 +786,11 @@
         </header>
 
         <!-- ===== DASHBOARD ===== -->
-        <div id="dashboard-content" class="p-6 space-y-6 max-w-[1600px] mx-auto w-full">
+        <div id="dashboard-content" class="p-4 md:p-6 space-y-6 max-w-[1600px] mx-auto w-full">
 
             <!-- AI Summary Section -->
             <section class="card p-6" style="border-color:rgba(99,102,241,0.25); background:linear-gradient(135deg, rgba(99,102,241,0.06) 0%, rgba(139,92,246,0.04) 100%);">
-                <div class="flex justify-between items-center">
+                <div class="flex flex-wrap justify-between items-center gap-3">
                     <label class="text-sm font-semibold flex items-center gap-2 cursor-pointer select-none" onclick="toggleAITextbox()" style="color:var(--text);">
                         <span style="color:var(--amber)">⚡</span>
                         Executive Analytical Summary
@@ -675,20 +804,31 @@
                 </div>
                 <div id="aiTextWrapper" class="hidden mt-5 transition-all duration-300">
                     <textarea id="reportSummaryInput" rows="26" placeholder="กดปุ่ม 'AI จัดอันดับข้อมูลทุกมิติ' เพื่อประมวลผลจัดอันดับยอดผู้เข้าอบรม อัตราการผ่านงาน อัตราการลาออกของทุกทีม วิเคราะห์คนกลับมาเทรนซ้ำ และผู้แนะนำทั้งหมด..."></textarea>
+                    <div class="mt-3 flex justify-end gap-2">
+                        <button onclick="copyAISummary()" class="btn btn-ghost no-print" style="font-size:12px;">
+                            <i class="fa-regular fa-copy"></i> คัดลอกข้อความ
+                        </button>
+                    </div>
                 </div>
             </section>
 
             <!-- KPI Cards -->
             <section class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <!-- Total -->
-                <div class="kpi-card blue">
-                    <div class="kpi-icon blue"><i class="fa-solid fa-users"></i></div>
+                <!-- Total — [FIX] Added clickable + onclick -->
+                <div class="kpi-card blue clickable" onclick="showTotalTrainees()" title="คลิกเพื่อดูรายชื่อทั้งหมด">
+                    <div class="flex justify-between items-start">
+                        <div class="kpi-icon blue"><i class="fa-solid fa-users"></i></div>
+                        <span class="badge badge-blue text-[9px] no-print" style="margin-top:2px;"><i class="fa-solid fa-arrow-pointer mr-1"></i>ดู</span>
+                    </div>
                     <div class="kpi-value" style="color:var(--accent)" id="kpi-total">0</div>
                     <div class="kpi-label" title="นับจากบุคคลจริง (ไม่นับซ้ำถ้ารีเทรน)">เข้าร่วมจริง</div>
                 </div>
-                <!-- Passed -->
-                <div class="kpi-card emerald">
-                    <div class="kpi-icon emerald"><i class="fa-solid fa-circle-check"></i></div>
+                <!-- Passed — [FIX] Added clickable + onclick -->
+                <div class="kpi-card emerald clickable" onclick="showPassedTrainees()" title="คลิกเพื่อดูรายชื่อผู้ผ่านอบรม">
+                    <div class="flex justify-between items-start">
+                        <div class="kpi-icon emerald"><i class="fa-solid fa-circle-check"></i></div>
+                        <span class="badge badge-emerald text-[9px] no-print" style="margin-top:2px;"><i class="fa-solid fa-arrow-pointer mr-1"></i>ดู</span>
+                    </div>
                     <div class="kpi-value" style="color:var(--emerald)" id="kpi-passed">0</div>
                     <div class="kpi-label">ผ่านอบรม</div>
                 </div>
@@ -715,6 +855,8 @@
                     <div class="kpi-icon violet"><i class="fa-solid fa-percent"></i></div>
                     <div class="kpi-value" style="color:var(--violet)" id="kpi-rate">0%</div>
                     <div class="kpi-label" style="color:rgba(139,92,246,0.7);">อัตราการผ่าน</div>
+                    <!-- Progress bar showing rate -->
+                    <div class="progress-bar mt-4"><div class="progress-fill" id="kpi-rate-bar" style="width:0%; background:var(--violet);"></div></div>
                 </div>
             </section>
 
@@ -761,10 +903,10 @@
 
             <!-- Data Table -->
             <section class="card overflow-hidden flex flex-col">
-                <div class="px-6 py-5 flex justify-between items-center" style="border-bottom:1px solid var(--border);">
+                <div class="px-6 py-5 flex flex-wrap justify-between items-center gap-3" style="border-bottom:1px solid var(--border);">
                     <div>
                         <h3 class="text-sm font-semibold" style="color:var(--text);">ฐานข้อมูลการลงทะเบียนทั้งหมด</h3>
-                        <p class="text-[11px] mt-0.5" style="color:var(--text-muted);">คลิกที่ชื่อพนักงานเพื่อดูโปรไฟล์</p>
+                        <p class="text-[11px] mt-0.5" style="color:var(--text-muted);">คลิกที่ชื่อพนักงานเพื่อดูโปรไฟล์ | คลิกหัวตารางเพื่อเรียงลำดับ</p>
                     </div>
                     <div class="flex items-center gap-3">
                         <span id="filterStatus" class="no-print text-xs px-3 py-1 rounded-lg font-semibold" style="background:rgba(255,255,255,0.05); color:var(--text-muted); border:1px solid var(--border);">แสดงข้อมูลทั้งหมด</span>
@@ -777,16 +919,21 @@
                     <table class="data-table w-full">
                         <thead>
                             <tr>
-                                <th class="py-3 px-5 text-left">วันที่ลงทะเบียน</th>
+                                <th class="py-3 px-5 text-left sortable-th" onclick="sortTable('timestamp')" id="th-timestamp">วันที่ลงทะเบียน</th>
                                 <th class="py-3 px-5 text-left">ชื่อ-สกุล / แผนก / ทีม</th>
-                                <th class="py-3 px-5 text-center">มาเรียน (วัน)</th>
-                                <th class="py-3 px-5 text-left">สถานะ</th>
+                                <th class="py-3 px-5 text-center sortable-th" onclick="sortTable('days')" id="th-days">มาเรียน (วัน)</th>
+                                <th class="py-3 px-5 text-left sortable-th" onclick="sortTable('status')" id="th-status">สถานะ</th>
                                 <th class="py-3 px-5 text-left">ผู้แนะนำ</th>
                                 <th class="py-3 px-5 text-left">หมายเหตุ</th>
                             </tr>
                         </thead>
                         <tbody id="dataTableBody"></tbody>
                     </table>
+                </div>
+                <!-- Pagination Info -->
+                <div class="px-6 py-3 flex items-center justify-between text-xs" style="border-top:1px solid var(--border); color:var(--text-dim);">
+                    <span id="tableRowCount">0 รายการ</span>
+                    <span>คลิกชื่อพนักงาน เพื่อดูรายละเอียด</span>
                 </div>
             </section>
 
@@ -809,14 +956,23 @@
         </div>
     </main>
 
-    <!-- ===== JAVASCRIPT (Identical Logic - Only UI outputs changed) ===== -->
+    <!-- ===== JAVASCRIPT ===== -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyYYauRspNoRvkhUWKZh4c5Hp1TzhxWGu_T96TvPPMZ6p1DHJqh30Azzi_PrEcGn9dy/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbyYYauRspNoRvkhUWKZh4c5Hp1TzhxWGu_T96TvPPMZ6p1DHJqh30Azzi_PrEcGn9dy/exec";
 
-        let allData = []; 
+        let allData = [];
         let charts = {};
-        let allNameCounts = {}; 
+        let allNameCounts = {};
+        // [FIX] Global filtered data for modal access
+        let currentFilteredData = [];
+        // [NEW] Sort state
+        let sortKey = 'timestamp';
+        let sortDir = 'desc';
+        // [NEW] Auto-refresh
+        let autoRefreshTimer = null;
+        let autoRefreshCountdown = 300; // seconds
 
+        // ========== UTILS ==========
         const safeString = (val) => val === null || val === undefined ? '' : String(val).trim();
         const checkDay = (val) => {
             const v = safeString(val).toLowerCase();
@@ -832,31 +988,147 @@
             return Object.values(groups);
         }
 
+        // [FIX] Safe encode for onclick inline — prevents XSS via single-quote in name
+        function safeEncode(str) {
+            return encodeURIComponent(safeString(str));
+        }
+
+        // ========== MOBILE SIDEBAR ==========
+        // [NEW] Mobile hamburger toggle
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileSidebarOverlay');
+            const isOpen = sidebar.classList.contains('mobile-open');
+            if (isOpen) {
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('visible');
+            } else {
+                sidebar.classList.add('mobile-open');
+                sidebar.style.display = 'flex';
+                overlay.classList.add('visible');
+            }
+        }
+
+        // ========== TOGGLE AI TEXTBOX ==========
         function toggleAITextbox() {
             const wrapper = document.getElementById('aiTextWrapper');
             const icon = document.getElementById('toggleAIIcon');
             if (wrapper.classList.contains('hidden')) {
                 wrapper.classList.remove('hidden');
-                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                // [FIX] Safe icon class replacement — check before replacing
+                if (icon.classList.contains('fa-chevron-down')) {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                }
             } else {
                 wrapper.classList.add('hidden');
-                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                if (icon.classList.contains('fa-chevron-up')) {
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
             }
         }
 
-        window.onload = () => { fetchAutoData(true); };
+        // [NEW] Copy AI Summary to clipboard
+        function copyAISummary() {
+            const text = document.getElementById('reportSummaryInput').value;
+            if (!text.trim()) { showToast('ยังไม่มีข้อความ กรุณากด AI จัดอันดับก่อน', 'warning'); return; }
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('คัดลอกข้อความสำเร็จ!', 'success');
+            }).catch(() => {
+                showToast('ไม่สามารถคัดลอกได้', 'error');
+            });
+        }
 
+        // ========== INIT ==========
+        window.onload = () => {
+            fetchAutoData(true);
+            initAutoRefresh();
+            initKeyboardShortcuts();
+            initModalBackdropClose();
+        };
+
+        // ========== AUTO REFRESH ==========
+        // [NEW] Auto-refresh every 5 minutes
+        function initAutoRefresh() {
+            autoRefreshCountdown = 300;
+            updateCountdownDisplay();
+            autoRefreshTimer = setInterval(() => {
+                autoRefreshCountdown--;
+                updateCountdownDisplay();
+                if (autoRefreshCountdown <= 0) {
+                    autoRefreshCountdown = 300;
+                    fetchAutoData(false);
+                    showToast('ซิงค์ข้อมูลอัตโนมัติเรียบร้อย', 'success');
+                }
+            }, 1000);
+        }
+
+        function updateCountdownDisplay() {
+            const el = document.getElementById('autoRefreshCountdown');
+            if (!el) return;
+            const m = Math.floor(autoRefreshCountdown / 60);
+            const s = autoRefreshCountdown % 60;
+            el.textContent = `${m}:${String(s).padStart(2,'0')}`;
+        }
+
+        // ========== KEYBOARD SHORTCUTS ==========
+        // [NEW] Escape key closes all modals
+        function initKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeAllModals();
+                }
+            });
+        }
+
+        function closeAllModals() {
+            ['individualModal|individualModalContent',
+             'activeModal|activeModalContent',
+             'droppedModal|droppedModalContent',
+             'detailModal|detailModalContent'].forEach(pair => {
+                const [ov, ct] = pair.split('|');
+                const el = document.getElementById(ov);
+                if (el && !el.classList.contains('hidden')) {
+                    closeModal(ov, ct);
+                }
+            });
+        }
+
+        // ========== BACKDROP CLICK ==========
+        // [FIX] Click outside modal box to close
+        function initModalBackdropClose() {
+            ['detailModal','activeModal','droppedModal','individualModal'].forEach(id => {
+                const overlay = document.getElementById(id);
+                if (!overlay) return;
+                overlay.addEventListener('click', (e) => {
+                    // Only close if clicking the overlay itself, not the modal box
+                    if (e.target === overlay) {
+                        overlay.querySelectorAll('[id$="Content"]').forEach(box => {
+                            closeModal(id, box.id);
+                        });
+                    }
+                });
+            });
+        }
+
+        // ========== FETCH DATA ==========
         async function fetchAutoData(showUI = false) {
-            if(showUI) {
-                document.getElementById('loadingOverlay').classList.remove('hidden', 'opacity-0');
+            if (showUI) {
+                const overlay = document.getElementById('loadingOverlay');
+                overlay.classList.remove('hidden', 'opacity-0');
+                overlay.style.opacity = '1';
             }
-            document.getElementById('connectionStatus').innerHTML = `<span class="status-dot" style="background:var(--amber); margin-right:6px;"></span> กำลังดึงข้อมูล...`;
-            
+            const syncBtn = document.getElementById('syncBtn');
+            if (syncBtn) { syncBtn.disabled = true; syncBtn.innerHTML = '<i class="fa-solid fa-rotate fa-spin"></i> กำลังซิงค์...'; }
+
+            document.getElementById('connectionStatus').innerHTML = `<span class="status-dot status-warning" style="margin-right:6px;"></span> กำลังดึงข้อมูล...`;
+
             try {
                 const response = await fetch(API_URL + "?action=get_dashboard");
                 const result = await response.json();
-                
-                if(result.status === "success") {
+
+                if (result.status === "success") {
                     const rows = result.data;
                     allNameCounts = {};
 
@@ -864,7 +1136,7 @@
                         const n = safeString(row[3]).toLowerCase().trim();
                         const nn = safeString(row[4]).toLowerCase().trim();
                         const cleanKey = n + '|' + nn;
-                        if(n) allNameCounts[cleanKey] = (allNameCounts[cleanKey] || 0) + 1;
+                        if (n) allNameCounts[cleanKey] = (allNameCounts[cleanKey] || 0) + 1;
 
                         return {
                             id: safeString(row[0]),
@@ -885,15 +1157,25 @@
                     }).filter(d => d.name !== '');
 
                     applyDateFilter();
-                    
+
                     document.getElementById('connectionStatus').innerHTML = `<span class="status-dot status-online"></span> เชื่อมต่อแล้ว`;
                     const dot = document.getElementById('headerStatusDot');
-                    if(dot) { dot.style.background = 'var(--emerald)'; dot.style.boxShadow = '0 0 6px var(--emerald)'; }
-                    
-                    if(showUI) {
+                    if (dot) { dot.style.background = 'var(--emerald)'; dot.style.boxShadow = '0 0 6px var(--emerald)'; }
+
+                    // [NEW] Update last sync time
+                    const now = new Date();
+                    const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    const lastSyncEl = document.getElementById('lastSyncTime');
+                    if (lastSyncEl) lastSyncEl.textContent = timeStr;
+
+                    // Reset auto-refresh countdown
+                    autoRefreshCountdown = 300;
+
+                    if (showUI) {
                         setTimeout(() => {
-                            document.getElementById('loadingOverlay').classList.add('opacity-0');
-                            setTimeout(() => document.getElementById('loadingOverlay').classList.add('hidden'), 300);
+                            const overlay = document.getElementById('loadingOverlay');
+                            overlay.classList.add('opacity-0');
+                            setTimeout(() => overlay.classList.add('hidden'), 300);
                         }, 400);
                     }
                 } else {
@@ -902,10 +1184,19 @@
             } catch (err) {
                 console.error("Error fetching data:", err);
                 document.getElementById('connectionStatus').innerHTML = `<span class="status-dot status-offline"></span> ล้มเหลว`;
-                if(showUI) document.getElementById('loadingOverlay').classList.add('hidden');
+                // [FIX] Properly hide loading overlay on error
+                if (showUI) {
+                    const overlay = document.getElementById('loadingOverlay');
+                    overlay.classList.add('opacity-0');
+                    setTimeout(() => overlay.classList.add('hidden'), 300);
+                }
+                showToast('ไม่สามารถเชื่อมต่อ API ได้ กรุณาลองใหม่', 'error');
+            } finally {
+                if (syncBtn) { syncBtn.disabled = false; syncBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> Sync'; }
             }
         }
 
+        // ========== DATE PARSER ==========
         function parseThaiDate(dateStr) {
             if (!dateStr) return null;
             let str = String(dateStr).trim();
@@ -923,12 +1214,27 @@
             return null;
         }
 
+        // ========== STATUS HELPERS ==========
+        function isPassedStatus(d) {
+            const s = d.status.toLowerCase();
+            return s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
+        }
+        function isDroppedStatus(d) {
+            const s = d.status.toLowerCase();
+            return s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก');
+        }
+        function isActiveStatus(d) {
+            const s = d.status.toLowerCase();
+            return s.includes('active') || d.status.includes('กำลัง') || (!isPassedStatus(d) && !isDroppedStatus(d));
+        }
+
+        // ========== FILTER ==========
         function applyDateFilter() {
             const startVal = document.getElementById('startDate').value;
             const endVal = document.getElementById('endDate').value;
             const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
             const statusVal = document.getElementById('statusFilter').value;
-            
+
             const startDate = startVal ? new Date(startVal) : new Date('2000-01-01');
             const endDate = endVal ? new Date(endVal) : new Date('2100-01-01');
             endDate.setHours(23, 59, 59, 999);
@@ -936,20 +1242,20 @@
             const filteredData = allData.filter(d => {
                 const rowDate = parseThaiDate(d.timestamp);
                 const matchDate = rowDate ? (rowDate >= startDate && rowDate <= endDate) : (!startVal && !endVal);
-                const searchText = `${d.name} ${d.nickname} ${d.dept} ${d.team}`.toLowerCase();
+                const searchText = `${d.name} ${d.nickname} ${d.dept} ${d.team} ${d.recruiter}`.toLowerCase();
                 const matchSearch = searchVal === '' || searchText.includes(searchVal);
 
                 let matchStatus = true;
                 if (statusVal !== 'all') {
-                    const s = d.status.toLowerCase();
-                    const passedCheck = s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
-                    const dropCheck = s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก');
-                    if (statusVal === 'pass') matchStatus = passedCheck;
-                    else if (statusVal === 'drop') matchStatus = dropCheck;
-                    else if (statusVal === 'active') matchStatus = s.includes('active') || d.status.includes('กำลัง') || (!passedCheck && !dropCheck);
+                    if (statusVal === 'pass') matchStatus = isPassedStatus(d);
+                    else if (statusVal === 'drop') matchStatus = isDroppedStatus(d);
+                    else if (statusVal === 'active') matchStatus = isActiveStatus(d);
                 }
                 return matchDate && matchSearch && matchStatus;
             });
+
+            // [FIX] Store globally for modal access
+            currentFilteredData = filteredData;
 
             const filterEl = document.getElementById('filterStatus');
             if (!startVal && !endVal && searchVal === '' && statusVal === 'all') {
@@ -971,17 +1277,31 @@
             applyDateFilter();
         }
 
+        // ========== SORT TABLE ==========
+        // [NEW] Client-side sort
+        function sortTable(key) {
+            if (sortKey === key) {
+                sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortKey = key;
+                sortDir = key === 'timestamp' ? 'desc' : 'asc';
+            }
+            // Update header indicators
+            ['timestamp','days','status'].forEach(k => {
+                const th = document.getElementById('th-' + k);
+                if (!th) return;
+                th.classList.remove('sort-asc','sort-desc');
+                if (k === sortKey) th.classList.add(sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+            });
+            renderTable(currentFilteredData);
+        }
+
+        // ========== DASHBOARD ==========
         function updateDashboard(dataToRender) {
             const latestRecords = getLatestRecords(dataToRender);
             const headCount = latestRecords.length;
-            const passed = latestRecords.filter(d => {
-                const s = d.status.toLowerCase();
-                return s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
-            }).length;
-            const dropped = latestRecords.filter(d => {
-                const s = d.status.toLowerCase();
-                return s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก');
-            }).length;
+            const passed = latestRecords.filter(isPassedStatus).length;
+            const dropped = latestRecords.filter(isDroppedStatus).length;
             const active = headCount - passed - dropped;
             const rate = headCount > 0 ? Math.round((passed / headCount) * 100) : 0;
 
@@ -990,62 +1310,98 @@
             document.getElementById("kpi-dropped").innerText = dropped;
             document.getElementById("kpi-active").innerText = active;
             document.getElementById("kpi-rate").innerText = rate + "%";
+            // [NEW] Update rate progress bar
+            const rateBar = document.getElementById('kpi-rate-bar');
+            if (rateBar) setTimeout(() => { rateBar.style.width = rate + '%'; }, 200);
 
-            const tbody = document.getElementById('dataTableBody');
-            tbody.innerHTML = '';
-            
-            if(dataToRender.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="py-12 text-center" style="color:var(--text-muted);"><i class="fa-regular fa-folder-open text-2xl mb-2 block opacity-30"></i> ไม่พบข้อมูลที่ค้นหา</td></tr>`;
-            } else {
-                const sortedData = [...dataToRender].reverse();
-                sortedData.forEach(d => {
-                    let badgeHtml = "";
-                    let s = d.status.toLowerCase();
-                    
-                    if (s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ')) {
-                        badgeHtml = `<span class="badge badge-emerald">${d.status || 'Pass'}</span>`;
-                    } else if (s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก')) {
-                        badgeHtml = `<span class="badge badge-rose">${d.status || 'Drop'}</span>`;
-                    } else {
-                        badgeHtml = `<span class="badge badge-amber">${d.status || 'Active'}</span>`;
-                    }
-
-                    let daysCount = checkDay(d.d1) + checkDay(d.d2) + checkDay(d.d3);
-                    let dateStr = d.timestamp ? d.timestamp.split(' ')[0] : '-';
-
-                    let retrainBadge = '';
-                    const cleanKey = d.name.trim().toLowerCase() + '|' + d.nickname.trim().toLowerCase();
-                    if (allNameCounts[cleanKey] > 1) {
-                        retrainBadge = `<span class="badge badge-violet ml-2" style="font-size:9px;"><i class="fa-solid fa-rotate-right mr-1"></i>Re-train</span>`;
-                    }
-
-                    const daysCircle = daysCount === 3
-                        ? `<span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold" style="background:rgba(16,185,129,0.2); color:var(--emerald);">${daysCount}/3</span>`
-                        : `<span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold" style="background:rgba(255,255,255,0.07); color:var(--text-muted);">${daysCount}/3</span>`;
-
-                    tbody.innerHTML += `
-                        <tr>
-                            <td style="color:var(--text-muted); font-size:12px;">${dateStr}</td>
-                            <td>
-                                <div class="font-semibold cursor-pointer hover:underline inline-block" style="color:var(--accent); font-size:13px;" onclick="showIndividualModal('${encodeURIComponent(d.name)}', '${encodeURIComponent(d.timestamp)}')">${d.prefix || ''}${d.name}</div>${retrainBadge}
-                                <div class="text-[11px] mt-0.5" style="color:var(--text-muted);">${d.dept || '-'} <span style="color:var(--text-dim);">|</span> ทีม: ${d.team || '-'}</div>
-                            </td>
-                            <td class="text-center">${daysCircle}</td>
-                            <td>${badgeHtml}</td>
-                            <td style="font-size:12px; color:var(--text-muted);">${d.recruiter || '-'}</td>
-                            <td style="font-size:12px; color:var(--rose);">${d.reason || '-'}</td>
-                        </tr>`;
-                });
-            }
-
+            renderTable(dataToRender);
             drawCharts(active, passed, dropped, latestRecords);
         }
 
+        function renderTable(dataToRender) {
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = '';
+
+            if (dataToRender.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-12 text-center" style="color:var(--text-muted);"><i class="fa-regular fa-folder-open text-2xl mb-2 block opacity-30"></i> ไม่พบข้อมูลที่ค้นหา</td></tr>`;
+                document.getElementById('tableRowCount').textContent = '0 รายการ';
+                return;
+            }
+
+            // Sort
+            let sortedData = [...dataToRender];
+            sortedData.sort((a, b) => {
+                let aVal, bVal;
+                if (sortKey === 'timestamp') {
+                    aVal = parseThaiDate(a.timestamp) || new Date(0);
+                    bVal = parseThaiDate(b.timestamp) || new Date(0);
+                    return sortDir === 'asc' ? aVal - bVal : bVal - aVal;
+                } else if (sortKey === 'days') {
+                    aVal = checkDay(a.d1) + checkDay(a.d2) + checkDay(a.d3);
+                    bVal = checkDay(b.d1) + checkDay(b.d2) + checkDay(b.d3);
+                    return sortDir === 'asc' ? aVal - bVal : bVal - aVal;
+                } else if (sortKey === 'status') {
+                    aVal = a.status || '';
+                    bVal = b.status || '';
+                    return sortDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                }
+                return 0;
+            });
+
+            document.getElementById('tableRowCount').textContent = `${sortedData.length} รายการ`;
+
+            sortedData.forEach(d => {
+                let badgeHtml = "";
+                if (isPassedStatus(d)) {
+                    badgeHtml = `<span class="badge badge-emerald">${d.status || 'Pass'}</span>`;
+                } else if (isDroppedStatus(d)) {
+                    badgeHtml = `<span class="badge badge-rose">${d.status || 'Drop'}</span>`;
+                } else {
+                    badgeHtml = `<span class="badge badge-amber">${d.status || 'Active'}</span>`;
+                }
+
+                let daysCount = checkDay(d.d1) + checkDay(d.d2) + checkDay(d.d3);
+                let dateStr = d.timestamp ? d.timestamp.split(' ')[0] : '-';
+
+                let retrainBadge = '';
+                const cleanKey = d.name.trim().toLowerCase() + '|' + d.nickname.trim().toLowerCase();
+                if (allNameCounts[cleanKey] > 1) {
+                    retrainBadge = `<span class="badge badge-violet ml-2" style="font-size:9px;"><i class="fa-solid fa-rotate-right mr-1"></i>Re-train</span>`;
+                }
+
+                const daysCircle = daysCount === 3
+                    ? `<span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold" style="background:rgba(16,185,129,0.2); color:var(--emerald);">${daysCount}/3</span>`
+                    : `<span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold" style="background:rgba(255,255,255,0.07); color:var(--text-muted);">${daysCount}/3</span>`;
+
+                // [FIX] Use safeEncode to prevent XSS / broken onclick
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="color:var(--text-muted); font-size:12px;">${escapeHtml(dateStr)}</td>
+                    <td>
+                        <div class="font-semibold cursor-pointer hover:underline inline-block" style="color:var(--accent); font-size:13px;" onclick="showIndividualModal('${safeEncode(d.name)}', '${safeEncode(d.timestamp)}')">${escapeHtml(d.prefix || '')}${escapeHtml(d.name)}</div>${retrainBadge}
+                        <div class="text-[11px] mt-0.5" style="color:var(--text-muted);">${escapeHtml(d.dept || '-')} <span style="color:var(--text-dim);">|</span> ทีม: ${escapeHtml(d.team || '-')}</div>
+                    </td>
+                    <td class="text-center">${daysCircle}</td>
+                    <td>${badgeHtml}</td>
+                    <td style="font-size:12px; color:var(--text-muted);">${escapeHtml(d.recruiter || '-')}</td>
+                    <td style="font-size:12px; color:var(--rose);">${escapeHtml(d.reason || '-')}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // [NEW] HTML escape to prevent XSS
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.appendChild(document.createTextNode(String(str || '')));
+            return div.innerHTML;
+        }
+
+        // ========== CHARTS ==========
         function drawCharts(active, passed, dropped, dataToRender) {
             Chart.defaults.color = '#7d8590';
             Chart.defaults.borderColor = 'rgba(255,255,255,0.07)';
 
-            if(charts['status']) charts['status'].destroy();
+            if (charts['status']) charts['status'].destroy();
             const ctxStatus = document.getElementById('statusChart').getContext('2d');
             charts['status'] = new Chart(ctxStatus, {
                 type: 'doughnut',
@@ -1072,22 +1428,11 @@
                             const label = charts['status'].data.labels[index];
                             let filteredList = [];
                             if (label.includes('กำลัง')) {
-                                filteredList = dataToRender.filter(d => {
-                                    const s = d.status.toLowerCase();
-                                    const p = s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
-                                    const dr = s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก');
-                                    return s.includes('active') || d.status.includes('กำลัง') || (!p && !dr);
-                                });
+                                filteredList = dataToRender.filter(isActiveStatus);
                             } else if (label.includes('ผ่าน')) {
-                                filteredList = dataToRender.filter(d => {
-                                    const s = d.status.toLowerCase();
-                                    return s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
-                                });
+                                filteredList = dataToRender.filter(isPassedStatus);
                             } else if (label.includes('ออก')) {
-                                filteredList = dataToRender.filter(d => {
-                                    const s = d.status.toLowerCase();
-                                    return s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก');
-                                });
+                                filteredList = dataToRender.filter(isDroppedStatus);
                             }
                             showDetailModal(`สถานะ: ${label}`, filteredList);
                         }
@@ -1098,7 +1443,7 @@
             const depts = {};
             dataToRender.forEach(d => { const k = d.dept || 'ไม่ระบุ'; depts[k] = (depts[k] || 0) + 1; });
 
-            if(charts['dept']) charts['dept'].destroy();
+            if (charts['dept']) charts['dept'].destroy();
             const ctxDept = document.getElementById('deptChart').getContext('2d');
             charts['dept'] = new Chart(ctxDept, {
                 type: 'bar',
@@ -1125,9 +1470,8 @@
             const teamStats = {};
             dataToRender.forEach(d => {
                 const k = d.team || 'ไม่ระบุทีม';
-                if(!teamStats[k]) teamStats[k] = { successActive: 0, dropped: 0 };
-                const s = d.status.toLowerCase();
-                if (s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก')) {
+                if (!teamStats[k]) teamStats[k] = { successActive: 0, dropped: 0 };
+                if (isDroppedStatus(d)) {
                     teamStats[k].dropped++;
                 } else {
                     teamStats[k].successActive++;
@@ -1138,7 +1482,7 @@
             const teamSuccessData = teamLabels.map(k => teamStats[k].successActive);
             const teamDropData = teamLabels.map(k => teamStats[k].dropped);
 
-            if(charts['team']) charts['team'].destroy();
+            if (charts['team']) charts['team'].destroy();
             const ctxTeam = document.getElementById('teamChart').getContext('2d');
             charts['team'] = new Chart(ctxTeam, {
                 type: 'bar',
@@ -1165,10 +1509,10 @@
                             let filteredList = dataToRender.filter(d => (d.team || 'ไม่ระบุทีม') === label);
                             let subtitle = "ทั้งหมด";
                             if (datasetIndex === 0) {
-                                filteredList = filteredList.filter(d => { const s = d.status.toLowerCase(); return !(s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก')); });
+                                filteredList = filteredList.filter(d => !isDroppedStatus(d));
                                 subtitle = "เฉพาะกลุ่มที่รอด";
                             } else if (datasetIndex === 1) {
-                                filteredList = filteredList.filter(d => { const s = d.status.toLowerCase(); return s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก'); });
+                                filteredList = filteredList.filter(isDroppedStatus);
                                 subtitle = "เฉพาะกลุ่มที่ลาออก/ไม่ผ่าน";
                             }
                             showDetailModal(`ทีม: ${label} (${subtitle})`, filteredList);
@@ -1178,17 +1522,29 @@
             });
         }
 
+        // ========== [NEW] SHOW TOTAL TRAINEES ==========
+        function showTotalTrainees() {
+            const latestRecords = getLatestRecords(currentFilteredData);
+            showDetailModal(`ผู้เข้าร่วมทั้งหมด (เข้าร่วมจริง)`, latestRecords);
+        }
+
+        // ========== [NEW] SHOW PASSED TRAINEES ==========
+        function showPassedTrainees() {
+            const latestRecords = getLatestRecords(currentFilteredData);
+            const passedList = latestRecords.filter(isPassedStatus);
+            showDetailModal(`ผ่านอบรม ✓`, passedList);
+        }
+
+        // ========== DROPPED MODAL ==========
         function showDroppedTrainees() {
-            const latestRecords = getLatestRecords(allData);
-            const droppedList = latestRecords.filter(d => {
-                const s = d.status.toLowerCase();
-                return s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก');
-            });
+            // [FIX] Now uses currentFilteredData instead of allData
+            const latestRecords = getLatestRecords(currentFilteredData);
+            const droppedList = latestRecords.filter(isDroppedStatus);
 
             const tbody = document.getElementById('droppedModalTableBody');
             tbody.innerHTML = '';
-            
-            if(droppedList.length === 0) {
+
+            if (droppedList.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" class="py-10 text-center" style="color:var(--text-muted);"><i class="fa-regular fa-circle-check text-2xl mb-2 block opacity-30"></i> ไม่มีข้อมูลผู้ที่ออกหรือสละสิทธิ์</td></tr>`;
             } else {
                 droppedList.sort((a, b) => (parseThaiDate(b.timestamp) || new Date(0)) - (parseThaiDate(a.timestamp) || new Date(0)));
@@ -1198,34 +1554,34 @@
                     const cleanKey = d.name.trim().toLowerCase() + '|' + d.nickname.trim().toLowerCase();
                     if (allNameCounts[cleanKey] > 1) retrainBadge = `<span class="badge badge-violet ml-1" style="font-size:9px;">Re-train</span>`;
 
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>
-                                <div class="font-semibold cursor-pointer hover:underline inline-block" style="color:var(--accent); font-size:13px;" onclick="showIndividualModal('${encodeURIComponent(d.name)}', '${encodeURIComponent(d.timestamp)}')">${d.prefix || ''}${d.name}</div>${retrainBadge}
-                                <div class="text-[11px] mt-0.5" style="color:var(--text-muted);"><i class="fa-regular fa-calendar mr-1"></i> เริ่ม: ${d.timestamp ? d.timestamp.split(' ')[0] : '-'}</div>
-                            </td>
-                            <td>
-                                <div class="text-sm font-medium" style="color:var(--accent);">${d.dept || '-'}</div>
-                                <div class="text-[11px]" style="color:var(--text-muted);">ทีม: ${d.team || '-'}</div>
-                            </td>
-                            <td class="text-center">
-                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold" style="background:rgba(244,63,94,0.1); color:var(--rose);">${daysAttended}/3</span>
-                            </td>
-                            <td style="color:var(--rose); font-size:13px;">${d.reason || '-'}</td>
-                            <td style="font-size:12px; color:var(--text-muted);">${d.recruiter || '-'}</td>
-                        </tr>`;
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>
+                            <div class="font-semibold cursor-pointer hover:underline inline-block" style="color:var(--accent); font-size:13px;" onclick="showIndividualModal('${safeEncode(d.name)}', '${safeEncode(d.timestamp)}')">${escapeHtml(d.prefix || '')}${escapeHtml(d.name)}</div>${retrainBadge}
+                            <div class="text-[11px] mt-0.5" style="color:var(--text-muted);"><i class="fa-regular fa-calendar mr-1"></i> เริ่ม: ${escapeHtml(d.timestamp ? d.timestamp.split(' ')[0] : '-')}</div>
+                        </td>
+                        <td>
+                            <div class="text-sm font-medium" style="color:var(--accent);">${escapeHtml(d.dept || '-')}</div>
+                            <div class="text-[11px]" style="color:var(--text-muted);">ทีม: ${escapeHtml(d.team || '-')}</div>
+                        </td>
+                        <td class="text-center">
+                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold" style="background:rgba(244,63,94,0.1); color:var(--rose);">${daysAttended}/3</span>
+                        </td>
+                        <td style="color:var(--rose); font-size:13px;">${escapeHtml(d.reason || '-')}</td>
+                        <td style="font-size:12px; color:var(--text-muted);">${escapeHtml(d.recruiter || '-')}</td>`;
+                    tbody.appendChild(tr);
                 });
             }
 
             const insightEl = document.getElementById('droppedMiniInsight');
-            if(droppedList.length > 0) {
+            if (droppedList.length > 0) {
                 const reasons = {};
                 droppedList.forEach(d => {
                     const r = (d.reason && d.reason.trim() !== "") ? d.reason.trim() : "ไม่ระบุสาเหตุ";
                     reasons[r] = (reasons[r] || 0) + 1;
                 });
-                const topReason = Object.keys(reasons).sort((a,b) => reasons[b] - reasons[a])[0];
-                insightEl.innerHTML = `<div class="flex items-center gap-2 text-sm font-medium" style="color:var(--rose);"><i class="fa-solid fa-chart-line"></i> <strong>ข้อมูลเชิงลึก:</strong>&nbsp;สาเหตุหลักอันดับ 1 คือ "${topReason}" (พบ ${reasons[topReason]} คน)</div>`;
+                const topReason = Object.keys(reasons).sort((a, b) => reasons[b] - reasons[a])[0];
+                insightEl.innerHTML = `<div class="flex items-center gap-2 text-sm font-medium" style="color:var(--rose);"><i class="fa-solid fa-chart-line"></i> <strong>ข้อมูลเชิงลึก:</strong>&nbsp;สาเหตุหลักอันดับ 1 คือ "${escapeHtml(topReason)}" (พบ ${reasons[topReason]} คน)</div>`;
             } else {
                 insightEl.innerHTML = `<span style="color:var(--text-muted); font-size:13px;"><i class="fa-solid fa-info-circle mr-1"></i> ไม่มีข้อมูลให้อนุมาน</span>`;
             }
@@ -1236,21 +1592,18 @@
 
         function closeDroppedModal() { closeModal('droppedModal', 'droppedModalContent'); }
 
+        // ========== ACTIVE MODAL ==========
         function showActiveTrainees() {
-            const latestRecords = getLatestRecords(allData);
-            const activeList = latestRecords.filter(d => {
-                const s = d.status.toLowerCase();
-                const p = s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
-                const dr = s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก');
-                return s.includes('active') || d.status.includes('กำลัง') || (!p && !dr);
-            });
+            // [FIX] Now uses currentFilteredData instead of allData
+            const latestRecords = getLatestRecords(currentFilteredData);
+            const activeList = latestRecords.filter(isActiveStatus);
 
             const tbody = document.getElementById('activeModalTableBody');
             tbody.innerHTML = '';
-            const today = new Date(); today.setHours(0,0,0,0);
+            const today = new Date(); today.setHours(0, 0, 0, 0);
             let laggingCount = 0;
 
-            if(activeList.length === 0) {
+            if (activeList.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" class="py-10 text-center" style="color:var(--text-muted);"><i class="fa-regular fa-circle-check text-2xl mb-2 block opacity-30"></i> ขณะนี้ไม่มีพนักงานอยู่ในสถานะกำลังเทรน</td></tr>`;
             } else {
                 activeList.sort((a, b) => (parseThaiDate(a.timestamp) || new Date()) - (parseThaiDate(b.timestamp) || new Date()));
@@ -1259,7 +1612,7 @@
                     const startDate = parseThaiDate(d.timestamp);
                     let daysSinceStart = 0, statusBadge = '';
                     if (startDate) {
-                        startDate.setHours(0,0,0,0);
+                        startDate.setHours(0, 0, 0, 0);
                         daysSinceStart = Math.floor(Math.abs(today - startDate) / 86400000);
                         if (daysSinceStart >= 5 && daysAttended < 3) {
                             statusBadge = `<span class="badge badge-rose"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ล่าช้า (${daysSinceStart} วัน)</span>`;
@@ -1281,25 +1634,25 @@
                         ? `<span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold" style="background:rgba(16,185,129,0.15); color:var(--emerald);">${daysAttended}/3</span>`
                         : `<span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold" style="background:rgba(255,255,255,0.07); color:var(--text-muted);">${daysAttended}/3</span>`;
 
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>
-                                <div class="font-semibold cursor-pointer hover:underline inline-block" style="color:var(--accent); font-size:13px;" onclick="showIndividualModal('${encodeURIComponent(d.name)}', '${encodeURIComponent(d.timestamp)}')">${d.prefix || ''}${d.name}</div>${retrainBadge}
-                                <div class="text-[11px] mt-0.5" style="color:var(--text-muted);"><i class="fa-regular fa-calendar mr-1"></i> เริ่ม: ${d.timestamp ? d.timestamp.split(' ')[0] : '-'}</div>
-                            </td>
-                            <td>
-                                <div class="text-sm font-medium" style="color:var(--accent);">${d.dept || '-'}</div>
-                                <div class="text-[11px]" style="color:var(--text-muted);">ทีม: ${d.team || '-'}</div>
-                            </td>
-                            <td class="text-center">${daysCircle}</td>
-                            <td class="text-center">${statusBadge}</td>
-                            <td style="font-size:12px; color:var(--text-muted);">${d.recruiter || '-'}</td>
-                        </tr>`;
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>
+                            <div class="font-semibold cursor-pointer hover:underline inline-block" style="color:var(--accent); font-size:13px;" onclick="showIndividualModal('${safeEncode(d.name)}', '${safeEncode(d.timestamp)}')">${escapeHtml(d.prefix || '')}${escapeHtml(d.name)}</div>${retrainBadge}
+                            <div class="text-[11px] mt-0.5" style="color:var(--text-muted);"><i class="fa-regular fa-calendar mr-1"></i> เริ่ม: ${escapeHtml(d.timestamp ? d.timestamp.split(' ')[0] : '-')}</div>
+                        </td>
+                        <td>
+                            <div class="text-sm font-medium" style="color:var(--accent);">${escapeHtml(d.dept || '-')}</div>
+                            <div class="text-[11px]" style="color:var(--text-muted);">ทีม: ${escapeHtml(d.team || '-')}</div>
+                        </td>
+                        <td class="text-center">${daysCircle}</td>
+                        <td class="text-center">${statusBadge}</td>
+                        <td style="font-size:12px; color:var(--text-muted);">${escapeHtml(d.recruiter || '-')}</td>`;
+                    tbody.appendChild(tr);
                 });
             }
 
             const insightEl = document.getElementById('activeMiniInsight');
-            if(activeList.length === 0) {
+            if (activeList.length === 0) {
                 insightEl.innerHTML = `<span style="color:var(--text-muted); font-size:13px;"><i class="fa-solid fa-info-circle mr-1"></i> ขณะนี้การเทรนเป็นปัจจุบัน ไม่มีพนักงานค้างท่อ</span>`;
             } else if (laggingCount > 0) {
                 insightEl.innerHTML = `<div class="flex items-start gap-2 text-sm font-medium" style="color:var(--rose);"><i class="fa-solid fa-robot mt-0.5"></i><div><strong>AI ตรวจพบความล่าช้า:</strong> มีพนักงาน <span class="badge badge-rose" style="font-size:11px;">${laggingCount} ราย</span> ลงทะเบียนมาเกิน 4 วันแต่ยังเข้าเทรนไม่ครบเกณฑ์</div></div>`;
@@ -1313,61 +1666,85 @@
 
         function closeActiveModal() { closeModal('activeModal', 'activeModalContent'); }
 
+        // ========== INDIVIDUAL MODAL ==========
         function showIndividualModal(encodedName, encodedTimestamp) {
             const name = decodeURIComponent(encodedName);
             const timestamp = decodeURIComponent(encodedTimestamp);
             const person = allData.find(d => d.name === name && d.timestamp === timestamp);
-            if(!person) return;
+            if (!person) {
+                showToast('ไม่พบข้อมูลพนักงาน', 'warning');
+                return;
+            }
 
             let daysCount = checkDay(person.d1) + checkDay(person.d2) + checkDay(person.d3);
-            let s = person.status.toLowerCase();
-            let badgeHtml = `<span class="badge badge-amber">${person.status || 'Active'}</span>`;
-            if (s.includes('pass') || person.status.includes('ผ่าน') || s.includes('back office') || person.status.includes('แบ็คออฟฟิศ')) {
-                badgeHtml = `<span class="badge badge-emerald">${person.status}</span>`;
-            } else if (s.includes('drop') || s.includes('new job') || s.includes('resign') || person.status.includes('ออก') || person.status.includes('ลาออก')) {
-                badgeHtml = `<span class="badge badge-rose">${person.status}</span>`;
+            let badgeHtml = `<span class="badge badge-amber">${escapeHtml(person.status || 'Active')}</span>`;
+            if (isPassedStatus(person)) {
+                badgeHtml = `<span class="badge badge-emerald">${escapeHtml(person.status)}</span>`;
+            } else if (isDroppedStatus(person)) {
+                badgeHtml = `<span class="badge badge-rose">${escapeHtml(person.status)}</span>`;
             }
 
             const pct = Math.round((daysCount / 3) * 100);
             const barColor = daysCount === 3 ? 'var(--emerald)' : daysCount >= 2 ? 'var(--amber)' : 'var(--rose)';
+
+            // Check if retrain
+            const cleanKey = person.name.trim().toLowerCase() + '|' + person.nickname.trim().toLowerCase();
+            const isRetrain = (allNameCounts[cleanKey] || 0) > 1;
+            const retrainNote = isRetrain ? `<span class="badge badge-violet ml-2"><i class="fa-solid fa-rotate-right mr-1"></i>Re-train ครั้งที่ ${allNameCounts[cleanKey]}</span>` : '';
+
+            // Day attendance detail
+            const dayDetails = [
+                { label: 'วันที่ 1', val: person.d1 },
+                { label: 'วันที่ 2', val: person.d2 },
+                { label: 'วันที่ 3', val: person.d3 }
+            ].map(day => {
+                const attended = checkDay(day.val);
+                const icon = attended
+                    ? `<i class="fa-solid fa-circle-check" style="color:var(--emerald);"></i>`
+                    : `<i class="fa-regular fa-circle-xmark" style="color:var(--text-dim);"></i>`;
+                const val = day.val ? ` <span style="color:var(--text-muted); font-size:10px;">(${escapeHtml(day.val)})</span>` : '';
+                return `<div class="flex items-center gap-2 text-sm py-1">${icon} ${day.label}${val}</div>`;
+            }).join('');
 
             document.getElementById('individualModalBody').innerHTML = `
                 <div class="flex items-center gap-4 mb-6 pb-5" style="border-bottom:1px solid var(--border);">
                     <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0" style="background:rgba(59,130,246,0.12); color:var(--accent);">
                         <i class="fa-solid fa-user-tie"></i>
                     </div>
-                    <div>
-                        <h2 class="text-xl font-bold" style="color:var(--text); font-family:'Space Grotesk',sans-serif;">${person.prefix || ''}${person.name}</h2>
-                        <div class="flex flex-wrap items-center gap-4 mt-2 text-xs" style="color:var(--text-muted);">
-                            <span><i class="fa-regular fa-id-badge mr-1"></i> ชื่อเล่น: <span style="color:var(--text);">${person.nickname || '-'}</span></span>
-                            <span><i class="fa-solid fa-phone mr-1"></i> เบอร์: <span style="color:var(--accent); font-family:monospace;">${person.phone || '-'}</span></span>
+                    <div class="flex-1">
+                        <h2 class="text-xl font-bold" style="color:var(--text); font-family:'Space Grotesk',sans-serif;">${escapeHtml(person.prefix || '')}${escapeHtml(person.name)}</h2>
+                        <div class="flex flex-wrap items-center gap-3 mt-2">
+                            <span class="text-xs" style="color:var(--text-muted);"><i class="fa-regular fa-id-badge mr-1"></i> ชื่อเล่น: <span style="color:var(--text);">${escapeHtml(person.nickname || '-')}</span></span>
+                            <span class="text-xs" style="color:var(--text-muted);"><i class="fa-solid fa-phone mr-1"></i> เบอร์: <span style="color:var(--accent); font-family:monospace;">${escapeHtml(person.phone || '-')}</span></span>
+                            ${retrainNote}
                         </div>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3 mb-5">
                     <div class="p-4 rounded-xl" style="background:rgba(255,255,255,0.04); border:1px solid var(--border);">
                         <div class="text-[10px] font-bold uppercase tracking-widest mb-1.5" style="color:var(--text-dim);">Department</div>
-                        <div class="text-sm font-semibold" style="color:var(--text);">${person.dept || '-'}</div>
+                        <div class="text-sm font-semibold" style="color:var(--text);">${escapeHtml(person.dept || '-')}</div>
                     </div>
                     <div class="p-4 rounded-xl" style="background:rgba(255,255,255,0.04); border:1px solid var(--border);">
                         <div class="text-[10px] font-bold uppercase tracking-widest mb-1.5" style="color:var(--text-dim);">Team</div>
-                        <div class="text-sm font-semibold" style="color:var(--accent);">${person.team || '-'}</div>
+                        <div class="text-sm font-semibold" style="color:var(--accent);">${escapeHtml(person.team || '-')}</div>
                     </div>
                     <div class="p-4 rounded-xl" style="background:rgba(255,255,255,0.04); border:1px solid var(--border);">
                         <div class="text-[10px] font-bold uppercase tracking-widest mb-1.5" style="color:var(--text-dim);">Start Date</div>
-                        <div class="text-sm font-semibold" style="color:var(--text);">${person.timestamp || '-'}</div>
+                        <div class="text-sm font-semibold" style="color:var(--text);">${escapeHtml(person.timestamp || '-')}</div>
                     </div>
                     <div class="p-4 rounded-xl" style="background:rgba(255,255,255,0.04); border:1px solid var(--border);">
                         <div class="text-[10px] font-bold uppercase tracking-widest mb-1.5" style="color:var(--text-dim);">Recruiter</div>
-                        <div class="text-sm font-semibold" style="color:var(--text);">${person.recruiter || '-'}</div>
+                        <div class="text-sm font-semibold" style="color:var(--text);">${escapeHtml(person.recruiter || '-')}</div>
                     </div>
                 </div>
                 <div class="p-4 rounded-xl mb-4" style="background:rgba(255,255,255,0.03); border:1px solid var(--border);">
-                    <div class="flex justify-between items-center mb-2">
+                    <div class="flex justify-between items-center mb-3">
                         <div class="text-xs font-semibold" style="color:var(--text-muted);">การเข้าเรียน</div>
                         <div class="font-bold text-lg" style="color:var(--text); font-family:'Space Grotesk',sans-serif;">${daysCount}<span class="text-xs font-normal ml-1" style="color:var(--text-muted);">/ 3 วัน</span></div>
                     </div>
-                    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%; background:${barColor};"></div></div>
+                    <div class="progress-bar mb-3"><div class="progress-fill" style="width:${pct}%; background:${barColor};"></div></div>
+                    <div class="mt-2">${dayDetails}</div>
                 </div>
                 <div class="flex items-center justify-between mb-4">
                     <div class="text-xs font-semibold" style="color:var(--text-muted);">สถานะล่าสุด</div>
@@ -1375,7 +1752,7 @@
                 </div>
                 ${person.reason ? `<div class="p-4 rounded-xl" style="background:rgba(244,63,94,0.07); border:1px solid rgba(244,63,94,0.2);">
                     <div class="text-[10px] font-bold uppercase tracking-widest mb-2" style="color:var(--rose);">หมายเหตุ / สาเหตุ</div>
-                    <div class="text-sm font-medium" style="color:var(--rose);">${person.reason}</div>
+                    <div class="text-sm font-medium" style="color:var(--rose);">${escapeHtml(person.reason)}</div>
                 </div>` : ''}`;
 
             openModal('individualModal', 'individualModalContent');
@@ -1383,40 +1760,40 @@
 
         function closeIndividualModal() { closeModal('individualModal', 'individualModalContent'); }
 
+        // ========== DETAIL MODAL ==========
         function showDetailModal(title, dataList) {
             document.getElementById('modalTitle').innerText = `${title} (${dataList.length} คน)`;
             const tbody = document.getElementById('modalTableBody');
             tbody.innerHTML = '';
-            
-            if(dataList.length === 0) {
+
+            if (dataList.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="4" class="py-8 text-center" style="color:var(--text-muted);">ไม่พบรายชื่อในกลุ่มนี้</td></tr>`;
             } else {
                 dataList.forEach(d => {
-                    let badgeHtml = `<span class="badge badge-amber">${d.status || 'Active'}</span>`;
-                    let s = d.status.toLowerCase();
-                    if (s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ')) {
-                        badgeHtml = `<span class="badge badge-emerald">${d.status}</span>`;
-                    } else if (s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก')) {
-                        badgeHtml = `<span class="badge badge-rose">${d.status}</span>`;
+                    let badgeHtml = `<span class="badge badge-amber">${escapeHtml(d.status || 'Active')}</span>`;
+                    if (isPassedStatus(d)) {
+                        badgeHtml = `<span class="badge badge-emerald">${escapeHtml(d.status)}</span>`;
+                    } else if (isDroppedStatus(d)) {
+                        badgeHtml = `<span class="badge badge-rose">${escapeHtml(d.status)}</span>`;
                     }
 
                     let retrainBadge = '';
                     const cleanKey = d.name.trim().toLowerCase() + '|' + d.nickname.trim().toLowerCase();
                     if (allNameCounts[cleanKey] > 1) retrainBadge = `<span class="badge badge-violet ml-1" style="font-size:9px;">Re-train</span>`;
 
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>
-                                <div class="font-semibold cursor-pointer hover:underline inline-block" style="color:var(--accent); font-size:13px;" onclick="showIndividualModal('${encodeURIComponent(d.name)}', '${encodeURIComponent(d.timestamp)}')">${d.prefix || ''}${d.name}</div>${retrainBadge}
-                                <div class="text-[11px] mt-0.5" style="color:var(--text-muted);">ชื่อเล่น: ${d.nickname || '-'}</div>
-                            </td>
-                            <td>
-                                <div class="text-sm font-medium" style="color:var(--accent);">${d.dept || '-'}</div>
-                                <div class="text-[11px]" style="color:var(--text-muted);">ทีม: ${d.team || '-'}</div>
-                            </td>
-                            <td class="text-center">${badgeHtml}</td>
-                            <td style="font-size:12px; color:var(--rose);">${d.reason || '-'}</td>
-                        </tr>`;
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>
+                            <div class="font-semibold cursor-pointer hover:underline inline-block" style="color:var(--accent); font-size:13px;" onclick="showIndividualModal('${safeEncode(d.name)}', '${safeEncode(d.timestamp)}')">${escapeHtml(d.prefix || '')}${escapeHtml(d.name)}</div>${retrainBadge}
+                            <div class="text-[11px] mt-0.5" style="color:var(--text-muted);">ชื่อเล่น: ${escapeHtml(d.nickname || '-')}</div>
+                        </td>
+                        <td>
+                            <div class="text-sm font-medium" style="color:var(--accent);">${escapeHtml(d.dept || '-')}</div>
+                            <div class="text-[11px]" style="color:var(--text-muted);">ทีม: ${escapeHtml(d.team || '-')}</div>
+                        </td>
+                        <td class="text-center">${badgeHtml}</td>
+                        <td style="font-size:12px; color:var(--rose);">${escapeHtml(d.reason || '-')}</td>`;
+                    tbody.appendChild(tr);
                 });
             }
 
@@ -1425,13 +1802,16 @@
 
         function closeDetailModal() { closeModal('detailModal', 'detailModalContent'); }
 
-        // Generic modal open/close
+        // ========== MODAL HELPERS ==========
         function openModal(overlayId, contentId) {
             const modal = document.getElementById(overlayId);
             const content = document.getElementById(contentId);
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+            }, 10);
         }
 
         function closeModal(overlayId, contentId) {
@@ -1439,19 +1819,38 @@
             const content = document.getElementById(contentId);
             modal.classList.add('opacity-0');
             content.classList.add('scale-95');
-            setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300);
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
         }
 
-        // ===== AI SUMMARY (Logic Identical) =====
+        // ========== TOAST ==========
+        // [NEW] Toast notifications
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const iconMap = { success: 'fa-circle-check', error: 'fa-circle-exclamation', warning: 'fa-triangle-exclamation', info: 'fa-circle-info' };
+            const colorMap = { success: 'var(--emerald)', error: 'var(--rose)', warning: 'var(--amber)', info: 'var(--accent)' };
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<i class="fa-solid ${iconMap[type] || 'fa-circle-info'}" style="color:${colorMap[type] || 'var(--accent)'}; font-size:15px;"></i> ${escapeHtml(message)}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'toastOut 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ========== AI SUMMARY ==========
         function generateAISummary() {
             const btn = document.getElementById('btnAISummary');
             btn.disabled = true;
-            
+
             const startVal = document.getElementById('startDate').value;
             const endVal = document.getElementById('endDate').value;
             const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
             const statusVal = document.getElementById('statusFilter').value;
-            
+
             const startDate = startVal ? new Date(startVal) : new Date('2000-01-01');
             const endDate = endVal ? new Date(endVal) : new Date('2100-01-01');
             endDate.setHours(23, 59, 59, 999);
@@ -1463,12 +1862,9 @@
                 const matchSearch = searchVal === '' || searchText.includes(searchVal);
                 let matchStatus = true;
                 if (statusVal !== 'all') {
-                    const s = d.status.toLowerCase();
-                    const passedCheck = s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
-                    const dropCheck = s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก');
-                    if (statusVal === 'pass') matchStatus = passedCheck;
-                    else if (statusVal === 'drop') matchStatus = dropCheck;
-                    else if (statusVal === 'active') matchStatus = d.status.toLowerCase().includes('active') || d.status.includes('กำลัง') || (!passedCheck && !dropCheck);
+                    if (statusVal === 'pass') matchStatus = isPassedStatus(d);
+                    else if (statusVal === 'drop') matchStatus = isDroppedStatus(d);
+                    else if (statusVal === 'active') matchStatus = isActiveStatus(d);
                 }
                 return matchDate && matchSearch && matchStatus;
             });
@@ -1476,8 +1872,8 @@
             const totalTransactions = filteredData.length;
             const latestRecords = getLatestRecords(filteredData);
             const headCount = latestRecords.length;
-            const passed = latestRecords.filter(d => { const s = d.status.toLowerCase(); return s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ'); }).length;
-            const dropped = latestRecords.filter(d => { const s = d.status.toLowerCase(); return s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก'); }).length;
+            const passed = latestRecords.filter(isPassedStatus).length;
+            const dropped = latestRecords.filter(isDroppedStatus).length;
             const active = headCount - passed - dropped;
             const rate = headCount > 0 ? Math.round((passed / headCount) * 100) : 0;
             const dropRate = headCount > 0 ? Math.round((dropped / headCount) * 100) : 0;
@@ -1493,9 +1889,8 @@
                 const r = d.recruiter && d.recruiter.trim() !== "" ? d.recruiter.trim() : "ไม่ระบุผู้แนะนำ";
                 if (!recruiterStats[r]) recruiterStats[r] = { total: 0, pass: 0, active: 0, drop: 0 };
                 recruiterStats[r].total++;
-                const s = d.status.toLowerCase();
-                if (s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ')) recruiterStats[r].pass++;
-                else if (s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก')) recruiterStats[r].drop++;
+                if (isPassedStatus(d)) recruiterStats[r].pass++;
+                else if (isDroppedStatus(d)) recruiterStats[r].drop++;
                 else recruiterStats[r].active++;
             });
             const sortedRecruiters = Object.entries(recruiterStats).sort((a, b) => b[1].total - a[1].total);
@@ -1506,15 +1901,14 @@
             });
 
             let retrainCount = 0;
-            Object.values(allNameCounts).forEach(c => { if(c > 1) retrainCount++; });
+            Object.values(allNameCounts).forEach(c => { if (c > 1) retrainCount++; });
             let retrainInsight = retrainCount > 0 ? ` นอกจากนี้พบ ${retrainCount} บุคคลที่กลับมาเทรนซ้ำ ควรติดตามเพื่อวิเคราะห์ Dropout Pattern` : '';
-            
-            const droppedData = latestRecords.filter(d => { const s = d.status.toLowerCase(); return s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก'); });
-            
+
+            const droppedData = latestRecords.filter(isDroppedStatus);
+
             let perfectAttendancePass = 0;
             latestRecords.forEach(d => {
-                const s = d.status.toLowerCase();
-                if ((s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ')) && (checkDay(d.d1) + checkDay(d.d2) + checkDay(d.d3)) === 3) perfectAttendancePass++;
+                if (isPassedStatus(d) && (checkDay(d.d1) + checkDay(d.d2) + checkDay(d.d3)) === 3) perfectAttendancePass++;
             });
             const perfectPct = passed > 0 ? Math.round((perfectAttendancePass / passed) * 100) : 0;
             let attendanceInsight = `  • ${perfectPct}% ของผู้ที่สอบผ่าน มีประวัติการเข้าเรียนครบถ้วน 3 วันเต็ม บ่งชี้ว่าความสม่ำเสมอคือปัจจัยสำคัญของความสำเร็จ${retrainInsight}`;
@@ -1535,13 +1929,13 @@
                     const t = (d.team && d.team !== "") ? d.team : "ไม่ระบุทีม";
                     teamDropsObj[t] = (teamDropsObj[t] || 0) + 1;
                 });
-                
-                const sortedReasonsArr = Object.entries(reasons).sort((a,b) => b[1] - a[1]);
-                reasonText = "";
-                sortedReasonsArr.slice(0, 3).forEach((item, index) => { let pct = Math.round((item[1]/dropped)*100); reasonText += `  ${index+1}. ${item[0]} - จำนวน ${item[1]} คน (${pct}%)\n`; });
 
-                const sortedTeamDrops = Object.entries(teamDropsObj).sort((a,b) => b[1] - a[1]);
-                sortedTeamDrops.forEach((item, index) => { teamDropText += `  ${index+1}. ทีม "${item[0]}" (พนักงานลาออก/ไม่ผ่าน ${item[1]} คน)\n`; });
+                const sortedReasonsArr = Object.entries(reasons).sort((a, b) => b[1] - a[1]);
+                reasonText = "";
+                sortedReasonsArr.slice(0, 3).forEach((item, index) => { let pct = Math.round((item[1] / dropped) * 100); reasonText += `  ${index + 1}. ${item[0]} - จำนวน ${item[1]} คน (${pct}%)\n`; });
+
+                const sortedTeamDrops = Object.entries(teamDropsObj).sort((a, b) => b[1] - a[1]);
+                sortedTeamDrops.forEach((item, index) => { teamDropText += `  ${index + 1}. ทีม "${item[0]}" (พนักงานลาออก/ไม่ผ่าน ${item[1]} คน)\n`; });
 
                 const topReasonStr = sortedReasonsArr[0][0].toLowerCase();
                 if (topReasonStr.includes('งานใหม่') || topReasonStr.includes('เงิน') || topReasonStr.includes('offer')) {
@@ -1558,7 +1952,7 @@
             }
 
             let dateRange = "ภาพรวมสะสมทั้งหมด (All Time)";
-            if(startVal && endVal) {
+            if (startVal && endVal) {
                 const sDate = new Date(startVal); const eDate = new Date(endVal);
                 const monthNames = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
                 if (sDate.getMonth() === eDate.getMonth() && sDate.getFullYear() === eDate.getFullYear()) {
@@ -1596,16 +1990,22 @@ ${attendanceInsight}
 " ${strategicAdvice} "`;
 
             document.getElementById('reportSummaryInput').value = autoText;
-            
+
             const wrapper = document.getElementById('aiTextWrapper');
             const icon = document.getElementById('toggleAIIcon');
             wrapper.classList.remove('hidden');
-            if (icon) icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
-            
+            // [FIX] Safe icon replacement
+            if (icon) {
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            }
+
             const btnTextSpan = document.getElementById('aiBtnText');
             btnTextSpan.innerHTML = `<i class="fa-solid fa-check-double"></i> AI จัดอันดับเรียบร้อย!`;
             btn.style.background = 'linear-gradient(135deg, #059669, #0d9488)';
-            
+
+            showToast('AI สรุปรายงานเรียบร้อยแล้ว!', 'success');
+
             setTimeout(() => {
                 btnTextSpan.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> AI จัดอันดับข้อมูลทุกมิติ`;
                 btn.style.background = '';
@@ -1613,10 +2013,11 @@ ${attendanceInsight}
             }, 3000);
         }
 
+        // ========== PREPARE REPORT ==========
         function prepareReport() {
             const start = document.getElementById('startDate').value;
             const end = document.getElementById('endDate').value;
-            if(!start || !end) {
+            if (!start || !end) {
                 Swal.fire({ icon: 'warning', title: 'กรุณาเลือกช่วงวันที่', text: 'กรุณาเลือกตั้งแต่วันที่ และ ถึงวันที่ ก่อนกดพิมพ์รายงานครับ', confirmButtonColor: '#3b82f6', background: '#1c2230', color: '#e6edf3' });
                 return;
             }
@@ -1626,13 +2027,13 @@ ${attendanceInsight}
                 return `${d.getDate()} ${monthNames[d.getMonth()]} ${d.getFullYear() + 543}`;
             };
             document.getElementById('reportDateRange').innerText = `${formatThai(start)} ถึง ${formatThai(end)}`;
-            
+
             const wrapper = document.getElementById('aiTextWrapper');
             wrapper.classList.remove('hidden');
-            
+
             const summaryInput = document.getElementById('reportSummaryInput');
             const summaryText = summaryInput.value;
-            if(summaryText.trim() !== "") {
+            if (summaryText.trim() !== "") {
                 const div = document.createElement('div');
                 div.id = "tempSummaryDiv";
                 div.className = "whitespace-pre-wrap text-[15px] text-slate-800 bg-transparent border-0 p-2 font-sarabun mt-2";
@@ -1644,20 +2045,21 @@ ${attendanceInsight}
             window.scrollTo({ top: 0, behavior: 'smooth' });
             setTimeout(() => {
                 window.print();
-                if(summaryText.trim() !== "") {
+                if (summaryText.trim() !== "") {
                     const tempDiv = document.getElementById('tempSummaryDiv');
-                    if(tempDiv) tempDiv.remove();
+                    if (tempDiv) tempDiv.remove();
                     summaryInput.style.display = "block";
                 }
             }, 500);
         }
 
+        // ========== EXPORT CSV ==========
         function exportToCSV() {
             const startVal = document.getElementById('startDate').value;
             const endVal = document.getElementById('endDate').value;
             const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
             const statusVal = document.getElementById('statusFilter').value;
-            
+
             const startDate = startVal ? new Date(startVal) : new Date('2000-01-01');
             const endDate = endVal ? new Date(endVal) : new Date('2100-01-01');
             endDate.setHours(23, 59, 59, 999);
@@ -1669,17 +2071,14 @@ ${attendanceInsight}
                 const matchSearch = searchVal === '' || searchText.includes(searchVal);
                 let matchStatus = true;
                 if (statusVal !== 'all') {
-                    const s = d.status.toLowerCase();
-                    const passedCheck = s.includes('pass') || d.status.includes('ผ่าน') || s.includes('back office') || d.status.includes('แบ็คออฟฟิศ');
-                    const dropCheck = s.includes('drop') || s.includes('new job') || s.includes('resign') || d.status.includes('ออก') || d.status.includes('ลาออก');
-                    if (statusVal === 'pass') matchStatus = passedCheck;
-                    else if (statusVal === 'drop') matchStatus = dropCheck;
-                    else if (statusVal === 'active') matchStatus = s.includes('active') || d.status.includes('กำลัง') || (!passedCheck && !dropCheck);
+                    if (statusVal === 'pass') matchStatus = isPassedStatus(d);
+                    else if (statusVal === 'drop') matchStatus = isDroppedStatus(d);
+                    else if (statusVal === 'active') matchStatus = isActiveStatus(d);
                 }
                 return matchDate && matchSearch && matchStatus;
             });
 
-            if(dataToExport.length === 0) {
+            if (dataToExport.length === 0) {
                 Swal.fire('ไม่พบข้อมูล', 'ไม่มีข้อมูลสำหรับดาวน์โหลดในช่วงเวลานี้', 'warning');
                 return;
             }
@@ -1699,14 +2098,17 @@ ${attendanceInsight}
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            showToast(`ดาวน์โหลด CSV สำเร็จ (${dataToExport.length} รายการ)`, 'success');
         }
 
+        // ========== EXPORT IMAGE ==========
         function exportToImage() {
             Swal.fire({ title: 'กำลังเตรียมรูปภาพ...', text: 'กรุณารอสักครู่', allowOutsideClick: false, background: '#1c2230', color: '#e6edf3', didOpen: () => { Swal.showLoading(); } });
 
             const noPrintElements = document.querySelectorAll('.no-print');
             noPrintElements.forEach(el => el.style.display = 'none');
-            
+
             const mainContent = document.getElementById('main-content');
             mainContent.style.height = 'auto';
             mainContent.style.overflow = 'visible';
@@ -1725,7 +2127,7 @@ ${attendanceInsight}
                 Swal.fire({ icon: 'success', title: 'บันทึกรูปภาพสำเร็จ!', showConfirmButton: false, timer: 1500, background: '#1c2230', color: '#e6edf3' });
             }).catch(err => {
                 Swal.close();
-                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถสร้างรูปภาพได้', 'error');
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถสร้างรูปภาพได้: ' + err.message, 'error');
                 noPrintElements.forEach(el => el.style.display = '');
                 mainContent.style.height = '';
                 mainContent.style.overflow = '';
