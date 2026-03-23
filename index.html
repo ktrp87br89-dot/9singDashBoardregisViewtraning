@@ -799,6 +799,9 @@
         [data-theme="light"] .theme-opt:hover { background: rgba(0,0,0,0.04); color: #0f172a; }
         [data-theme="light"] .theme-opt.active-theme { background: rgba(0,0,0,0.05); color: #0f172a; border-color: rgba(0,0,0,0.1); }
         [data-theme="light"] #themeDropdown { box-shadow: 0 16px 48px rgba(0,0,0,0.12); }
+
+        /* ========== TAB CONTENT HEADER ========== */
+        .tab-content-header {
             display: flex;
             align-items: center;
             gap: 10px;
@@ -811,19 +814,124 @@
             font-size: 15px;
             flex-shrink: 0;
         }
-        .tab-content-header-icon.violet { background: rgba(139,92,246,0.15); color: var(--violet); }
-        .tab-content-header-icon.blue { background: rgba(59,130,246,0.15); color: var(--accent); }
-        .tab-content-header-icon.emerald { background: rgba(16,185,129,0.15); color: var(--emerald); }
+        .tab-content-header-icon.violet  { background: rgba(139,92,246,0.15); color: var(--violet); }
+        .tab-content-header-icon.blue    { background: rgba(59,130,246,0.15);  color: var(--accent); }
+        .tab-content-header-icon.emerald { background: rgba(16,185,129,0.15);  color: var(--emerald); }
+        .tab-content-header-icon.cyan    { background: rgba(6,182,212,0.15);   color: #06b6d4; }
+        .tab-content-header-icon.amber   { background: rgba(245,158,11,0.15);  color: var(--amber); }
 
         .tab-breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11px;
-            color: var(--text-dim);
-            margin-bottom: 4px;
+            display: flex; align-items: center; gap: 6px;
+            font-size: 11px; color: var(--text-dim); margin-bottom: 4px;
         }
         .tab-breadcrumb span { color: var(--text-muted); font-weight: 600; }
+
+        /* ========== NEW TAB COLORS ========== */
+        .tab-bar-btn.active-tab.tab-analytics { color: #06b6d4; border-color: rgba(6,182,212,0.35); background: rgba(6,182,212,0.08); }
+        .tab-bar-btn.active-tab.tab-recruiter { color: var(--amber); border-color: rgba(245,158,11,0.35); background: rgba(245,158,11,0.08); }
+        .tab-dot.cyan  { background: #06b6d4; }
+        .tab-dot.amber { background: var(--amber); }
+        .nav-item.cyan.active  { background: rgba(6,182,212,0.12);  color: #06b6d4;      border-color: rgba(6,182,212,0.3); }
+        .nav-item.amber.active { background: rgba(245,158,11,0.12); color: var(--amber); border-color: rgba(245,158,11,0.3); }
+
+        /* ========== SMART ALERT BANNER ========== */
+        #alertBanner {
+            display: none;
+            border-radius: 14px;
+            padding: 0;
+            overflow: hidden;
+            margin-bottom: 0;
+        }
+        #alertBanner.show { display: block; animation: alertSlideIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+        @keyframes alertSlideIn {
+            from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .alert-item {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 13px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            transition: background 0.15s;
+        }
+        .alert-item:last-child { border-bottom: none; }
+        .alert-item:hover { background: rgba(255,255,255,0.02); }
+        .alert-icon {
+            width: 32px; height: 32px; border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; flex-shrink: 0; margin-top: 1px;
+        }
+        .alert-icon.danger { background: rgba(244,63,94,0.2);  color: var(--rose); }
+        .alert-icon.warn   { background: rgba(245,158,11,0.2); color: var(--amber); }
+        .alert-icon.info   { background: rgba(59,130,246,0.2); color: var(--accent); }
+        .alert-title { font-size: 13px; font-weight: 700; line-height: 1.3; }
+        .alert-body  { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; line-height: 1.5; }
+        .alert-dismiss {
+            margin-left: auto; width: 26px; height: 26px;
+            border-radius: 7px; border: 1px solid var(--border);
+            background: transparent; color: var(--text-dim);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 11px; flex-shrink: 0; transition: all 0.15s;
+        }
+        .alert-dismiss:hover { background: rgba(244,63,94,0.15); color: var(--rose); border-color: rgba(244,63,94,0.3); }
+
+        /* ========== RECRUITER LEADERBOARD ========== */
+        .recruiter-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 14px; padding: 18px; transition: all 0.22s ease;
+            cursor: default; position: relative; overflow: hidden;
+        }
+        .recruiter-card:hover { border-color: var(--border-bright); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+        .recruiter-card.rank-1 { border-color: rgba(245,158,11,0.35); background: linear-gradient(135deg, var(--surface) 0%, rgba(245,158,11,0.04) 100%); }
+        .recruiter-card.rank-2 { border-color: rgba(148,163,184,0.3); background: linear-gradient(135deg, var(--surface) 0%, rgba(148,163,184,0.04) 100%); }
+        .recruiter-card.rank-3 { border-color: rgba(180,120,60,0.3);  background: linear-gradient(135deg, var(--surface) 0%, rgba(180,120,60,0.04) 100%); }
+        .rank-medal { font-size: 22px; flex-shrink: 0; }
+        .recruiter-name { font-size: 14px; font-weight: 700; color: var(--text); }
+        .recruiter-meta { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+        .rec-stat-box {
+            display: flex; flex-direction: column; align-items: center;
+            padding: 8px 10px; border-radius: 10px;
+            background: rgba(255,255,255,0.04); border: 1px solid var(--border); flex: 1;
+        }
+        .rec-stat-num { font-size: 20px; font-weight: 700; font-family: 'Space Grotesk',sans-serif; line-height: 1; }
+        .rec-stat-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-dim); margin-top: 3px; }
+        .win-rate-bar { height: 5px; background: rgba(255,255,255,0.07); border-radius: 4px; overflow: hidden; margin-top: 6px; }
+        .win-rate-fill { height: 100%; border-radius: 4px; transition: width 0.9s cubic-bezier(0.34,1.56,0.64,1); }
+
+        /* Recruiter full table */
+        .rec-table-row { transition: background 0.12s; }
+        .rec-table-row:hover td { background: rgba(255,255,255,0.03) !important; }
+        .rank-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 24px; height: 24px; border-radius: 6px;
+            font-size: 11px; font-weight: 800;
+        }
+
+        /* ========== TREND CHART SECTION ========== */
+        .trend-insight-pill {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 11px; font-weight: 600;
+            padding: 4px 10px; border-radius: 20px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.04);
+            color: var(--text-muted);
+            cursor: default;
+        }
+        .trend-insight-pill.up   { color: var(--emerald); border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.07); }
+        .trend-insight-pill.down { color: var(--rose);    border-color: rgba(244,63,94,0.3);  background: rgba(244,63,94,0.07); }
+        .trend-insight-pill.flat { color: var(--amber);   border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.07); }
+
+        /* Monthly cohort heat row */
+        .cohort-cell {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border-radius: 8px;
+            font-size: 11px; font-weight: 700; border: 1px solid transparent;
+            transition: transform 0.15s;
+        }
+        .cohort-cell:hover { transform: scale(1.15); }
+
+        /* ========== SPARKLINE ========== */
+        .sparkline-wrap { display: inline-block; vertical-align: middle; }
+        .sparkline-wrap canvas { display: block; }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden print:h-auto print:overflow-visible print:block">
@@ -1013,6 +1121,24 @@
                 <span id="sidebar-emp-count" class="ml-auto text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(16,185,129,0.12); color:var(--emerald); font-weight:700;">0</span>
             </button>
 
+            <!-- Analytics -->
+            <button id="sidebar-tab-analytics"
+                    onclick="showTab('analytics')"
+                    class="nav-item cyan w-full">
+                <i class="fa-solid fa-chart-line w-4 text-center"></i>
+                <span>Trend Analytics</span>
+                <span class="ml-auto text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(6,182,212,0.12); color:#06b6d4; font-weight:700;">NEW</span>
+            </button>
+
+            <!-- Recruiter -->
+            <button id="sidebar-tab-recruiter"
+                    onclick="showTab('recruiter')"
+                    class="nav-item amber w-full">
+                <i class="fa-solid fa-ranking-star w-4 text-center"></i>
+                <span>Recruiter Board</span>
+                <span class="ml-auto text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(245,158,11,0.12); color:var(--amber); font-weight:700;">NEW</span>
+            </button>
+
             <!-- Divider -->
             <div class="my-3" style="height:1px; background:var(--border);"></div>
 
@@ -1170,11 +1296,30 @@
                     รายชื่อพนักงาน
                     <span class="tab-count" id="tabbar-emp-count">0</span>
                 </button>
+                <!-- Analytics -->
+                <button class="tab-bar-btn tab-analytics"
+                        id="tabbar-analytics"
+                        onclick="showTab('analytics')">
+                    <span class="tab-dot cyan"></span>
+                    <i class="fa-solid fa-chart-line text-[11px]"></i>
+                    Trend
+                </button>
+                <!-- Recruiter -->
+                <button class="tab-bar-btn tab-recruiter"
+                        id="tabbar-recruiter"
+                        onclick="showTab('recruiter')">
+                    <span class="tab-dot amber"></span>
+                    <i class="fa-solid fa-ranking-star text-[11px]"></i>
+                    Recruiter
+                </button>
             </div>
         </header>
 
         <!-- ===== DASHBOARD CONTENT ===== -->
         <div id="dashboard-content" class="p-4 md:p-6 max-w-[1600px] mx-auto w-full">
+
+        <!-- ===== SMART ALERT BANNER ===== -->
+        <div id="alertBanner" class="no-print"></div>
 
             <!-- ══════════════════════════════════════════
                  TAB 1: สรุปภาพรวม
@@ -1422,6 +1567,128 @@
 
             </div><!-- /tab-employees -->
 
+            <!-- ══════════════════════════════════════════
+                 TAB 4: Trend Analytics
+            ══════════════════════════════════════════ -->
+            <div id="tab-analytics" class="tab-panel space-y-5">
+
+                <!-- Header -->
+                <div class="tab-content-header">
+                    <div class="tab-content-header-icon cyan"><i class="fa-solid fa-chart-line"></i></div>
+                    <div>
+                        <div class="tab-breadcrumb">
+                            <i class="fa-solid fa-house text-[9px]"></i>
+                            <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                            <span>Trend Analytics</span>
+                        </div>
+                        <h2 class="text-base font-bold" style="color:var(--text); font-family:'Space Grotesk',sans-serif;">Monthly Trend & Cohort Analysis</h2>
+                    </div>
+                    <div class="ml-auto flex flex-wrap gap-2 no-print" id="trendInsightPills"></div>
+                </div>
+
+                <!-- Monthly Trend Line Chart -->
+                <section class="card p-6 chart-card">
+                    <div class="flex flex-wrap justify-between items-center gap-3 mb-5">
+                        <div>
+                            <h3 class="text-sm font-semibold flex items-center gap-2" style="color:var(--text);">
+                                <i class="fa-solid fa-chart-area" style="color:#06b6d4;"></i>
+                                ยอดผู้สมัคร vs ผ่าน vs ลาออก รายเดือน
+                            </h3>
+                            <p class="text-[11px] mt-1" style="color:var(--text-muted);">แต่ละจุดคือผลรวม 1 เดือน • Hover เพื่อดูตัวเลข</p>
+                        </div>
+                        <div class="flex gap-2 flex-wrap">
+                            <select id="trendYearFilter" onchange="drawTrendChart(currentFilteredData)" class="text-xs px-3 py-1.5 rounded-lg font-semibold" style="background:var(--surface2);border:1px solid var(--border);color:var(--text-muted);outline:none;cursor:pointer;"></select>
+                        </div>
+                    </div>
+                    <div class="h-72 relative"><canvas id="trendChart"></canvas></div>
+                </section>
+
+                <!-- Cohort Heatmap -->
+                <section class="card p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-sm font-semibold flex items-center gap-2" style="color:var(--text);">
+                            <i class="fa-solid fa-table-cells" style="color:var(--violet);"></i>
+                            Cohort Retention Heatmap — อัตราผ่านรายเดือน
+                        </h3>
+                        <span class="text-[10px] px-2 py-1 rounded" style="background:rgba(255,255,255,0.05);color:var(--text-dim);border:1px solid var(--border);">
+                            <i class="fa-solid fa-circle mr-1" style="color:var(--emerald);font-size:7px;"></i>≥70%
+                            <i class="fa-solid fa-circle mx-1" style="color:var(--amber);font-size:7px;"></i>40–70%
+                            <i class="fa-solid fa-circle mx-1" style="color:var(--rose);font-size:7px;"></i>&lt;40%
+                        </span>
+                    </div>
+                    <div id="cohortHeatmap" class="overflow-x-auto"></div>
+                </section>
+
+                <!-- Weekly Intake Bar -->
+                <section class="card p-6 chart-card">
+                    <h3 class="text-sm font-semibold flex items-center gap-2 mb-5" style="color:var(--text);">
+                        <i class="fa-solid fa-calendar-week" style="color:var(--amber);"></i>
+                        ยอดรับสมัครรายสัปดาห์ (8 สัปดาห์ล่าสุด)
+                    </h3>
+                    <div class="h-48 relative"><canvas id="weeklyChart"></canvas></div>
+                </section>
+
+            </div><!-- /tab-analytics -->
+
+            <!-- ══════════════════════════════════════════
+                 TAB 5: Recruiter Leaderboard
+            ══════════════════════════════════════════ -->
+            <div id="tab-recruiter" class="tab-panel space-y-5">
+
+                <!-- Header -->
+                <div class="tab-content-header">
+                    <div class="tab-content-header-icon amber"><i class="fa-solid fa-ranking-star"></i></div>
+                    <div>
+                        <div class="tab-breadcrumb">
+                            <i class="fa-solid fa-house text-[9px]"></i>
+                            <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                            <span>Recruiter Board</span>
+                        </div>
+                        <h2 class="text-base font-bold" style="color:var(--text); font-family:'Space Grotesk',sans-serif;">Recruiter Performance Leaderboard</h2>
+                    </div>
+                </div>
+
+                <!-- Summary KPIs -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="recruiterKPIs"></div>
+
+                <!-- Top 3 Cards -->
+                <section>
+                    <h3 class="text-xs font-bold uppercase tracking-widest mb-3 flex items-center gap-2" style="color:var(--text-dim);">
+                        <i class="fa-solid fa-trophy" style="color:var(--amber);"></i> Top Performers
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="recruiterTop3"></div>
+                </section>
+
+                <!-- Full Leaderboard Table -->
+                <section class="card overflow-hidden">
+                    <div class="px-6 py-4 flex justify-between items-center" style="border-bottom:1px solid var(--border);">
+                        <div>
+                            <h3 class="text-sm font-semibold" style="color:var(--text);">Recruiter Performance Table</h3>
+                            <p class="text-[11px] mt-0.5" style="color:var(--text-muted);">เรียงตามยอดรวม มากไปน้อย</p>
+                        </div>
+                        <span id="recruiterTableCount" class="text-xs font-bold px-3 py-1 rounded-lg" style="background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.3);">0 คน</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="data-table w-full">
+                            <thead>
+                                <tr>
+                                    <th class="py-3 px-5 text-center" style="width:50px;">#</th>
+                                    <th class="py-3 px-5 text-left">ผู้แนะนำ</th>
+                                    <th class="py-3 px-5 text-center">รวมทั้งหมด</th>
+                                    <th class="py-3 px-5 text-center">ผ่านอบรม</th>
+                                    <th class="py-3 px-5 text-center">กำลังเทรน</th>
+                                    <th class="py-3 px-5 text-center">ออก/ไม่ผ่าน</th>
+                                    <th class="py-3 px-5 text-left" style="min-width:160px;">Win Rate</th>
+                                    <th class="py-3 px-5 text-center">Efficiency</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recruiterTableBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </div><!-- /tab-recruiter -->
+
             <!-- Signature (print only) -->
             <div id="signatureArea">
                 <div class="sig-box">
@@ -1458,36 +1725,36 @@
         let currentTab = 'dashboard';
 
         function showTab(tabName) {
-            // Hide all panels
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            // Show target
             const panel = document.getElementById('tab-' + tabName);
             if (panel) panel.classList.add('active');
-
             currentTab = tabName;
 
-            // Update tab bar buttons
             document.querySelectorAll('.tab-bar-btn').forEach(btn => btn.classList.remove('active-tab'));
             const activeBtn = document.getElementById('tabbar-' + tabName);
             if (activeBtn) activeBtn.classList.add('active-tab');
 
-            // Update sidebar nav items
-            const sidebarItems = ['overview','dashboard','employees'];
+            const sidebarItems = ['overview','dashboard','employees','analytics','recruiter'];
             sidebarItems.forEach(t => {
                 const el = document.getElementById('sidebar-tab-' + t);
                 if (!el) return;
-                // Reset all
-                el.classList.remove('active','tab-nav-active-overview','tab-nav-active-dashboard','tab-nav-active-employees');
-                if (t === tabName) {
-                    el.classList.add('active');
-                }
+                el.classList.remove('active');
+                if (t === tabName) el.classList.add('active');
             });
 
-            // Resize charts if switching to dashboard tab (fixes Chart.js hidden canvas bug)
             if (tabName === 'dashboard') {
+                setTimeout(() => { Object.values(charts).forEach(c => { if (c && typeof c.resize === 'function') c.resize(); }); }, 50);
+            }
+            if (tabName === 'analytics') {
                 setTimeout(() => {
-                    Object.values(charts).forEach(c => { if (c && typeof c.resize === 'function') c.resize(); });
+                    drawTrendChart(currentFilteredData);
+                    ['trendChart','weeklyChart'].forEach(id => {
+                        if (charts[id] && typeof charts[id].resize === 'function') charts[id].resize();
+                    });
                 }, 50);
+            }
+            if (tabName === 'recruiter') {
+                renderRecruiterTab(currentFilteredData);
             }
         }
 
@@ -1810,7 +2077,6 @@
             const active = headCount - passed - dropped;
             const rate = headCount > 0 ? Math.round((passed / headCount) * 100) : 0;
 
-            // Update KPI cards (Dashboard tab)
             document.getElementById("kpi-total").innerText = headCount;
             document.getElementById("kpi-passed").innerText = passed;
             document.getElementById("kpi-dropped").innerText = dropped;
@@ -1819,7 +2085,6 @@
             const rateBar = document.getElementById('kpi-rate-bar');
             if (rateBar) setTimeout(() => { rateBar.style.width = rate + '%'; }, 200);
 
-            // Update Overview mini KPIs
             const ovTotal = document.getElementById('ov-total');
             const ovPassed = document.getElementById('ov-passed');
             const ovDropped = document.getElementById('ov-dropped');
@@ -1829,7 +2094,6 @@
             if (ovDropped) ovDropped.innerText = dropped;
             if (ovRate) ovRate.innerText = rate + '%';
 
-            // Update employee count badges
             const empCount = dataToRender.length;
             const sidebarEmpCount = document.getElementById('sidebar-emp-count');
             const tabbarEmpCount = document.getElementById('tabbar-emp-count');
@@ -1838,6 +2102,11 @@
 
             renderTable(dataToRender);
             drawCharts(active, passed, dropped, latestRecords);
+
+            // ===== NEW FEATURES =====
+            checkAlerts(latestRecords, headCount, dropped, active);
+            if (currentTab === 'analytics') drawTrendChart(dataToRender);
+            if (currentTab === 'recruiter') renderRecruiterTab(dataToRender);
         }
 
         function renderTable(dataToRender) {
@@ -3168,6 +3437,417 @@ ${aiText ? `
                 setTimeout(() => { Object.values(charts).forEach(c => { try { c&&c.resize&&c.resize(); } catch(e){} }); }, 100);
             }
         }
+        // ═══════════════════════════════════════════════════
+        // ========== SMART ALERT SYSTEM ==========
+        // ═══════════════════════════════════════════════════
+        let alertDismissed = {};
+
+        function checkAlerts(latestRecords, headCount, dropped, active) {
+            const banner = document.getElementById('alertBanner');
+            if (!banner) return;
+
+            const alerts = [];
+            const dropRate = headCount > 0 ? Math.round((dropped / headCount) * 100) : 0;
+
+            // Alert 1: Drop Rate > 30%
+            if (dropRate >= 30 && !alertDismissed['drop_rate']) {
+                alerts.push({
+                    id: 'drop_rate', level: 'danger',
+                    icon: 'fa-triangle-exclamation',
+                    title: `⚠️ Drop Rate สูงผิดปกติ — ${dropRate}%`,
+                    body: `พนักงาน ${dropped} จาก ${headCount} คน ออกหรือไม่ผ่านการประเมิน เกินเกณฑ์ 30% ที่กำหนด ควรทบทวนกระบวนการคัดกรองและ Onboarding ทันที`
+                });
+            }
+
+            // Alert 2: Active > 7 days stuck
+            const today = new Date(); today.setHours(0,0,0,0);
+            const stuckList = latestRecords.filter(d => {
+                if (!isActiveStatus(d)) return false;
+                const days = checkDay(d.d1)+checkDay(d.d2)+checkDay(d.d3);
+                if (days >= 3) return false;
+                const start = parseThaiDate(d.timestamp);
+                if (!start) return false;
+                start.setHours(0,0,0,0);
+                return Math.floor((today - start) / 86400000) >= 7;
+            });
+            if (stuckList.length > 0 && !alertDismissed['stuck_active']) {
+                alerts.push({
+                    id: 'stuck_active', level: 'warn',
+                    icon: 'fa-clock-rotate-left',
+                    title: `🔄 พบพนักงาน ${stuckList.length} คน ค้างใน Active เกิน 7 วัน`,
+                    body: `${stuckList.slice(0,3).map(d => d.name).join(', ')}${stuckList.length > 3 ? ` และอีก ${stuckList.length-3} คน` : ''} — ลงทะเบียนมานานแต่ยังเข้าเทรนไม่ครบ 3 วัน ควรติดตามสถานะ`
+                });
+            }
+
+            // Alert 3: No data this month
+            const thisMonth = new Date().getMonth();
+            const thisYear  = new Date().getFullYear();
+            const thisMonthData = latestRecords.filter(d => {
+                const dt = parseThaiDate(d.timestamp);
+                return dt && dt.getMonth() === thisMonth && dt.getFullYear() === thisYear;
+            });
+            if (headCount > 0 && thisMonthData.length === 0 && !alertDismissed['no_intake']) {
+                alerts.push({
+                    id: 'no_intake', level: 'info',
+                    icon: 'fa-circle-info',
+                    title: `ℹ️ ยังไม่มีการรับสมัครในเดือนนี้`,
+                    body: `ข้อมูลปัจจุบันไม่มีผู้ลงทะเบียนในเดือน${new Date().toLocaleDateString('th-TH',{month:'long'})} กรุณาตรวจสอบว่าข้อมูลถูก sync แล้วหรือแผนการรับสมัครยังไม่เริ่ม`
+                });
+            }
+
+            if (alerts.length === 0) {
+                banner.classList.remove('show');
+                banner.innerHTML = '';
+                return;
+            }
+
+            const levelColor = { danger:'rgba(244,63,94,0.08)', warn:'rgba(245,158,11,0.07)', info:'rgba(59,130,246,0.07)' };
+            const levelBorder = { danger:'rgba(244,63,94,0.25)', warn:'rgba(245,158,11,0.25)', info:'rgba(59,130,246,0.2)' };
+            const textColor   = { danger:'var(--rose)', warn:'var(--amber)', info:'var(--accent)' };
+
+            banner.innerHTML = `<div style="background:var(--surface);border:1px solid var(--border-bright);border-radius:14px;overflow:hidden;margin-bottom:4px;">
+                <div style="padding:8px 16px 6px;background:rgba(255,255,255,0.02);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+                    <i class="fa-solid fa-bell-ring" style="color:var(--amber);font-size:12px;"></i>
+                    <span style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);">Smart Alerts — ${alerts.length} รายการ</span>
+                </div>
+                ${alerts.map(a => `
+                <div class="alert-item" style="background:${levelColor[a.level]};">
+                    <div class="alert-icon ${a.level}"><i class="fa-solid ${a.icon}"></i></div>
+                    <div style="flex:1;min-width:0;">
+                        <div class="alert-title" style="color:${textColor[a.level]};">${escapeHtml(a.title)}</div>
+                        <div class="alert-body">${escapeHtml(a.body)}</div>
+                    </div>
+                    <button class="alert-dismiss" onclick="dismissAlert('${a.id}')" title="ปิด"><i class="fa-solid fa-xmark"></i></button>
+                </div>`).join('')}
+            </div>`;
+            banner.classList.add('show');
+        }
+
+        function dismissAlert(id) {
+            alertDismissed[id] = true;
+            const banner = document.getElementById('alertBanner');
+            // Re-run with updated dismissed state
+            const lr = getLatestRecords(currentFilteredData);
+            const dropped = lr.filter(isDroppedStatus).length;
+            const active  = lr.length - lr.filter(isPassedStatus).length - dropped;
+            checkAlerts(lr, lr.length, dropped, active);
+        }
+
+        // ═══════════════════════════════════════════════════
+        // ========== TREND CHART (Monthly) ==========
+        // ═══════════════════════════════════════════════════
+        function drawTrendChart(dataToRender) {
+            // --- Build year selector ---
+            const years = [...new Set(dataToRender.map(d => {
+                const dt = parseThaiDate(d.timestamp);
+                return dt ? dt.getFullYear() : null;
+            }).filter(Boolean))].sort((a,b) => b-a);
+
+            const sel = document.getElementById('trendYearFilter');
+            if (sel && years.length > 0) {
+                const current = sel.value;
+                sel.innerHTML = `<option value="all">ทุกปี</option>` + years.map(y => `<option value="${y}"${String(y)===current?'selected':''}>${y}</option>`).join('');
+            }
+
+            const yearFilter = sel ? sel.value : 'all';
+            const filtered = yearFilter === 'all' ? dataToRender :
+                dataToRender.filter(d => {
+                    const dt = parseThaiDate(d.timestamp);
+                    return dt && dt.getFullYear() === parseInt(yearFilter);
+                });
+
+            // --- Group by month ---
+            const MONTHS = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+            const monthBuckets = {};
+            filtered.forEach(d => {
+                const dt = parseThaiDate(d.timestamp);
+                if (!dt) return;
+                const key = `${dt.getFullYear()}-${String(dt.getMonth()).padStart(2,'0')}`;
+                if (!monthBuckets[key]) monthBuckets[key] = { label: MONTHS[dt.getMonth()] + (yearFilter==='all'?` '${String(dt.getFullYear()).slice(-2)}`:''), total:0, pass:0, drop:0, active:0 };
+                monthBuckets[key].total++;
+                if (isPassedStatus(d)) monthBuckets[key].pass++;
+                else if (isDroppedStatus(d)) monthBuckets[key].drop++;
+                else monthBuckets[key].active++;
+            });
+
+            const keys   = Object.keys(monthBuckets).sort();
+            const labels  = keys.map(k => monthBuckets[k].label);
+            const totals  = keys.map(k => monthBuckets[k].total);
+            const passes  = keys.map(k => monthBuckets[k].pass);
+            const drops   = keys.map(k => monthBuckets[k].drop);
+            const actives = keys.map(k => monthBuckets[k].active);
+
+            // --- Trend insight pills ---
+            const pillsEl = document.getElementById('trendInsightPills');
+            if (pillsEl && passes.length >= 2) {
+                const last = passes[passes.length-1];
+                const prev = passes[passes.length-2];
+                const diff = last - prev;
+                const dir  = diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat';
+                const icon = diff > 0 ? '↑' : diff < 0 ? '↓' : '→';
+                pillsEl.innerHTML = `
+                    <span class="trend-insight-pill ${dir}">${icon} ผ่านเดือนล่าสุด: ${last} คน (${diff>=0?'+':''}${diff} จากเดือนก่อน)</span>
+                    <span class="trend-insight-pill ${totals[totals.length-1] >= totals[totals.length-2] ? 'up':'down'}">
+                        ${totals[totals.length-1] >= totals[totals.length-2]?'↑':'↓'} รับสมัครรวม: ${totals[totals.length-1]} คน
+                    </span>`;
+            }
+
+            // --- Draw chart ---
+            if (charts['trend']) charts['trend'].destroy();
+            const ctx = document.getElementById('trendChart');
+            if (!ctx) return;
+            charts['trend'] = new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'รับสมัครรวม', data: totals,
+                            borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.07)',
+                            borderWidth: 2.5, pointRadius: 5, pointHoverRadius: 8,
+                            pointBackgroundColor: '#06b6d4', tension: 0.35, fill: true
+                        },
+                        {
+                            label: 'ผ่านอบรม', data: passes,
+                            borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.06)',
+                            borderWidth: 2.5, pointRadius: 5, pointHoverRadius: 8,
+                            pointBackgroundColor: '#10b981', tension: 0.35, fill: true
+                        },
+                        {
+                            label: 'ออก/ไม่ผ่าน', data: drops,
+                            borderColor: '#f43f5e', backgroundColor: 'rgba(244,63,94,0.05)',
+                            borderWidth: 2, pointRadius: 4, pointHoverRadius: 7,
+                            pointBackgroundColor: '#f43f5e', tension: 0.35, fill: true,
+                            borderDash: [5,3]
+                        },
+                        {
+                            label: 'กำลังเทรน', data: actives,
+                            borderColor: '#f59e0b', backgroundColor: 'transparent',
+                            borderWidth: 2, pointRadius: 4, pointHoverRadius: 7,
+                            pointBackgroundColor: '#f59e0b', tension: 0.35, fill: false,
+                            borderDash: [3,3]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { position:'top', labels:{ usePointStyle:true, padding:18, font:{size:11} } },
+                        tooltip: {
+                            backgroundColor: 'rgba(22,27,34,0.97)', borderColor:'rgba(255,255,255,0.1)',
+                            borderWidth:1, padding:12, titleFont:{size:12,weight:'bold'},
+                            callbacks: {
+                                afterBody: (items) => {
+                                    const t = items.find(i=>i.dataset.label==='รับสมัครรวม');
+                                    const p = items.find(i=>i.dataset.label==='ผ่านอบรม');
+                                    if (t && p && t.raw > 0) {
+                                        const rate = Math.round((p.raw/t.raw)*100);
+                                        return [`── Success Rate: ${rate}%`];
+                                    }
+                                    return [];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero:true, ticks:{stepSize:1}, grid:{color:'rgba(255,255,255,0.05)'} },
+                        x: { grid:{display:false} }
+                    }
+                }
+            });
+
+            // --- Cohort Heatmap ---
+            drawCohortHeatmap(monthBuckets, keys);
+
+            // --- Weekly chart ---
+            drawWeeklyChart(dataToRender);
+        }
+
+        function drawCohortHeatmap(monthBuckets, keys) {
+            const el = document.getElementById('cohortHeatmap');
+            if (!el) return;
+            if (keys.length === 0) { el.innerHTML = `<div class="py-8 text-center" style="color:var(--text-dim);">ไม่มีข้อมูลสำหรับแสดง Cohort</div>`; return; }
+
+            const MONTHS = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+            let html = `<div style="display:flex;flex-wrap:wrap;gap:8px;padding:4px 0;">`;
+            keys.forEach(k => {
+                const b = monthBuckets[k];
+                const rate = b.total > 0 ? Math.round((b.pass / b.total) * 100) : 0;
+                let bg, tc;
+                if (b.total === 0) { bg = 'rgba(255,255,255,0.04)'; tc = 'var(--text-dim)'; }
+                else if (rate >= 70) { bg = 'rgba(16,185,129,0.25)'; tc = '#34d399'; }
+                else if (rate >= 40) { bg = 'rgba(245,158,11,0.25)'; tc = '#fbbf24'; }
+                else { bg = 'rgba(244,63,94,0.25)'; tc = '#fb7185'; }
+
+                html += `<div title="${b.label}: ${b.pass}/${b.total} ผ่าน (${rate}%)" style="display:flex;flex-direction:column;align-items:center;gap:4px;cursor:default;">
+                    <div style="font-size:9px;color:var(--text-dim);font-weight:600;white-space:nowrap;">${b.label}</div>
+                    <div style="width:52px;height:52px;border-radius:10px;background:${bg};border:1px solid ${tc}33;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <span style="font-size:16px;font-weight:800;font-family:'Space Grotesk',sans-serif;color:${tc};line-height:1;">${rate}%</span>
+                        <span style="font-size:9px;color:var(--text-dim);margin-top:2px;">${b.pass}/${b.total}</span>
+                    </div>
+                </div>`;
+            });
+            html += `</div>`;
+            el.innerHTML = html;
+        }
+
+        function drawWeeklyChart(dataToRender) {
+            // Last 8 weeks
+            const today = new Date(); today.setHours(23,59,59,999);
+            const weeks = [];
+            for (let i = 7; i >= 0; i--) {
+                const end = new Date(today); end.setDate(end.getDate() - i*7);
+                const start = new Date(end); start.setDate(start.getDate() - 6); start.setHours(0,0,0,0);
+                weeks.push({ start: new Date(start), end: new Date(end), count: 0, label: `${start.getDate()}/${start.getMonth()+1}` });
+            }
+            dataToRender.forEach(d => {
+                const dt = parseThaiDate(d.timestamp);
+                if (!dt) return;
+                weeks.forEach(w => { if (dt >= w.start && dt <= w.end) w.count++; });
+            });
+
+            if (charts['weekly']) charts['weekly'].destroy();
+            const ctx = document.getElementById('weeklyChart');
+            if (!ctx) return;
+            charts['weekly'] = new Chart(ctx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: weeks.map(w => w.label),
+                    datasets: [{
+                        label: 'รับสมัคร/สัปดาห์', data: weeks.map(w => w.count),
+                        backgroundColor: weeks.map((w, i) => i === 7 ? 'rgba(245,158,11,0.85)' : 'rgba(6,182,212,0.55)'),
+                        borderColor: weeks.map((w, i) => i === 7 ? '#f59e0b' : '#06b6d4'),
+                        borderWidth: 1, borderRadius: 6, hoverBackgroundColor: 'rgba(6,182,212,0.85)'
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(22,27,34,0.97)', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, padding:10,
+                            callbacks: { title: (items) => `สัปดาห์เริ่ม ${items[0].label}` }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks:{ stepSize:1 }, grid:{ color:'rgba(255,255,255,0.05)' } },
+                        x: { grid:{ display:false } }
+                    }
+                }
+            });
+        }
+
+        // ═══════════════════════════════════════════════════
+        // ========== RECRUITER LEADERBOARD ==========
+        // ═══════════════════════════════════════════════════
+        function renderRecruiterTab(dataToRender) {
+            // Build stats per recruiter
+            const stats = {};
+            dataToRender.forEach(d => {
+                const r = (d.recruiter && d.recruiter.trim()) ? d.recruiter.trim() : 'ไม่ระบุ';
+                if (!stats[r]) stats[r] = { total:0, pass:0, drop:0, active:0 };
+                stats[r].total++;
+                if (isPassedStatus(d))      stats[r].pass++;
+                else if (isDroppedStatus(d)) stats[r].drop++;
+                else                         stats[r].active++;
+            });
+
+            const sorted = Object.entries(stats).sort((a,b) => b[1].total - a[1].total);
+            const total  = sorted.length;
+            const totalReferrals = sorted.reduce((s,[,v]) => s+v.total, 0);
+            const totalPass      = sorted.reduce((s,[,v]) => s+v.pass, 0);
+            const avgRate        = totalReferrals > 0 ? Math.round((totalPass/totalReferrals)*100) : 0;
+            const topRecruiter   = sorted[0] ? sorted[0][0] : '-';
+
+            // Summary KPIs
+            const kpiEl = document.getElementById('recruiterKPIs');
+            if (kpiEl) {
+                kpiEl.innerHTML = [
+                    { icon:'fa-users-gear', color:'var(--amber)', bg:'rgba(245,158,11,0.1)', border:'rgba(245,158,11,0.2)', val:total, lbl:'ผู้แนะนำทั้งหมด' },
+                    { icon:'fa-user-plus',  color:'var(--accent)', bg:'rgba(59,130,246,0.08)', border:'rgba(59,130,246,0.18)', val:totalReferrals, lbl:'รวมผู้ถูกแนะนำ' },
+                    { icon:'fa-circle-check', color:'var(--emerald)', bg:'rgba(16,185,129,0.08)', border:'rgba(16,185,129,0.18)', val:totalPass, lbl:'ผ่านอบรมรวม' },
+                    { icon:'fa-percent', color:'var(--violet)', bg:'rgba(139,92,246,0.08)', border:'rgba(139,92,246,0.18)', val:avgRate+'%', lbl:'อัตราผ่านเฉลี่ย' },
+                ].map(k => `
+                    <div class="rounded-xl p-4 flex items-center gap-3" style="background:${k.bg};border:1px solid ${k.border};">
+                        <div style="width:38px;height:38px;border-radius:10px;background:${k.bg};border:1px solid ${k.border};display:flex;align-items:center;justify-content:center;color:${k.color};font-size:15px;flex-shrink:0;">
+                            <i class="fa-solid ${k.icon}"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:22px;font-weight:800;color:${k.color};font-family:'Space Grotesk',sans-serif;line-height:1;">${escapeHtml(String(k.val))}</div>
+                            <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-dim);font-weight:700;margin-top:2px;">${k.lbl}</div>
+                        </div>
+                    </div>`).join('');
+            }
+
+            // Top 3 Cards
+            const top3El = document.getElementById('recruiterTop3');
+            const medals = ['🥇','🥈','🥉'];
+            const rankClass = ['rank-1','rank-2','rank-3'];
+            if (top3El) {
+                top3El.innerHTML = sorted.slice(0,3).map(([name, s], i) => {
+                    const wr = s.total > 0 ? Math.round((s.pass/s.total)*100) : 0;
+                    const wrColor = wr >= 70 ? 'var(--emerald)' : wr >= 40 ? 'var(--amber)' : 'var(--rose)';
+                    const effScore = Math.round((s.pass * 2 + s.active * 1 - s.drop * 0.5) / Math.max(s.total,1) * 100);
+                    return `<div class="recruiter-card ${rankClass[i]||''}">
+                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+                            <span class="rank-medal">${medals[i]||'#'+(i+1)}</span>
+                            <div style="flex:1;min-width:0;">
+                                <div class="recruiter-name">${escapeHtml(name)}</div>
+                                <div class="recruiter-meta">อันดับ ${i+1} • Win Rate ${wr}%</div>
+                            </div>
+                            <div style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:7px;background:rgba(255,255,255,0.06);color:var(--text-muted);border:1px solid var(--border);">
+                                Eff. ${effScore}
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:6px;margin-bottom:12px;">
+                            <div class="rec-stat-box"><span class="rec-stat-num" style="color:var(--accent);">${s.total}</span><span class="rec-stat-lbl">รวม</span></div>
+                            <div class="rec-stat-box"><span class="rec-stat-num" style="color:var(--emerald);">${s.pass}</span><span class="rec-stat-lbl">ผ่าน</span></div>
+                            <div class="rec-stat-box"><span class="rec-stat-num" style="color:var(--amber);">${s.active}</span><span class="rec-stat-lbl">เทรน</span></div>
+                            <div class="rec-stat-box"><span class="rec-stat-num" style="color:var(--rose);">${s.drop}</span><span class="rec-stat-lbl">ออก</span></div>
+                        </div>
+                        <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;display:flex;justify-content:space-between;"><span>Win Rate</span><span style="font-weight:700;color:${wrColor};">${wr}%</span></div>
+                        <div class="win-rate-bar"><div class="win-rate-fill" style="width:${Math.max(wr,2)}%;background:linear-gradient(90deg,${wrColor},${wrColor}88);"></div></div>
+                    </div>`;
+                }).join('');
+            }
+
+            // Full Table
+            const tbody = document.getElementById('recruiterTableBody');
+            const countEl = document.getElementById('recruiterTableCount');
+            if (countEl) countEl.innerText = `${sorted.length} คน`;
+            if (!tbody) return;
+            if (sorted.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="py-10 text-center" style="color:var(--text-muted);">ไม่มีข้อมูลผู้แนะนำ</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = sorted.map(([name, s], i) => {
+                const wr = s.total > 0 ? Math.round((s.pass/s.total)*100) : 0;
+                const wrColor = wr >= 70 ? 'var(--emerald)' : wr >= 40 ? 'var(--amber)' : 'var(--rose)';
+                const effScore = Math.round((s.pass*2 + s.active - s.drop*0.5) / Math.max(s.total,1) * 100);
+                const effBadge = effScore >= 150 ? {c:'var(--emerald)',bg:'rgba(16,185,129,0.12)',t:'ยอดเยี่ยม'} : effScore >= 80 ? {c:'var(--amber)',bg:'rgba(245,158,11,0.12)',t:'ดี'} : {c:'var(--rose)',bg:'rgba(244,63,94,0.12)',t:'ต้องปรับ'};
+                const rankBg = i===0?'rgba(245,158,11,0.2)':i===1?'rgba(148,163,184,0.15)':i===2?'rgba(180,120,60,0.15)':'rgba(255,255,255,0.05)';
+                const rankTc = i===0?'#fbbf24':i===1?'#94a3b8':i===2?'#b47a3c':'var(--text-dim)';
+                return `<tr class="rec-table-row">
+                    <td class="text-center"><div class="rank-badge" style="background:${rankBg};color:${rankTc};">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div></td>
+                    <td><span style="font-weight:700;color:var(--text);">${escapeHtml(name)}</span></td>
+                    <td class="text-center"><span style="font-size:15px;font-weight:800;font-family:'Space Grotesk',sans-serif;color:var(--accent);">${s.total}</span></td>
+                    <td class="text-center"><span style="font-weight:700;color:var(--emerald);">${s.pass}</span></td>
+                    <td class="text-center"><span style="font-weight:700;color:var(--amber);">${s.active}</span></td>
+                    <td class="text-center"><span style="font-weight:700;color:var(--rose);">${s.drop}</span></td>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <div style="flex:1;height:6px;background:rgba(255,255,255,0.07);border-radius:4px;overflow:hidden;min-width:60px;">
+                                <div style="width:${Math.max(wr,2)}%;height:100%;background:linear-gradient(90deg,${wrColor},${wrColor}88);border-radius:4px;transition:width 0.8s ease;"></div>
+                            </div>
+                            <span style="font-size:12px;font-weight:800;color:${wrColor};min-width:34px;">${wr}%</span>
+                        </div>
+                    </td>
+                    <td class="text-center"><span style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:${effBadge.bg};color:${effBadge.c};border:1px solid ${effBadge.c}33;">${effBadge.t}</span></td>
+                </tr>`;
+            }).join('');
+        }
+
         // ========== THEME SYSTEM ==========
         const THEMES = ['dark','light','midnight','forest','rose'];
 
