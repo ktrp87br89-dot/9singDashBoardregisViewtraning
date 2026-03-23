@@ -13,7 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        :root {
+        /* ========== THEME: DARK (Default) ========== */
+        :root, [data-theme="dark"] {
             --bg: #0d1117;
             --surface: #161b22;
             --surface2: #1c2230;
@@ -32,6 +33,182 @@
             --amber-glow: rgba(245,158,11,0.2);
             --violet: #8b5cf6;
             --violet-glow: rgba(139,92,246,0.2);
+        }
+
+        /* ========== THEME: LIGHT ========== */
+        [data-theme="light"] {
+            --bg: #f1f5f9;
+            --surface: #ffffff;
+            --surface2: #f8fafc;
+            --border: rgba(0,0,0,0.08);
+            --border-bright: rgba(0,0,0,0.14);
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --text-dim: #94a3b8;
+            --accent: #2563eb;
+            --accent-glow: rgba(37,99,235,0.2);
+            --emerald: #059669;
+            --emerald-glow: rgba(5,150,105,0.2);
+            --rose: #e11d48;
+            --rose-glow: rgba(225,29,72,0.15);
+            --amber: #d97706;
+            --amber-glow: rgba(217,119,6,0.15);
+            --violet: #7c3aed;
+            --violet-glow: rgba(124,58,237,0.15);
+        }
+        [data-theme="light"] header {
+            background: rgba(241,245,249,0.9) !important;
+            border-bottom-color: rgba(0,0,0,0.08) !important;
+        }
+        [data-theme="light"] aside {
+            background: #ffffff !important;
+            border-right-color: rgba(0,0,0,0.08) !important;
+        }
+        [data-theme="light"] .filter-bar input,
+        [data-theme="light"] .filter-bar select { color: #0f172a; }
+        [data-theme="light"] .filter-bar select option { background: #fff; color: #0f172a; }
+        [data-theme="light"] .filter-bar input[type="date"]::-webkit-calendar-picker-indicator { filter: none; }
+        [data-theme="light"] .data-table thead th { background: rgba(0,0,0,0.03) !important; }
+        [data-theme="light"] .logo-glow { box-shadow: 0 0 20px rgba(37,99,235,0.3); }
+
+        /* ========== THEME: MIDNIGHT ========== */
+        [data-theme="midnight"] {
+            --bg: #060a14;
+            --surface: #0d1526;
+            --surface2: #111c33;
+            --border: rgba(100,160,255,0.08);
+            --border-bright: rgba(100,160,255,0.15);
+            --text: #ccd9f0;
+            --text-muted: #6880a8;
+            --text-dim: #3a4d6e;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56,189,248,0.25);
+            --emerald: #34d399;
+            --emerald-glow: rgba(52,211,153,0.2);
+            --rose: #fb7185;
+            --rose-glow: rgba(251,113,133,0.2);
+            --amber: #fbbf24;
+            --amber-glow: rgba(251,191,36,0.2);
+            --violet: #a78bfa;
+            --violet-glow: rgba(167,139,250,0.2);
+        }
+        [data-theme="midnight"] .logo-glow {
+            background: linear-gradient(135deg,#38bdf8,#a78bfa);
+            box-shadow: 0 0 30px rgba(56,189,248,0.4);
+        }
+
+        /* ========== THEME: FOREST ========== */
+        [data-theme="forest"] {
+            --bg: #0a1209;
+            --surface: #111a10;
+            --surface2: #172316;
+            --border: rgba(74,222,128,0.07);
+            --border-bright: rgba(74,222,128,0.14);
+            --text: #d1fae5;
+            --text-muted: #6b9e7a;
+            --text-dim: #3a5e44;
+            --accent: #4ade80;
+            --accent-glow: rgba(74,222,128,0.25);
+            --emerald: #34d399;
+            --emerald-glow: rgba(52,211,153,0.2);
+            --rose: #f87171;
+            --rose-glow: rgba(248,113,113,0.2);
+            --amber: #fcd34d;
+            --amber-glow: rgba(252,211,77,0.2);
+            --violet: #86efac;
+            --violet-glow: rgba(134,239,172,0.2);
+        }
+        [data-theme="forest"] .logo-glow {
+            background: linear-gradient(135deg,#4ade80,#34d399);
+            box-shadow: 0 0 30px rgba(74,222,128,0.4);
+        }
+
+        /* ========== THEME: ROSE ========== */
+        [data-theme="rose"] {
+            --bg: #13080c;
+            --surface: #1e0f15;
+            --surface2: #27131c;
+            --border: rgba(251,113,133,0.08);
+            --border-bright: rgba(251,113,133,0.16);
+            --text: #fce7f3;
+            --text-muted: #be7b94;
+            --text-dim: #7c3f55;
+            --accent: #fb7185;
+            --accent-glow: rgba(251,113,133,0.25);
+            --emerald: #86efac;
+            --emerald-glow: rgba(134,239,172,0.2);
+            --rose: #f43f5e;
+            --rose-glow: rgba(244,63,94,0.2);
+            --amber: #fdba74;
+            --amber-glow: rgba(253,186,116,0.2);
+            --violet: #e879f9;
+            --violet-glow: rgba(232,121,249,0.2);
+        }
+        [data-theme="rose"] .logo-glow {
+            background: linear-gradient(135deg,#fb7185,#e879f9);
+            box-shadow: 0 0 30px rgba(251,113,133,0.4);
+        }
+
+        /* ========== THEME PICKER ========== */
+        #themePicker {
+            position: relative;
+            display: inline-block;
+        }
+        #themePickerBtn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 13px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--surface2);
+            border: 1px solid var(--border-bright);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        #themePickerBtn:hover { color: var(--text); background: var(--surface); }
+        #themeDropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border-bright);
+            border-radius: 14px;
+            padding: 8px;
+            z-index: 999;
+            min-width: 200px;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+            animation: dropdownIn 0.2s ease;
+        }
+        @keyframes dropdownIn {
+            from { opacity:0; transform:translateY(-6px) scale(0.97); }
+            to   { opacity:1; transform:translateY(0) scale(1); }
+        }
+        #themeDropdown.open { display: block; }
+        .theme-opt {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all 0.15s;
+            border: 1px solid transparent;
+        }
+        .theme-opt:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+        .theme-opt.active-theme { background: rgba(255,255,255,0.07); color: var(--text); border-color: var(--border-bright); }
+        .theme-swatch {
+            width: 24px; height: 24px;
+            border-radius: 6px;
+            flex-shrink: 0;
+            border: 2px solid rgba(255,255,255,0.15);
         }
 
         * { box-sizing: border-box; }
@@ -64,7 +241,6 @@
             background: var(--surface2);
         }
 
-        /* Keep .card class for compatibility */
         .card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -108,9 +284,12 @@
             color: var(--accent);
             border-color: rgba(59,130,246,0.3);
         }
+        .nav-item.emerald.active { background: rgba(16,185,129,0.12); color: var(--emerald); border-color: rgba(16,185,129,0.3); }
+        .nav-item.violet.active { background: rgba(139,92,246,0.12); color: var(--violet); border-color: rgba(139,92,246,0.3); }
         .nav-item.emerald:hover { background: rgba(16,185,129,0.1); color: var(--emerald); border-color: rgba(16,185,129,0.25); }
         .nav-item.cyan:hover { background: rgba(6,182,212,0.1); color: #06b6d4; border-color: rgba(6,182,212,0.25); }
         .nav-item.slate:hover { background: rgba(255,255,255,0.06); color: var(--text); border-color: var(--border-bright); }
+        .nav-item.violet:hover { background: rgba(139,92,246,0.1); color: var(--violet); border-color: rgba(139,92,246,0.25); }
 
         /* ========== KPI CARDS ========== */
         .kpi-card {
@@ -248,10 +427,7 @@
             padding: 12px 20px;
             border-bottom: 1px solid var(--border);
         }
-        .data-table thead th:first-child { border-radius: 0; }
-        .data-table tbody tr {
-            transition: background 0.15s;
-        }
+        .data-table tbody tr { transition: background 0.15s; }
         .data-table tbody tr:hover td { background: rgba(255,255,255,0.03); }
         .data-table tbody td {
             padding: 14px 20px;
@@ -262,12 +438,7 @@
         }
         .data-table tbody tr:last-child td { border-bottom: none; }
 
-        /* Sortable column header */
-        .sortable-th {
-            cursor: pointer;
-            user-select: none;
-            transition: color 0.15s;
-        }
+        .sortable-th { cursor: pointer; user-select: none; transition: color 0.15s; }
         .sortable-th:hover { color: var(--text) !important; }
 
         /* ========== BADGES ========== */
@@ -297,22 +468,14 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ========== STATUS DOT ========== */
         .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
         .status-online { background: var(--emerald); box-shadow: 0 0 6px var(--emerald); animation: pulse-dot 2s ease-in-out infinite; }
         .status-offline { background: var(--text-dim); }
         .status-warning { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
 
         /* ========== MODAL ========== */
-        .modal-overlay {
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
-        }
-        .modal-box {
-            background: var(--surface);
-            border: 1px solid var(--border-bright);
-            border-radius: 20px;
-        }
+        .modal-overlay { background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); }
+        .modal-box { background: var(--surface); border: 1px solid var(--border-bright); border-radius: 20px; }
         .modal-header {
             padding: 20px 24px;
             border-bottom: 1px solid var(--border);
@@ -333,7 +496,6 @@
         }
         .modal-close:hover { background: rgba(244,63,94,0.15); color: var(--rose); border-color: rgba(244,63,94,0.3); }
 
-        /* Modal table headers override */
         #detailModal thead tr, #activeModal thead tr, #droppedModal thead tr {
             background: rgba(255,255,255,0.04) !important;
         }
@@ -368,7 +530,6 @@
         #reportSummaryInput:focus { outline: none; border-color: rgba(59,130,246,0.5); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
         #reportSummaryInput::placeholder { color: var(--text-dim); }
 
-        /* ========== SECTION LABELS ========== */
         .section-label {
             font-size: 10px;
             font-weight: 700;
@@ -383,24 +544,51 @@
 
         /* ========== PRINT ========== */
         #reportHeader, #signatureArea { display: none; }
+        body.printing .tab-panel { display: block !important; opacity: 1 !important; }
 
         @media print {
-            body { background: white !important; color: #1e293b !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            body { background: #f8fafc !important; color: #1e293b !important; }
             html, body { height: auto !important; overflow: visible !important; }
             .h-screen { height: auto !important; overflow: visible !important; }
             .overflow-hidden, .overflow-y-auto { overflow: visible !important; }
-            .no-print, aside, header { display: none !important; }
-            #main-content { margin-left: 0 !important; width: 100% !important; padding: 0 !important; background: white !important; height: auto !important; overflow: visible !important; position: static !important; }
-            .card, .glass, .kpi-card { box-shadow: none !important; border: 1px solid #ddd !important; page-break-inside: avoid; margin-bottom: 20px; background: white !important; }
+            .no-print, aside, header, #mainTabBar { display: none !important; }
+            #main-content { margin-left: 0 !important; width: 100% !important; padding: 0 !important; background: #f8fafc !important; height: auto !important; overflow: visible !important; position: static !important; }
+            .card, .glass, .kpi-card { box-shadow: none !important; border: 1px solid #e2e8f0 !important; page-break-inside: avoid; margin-bottom: 16px; background: white !important; border-radius: 12px !important; }
             #reportHeader { display: block !important; text-align: center; margin-bottom: 25px; border-bottom: 2px solid #1e293b; padding-bottom: 15px; padding-top: 20px; }
-            #reportHeader h1 { font-size: 22pt; color: #1e293b; font-weight: bold; }
-            #reportHeader p { font-size: 12pt; color: #475569; margin-top: 8px; }
-            .grid { display: block !important; }
-            canvas { max-height: 280px !important; width: 100% !important; margin: 0 auto; }
-            #signatureArea { display: flex !important; justify-content: space-around; margin-top: 40px; padding: 20px; page-break-inside: avoid; }
-            .sig-box { text-align: center; width: 220px; border-top: 1px solid #333; padding-top: 10px; color: #1e293b; }
-            .kpi-value { color: #1e293b !important; }
+            #reportHeader h1 { font-size: 20pt; color: #1e293b; font-weight: bold; }
+            #reportHeader p { font-size: 11pt; color: #475569; margin-top: 8px; }
+            /* ALL tabs show when printing */
+            .tab-panel { display: block !important; opacity: 1 !important; animation: none !important; }
+            #tab-overview { page-break-after: always; }
+            #tab-dashboard { page-break-after: always; }
+            .tab-content-header { background: #f1f5f9 !important; border: 1px solid #e2e8f0 !important; border-radius: 10px !important; padding: 10px 14px !important; }
+            .tab-content-header-icon { background: #e2e8f0 !important; }
+            .tab-content-header-icon i, .tab-breadcrumb, .tab-breadcrumb span { color: #475569 !important; }
+            .kpi-value { color: #1e293b !important; font-size: 28px !important; }
             .kpi-label { color: #64748b !important; }
+            .kpi-card::before { display: none !important; }
+            .kpi-icon { background: #f1f5f9 !important; }
+            .kpi-icon i { color: #475569 !important; }
+            .data-table thead th { background: #f8fafc !important; color: #64748b !important; border-bottom: 2px solid #e2e8f0 !important; }
+            .data-table tbody td { color: #1e293b !important; border-bottom: 1px solid #f1f5f9 !important; font-size: 11px !important; padding: 8px 14px !important; }
+            .badge-emerald { background: #d1fae5 !important; color: #065f46 !important; border-color: #6ee7b7 !important; }
+            .badge-rose { background: #ffe4e6 !important; color: #9f1239 !important; border-color: #fda4af !important; }
+            .badge-amber { background: #fef3c7 !important; color: #92400e !important; border-color: #fcd34d !important; }
+            .badge-violet { background: #ede9fe !important; color: #5b21b6 !important; border-color: #c4b5fd !important; }
+            .badge-blue { background: #dbeafe !important; color: #1e40af !important; border-color: #93c5fd !important; }
+            .chart-card::after { display: none !important; }
+            canvas { max-height: 240px !important; width: 100% !important; margin: 0 auto; page-break-inside: avoid; }
+            .h-60 { height: 200px !important; }
+            .h-72 { height: 220px !important; }
+            .grid { display: block !important; }
+            section { margin-bottom: 16px !important; }
+            #aiTextWrapper { display: block !important; }
+            #reportSummaryInput { display: none !important; }
+            #btnAISummary { display: none !important; }
+            #signatureArea { display: flex !important; justify-content: space-around; margin-top: 40px; padding: 20px; page-break-inside: avoid; }
+            .sig-box { text-align: center; width: 220px; border-top: 2px solid #334155; padding-top: 10px; color: #1e293b; }
+            .progress-bar { background: #e2e8f0 !important; }
         }
 
         /* ========== ANIMATIONS ========== */
@@ -410,13 +598,11 @@
         @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         .pulse { animation: pulse-dot 2s ease-in-out infinite; }
 
-        /* Logo glow */
         .logo-glow {
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             box-shadow: 0 0 30px rgba(59,130,246,0.4);
         }
 
-        /* Chart area */
         .chart-card { position: relative; overflow: hidden; }
         .chart-card::after {
             content: '';
@@ -426,11 +612,9 @@
             pointer-events: none;
         }
 
-        /* Progress bar */
         .progress-bar { height: 4px; background: rgba(255,255,255,0.07); border-radius: 4px; overflow: hidden; margin-top: 8px; }
         .progress-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
 
-        /* ========== AUTO REFRESH BADGE ========== */
         #autoRefreshBadge {
             display: inline-flex;
             align-items: center;
@@ -444,7 +628,6 @@
             background: rgba(255,255,255,0.03);
         }
 
-        /* ========== MOBILE SIDEBAR OVERLAY ========== */
         #mobileSidebarOverlay {
             display: none;
             position: fixed;
@@ -455,7 +638,6 @@
         }
         #mobileSidebarOverlay.visible { display: block; }
 
-        /* Mobile sidebar slide-in */
         @media (max-width: 767px) {
             aside.mobile-open {
                 display: flex !important;
@@ -471,7 +653,6 @@
             }
         }
 
-        /* ========== TOAST NOTIFICATION ========== */
         #toastContainer {
             position: fixed;
             bottom: 24px;
@@ -500,16 +681,149 @@
         @keyframes toastIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes toastOut { to { opacity: 0; transform: translateX(30px); } }
 
-        /* ========== SORT INDICATOR ========== */
         .sort-asc::after { content: ' ↑'; }
         .sort-desc::after { content: ' ↓'; }
 
-        /* Escape hint */
         .modal-escape-hint {
             font-size: 10px;
             color: var(--text-dim);
             margin-top: 6px;
         }
+
+        /* ========== TAB SYSTEM ========== */
+        .tab-panel {
+            display: none;
+            animation: tabFadeIn 0.35s ease forwards;
+        }
+        .tab-panel.active {
+            display: block;
+        }
+        @keyframes tabFadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Inline Tab Bar (in main content) */
+        .tab-bar {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            padding: 4px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+        .tab-bar-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border: 1px solid transparent;
+            background: transparent;
+            transition: all 0.22s ease;
+            white-space: nowrap;
+            font-family: 'IBM Plex Sans Thai', 'Space Grotesk', sans-serif;
+        }
+        .tab-bar-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+        }
+        .tab-bar-btn.active-tab {
+            background: var(--surface);
+            color: var(--text);
+            border-color: var(--border-bright);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+        }
+        .tab-bar-btn.active-tab.tab-overview { color: var(--violet); border-color: rgba(139,92,246,0.35); background: rgba(139,92,246,0.08); }
+        .tab-bar-btn.active-tab.tab-dashboard { color: var(--accent); border-color: rgba(59,130,246,0.35); background: rgba(59,130,246,0.08); }
+        .tab-bar-btn.active-tab.tab-employees { color: var(--emerald); border-color: rgba(16,185,129,0.35); background: rgba(16,185,129,0.08); }
+
+        .tab-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .tab-dot.violet { background: var(--violet); }
+        .tab-dot.blue { background: var(--accent); }
+        .tab-dot.emerald { background: var(--emerald); }
+
+        /* Sidebar tab items */
+        .nav-item.tab-nav-active-overview { background: rgba(139,92,246,0.12); color: var(--violet); border-color: rgba(139,92,246,0.3); }
+        .nav-item.tab-nav-active-dashboard { background: rgba(59,130,246,0.12); color: var(--accent); border-color: rgba(59,130,246,0.3); }
+        .nav-item.tab-nav-active-employees { background: rgba(16,185,129,0.12); color: var(--emerald); border-color: rgba(16,185,129,0.3); }
+
+        /* Tab count badge */
+        .tab-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 18px;
+            padding: 0 5px;
+            border-radius: 5px;
+            font-size: 10px;
+            font-weight: 700;
+            background: rgba(255,255,255,0.08);
+            color: var(--text-dim);
+            transition: all 0.2s;
+        }
+        .tab-bar-btn.active-tab .tab-count {
+            background: rgba(255,255,255,0.12);
+            color: var(--text-muted);
+        }
+
+        /* ========== THEME OPT ROW ========== */
+        .theme-opt {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all 0.15s;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+        .theme-opt:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+        .theme-opt.active-theme { background: rgba(255,255,255,0.07); color: var(--text); border-color: var(--border-bright); }
+        /* Light theme dropdown text fix */
+        [data-theme="light"] .theme-opt { color: #64748b; }
+        [data-theme="light"] .theme-opt:hover { background: rgba(0,0,0,0.04); color: #0f172a; }
+        [data-theme="light"] .theme-opt.active-theme { background: rgba(0,0,0,0.05); color: #0f172a; border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] #themeDropdown { box-shadow: 0 16px 48px rgba(0,0,0,0.12); }
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab-content-header-icon {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+        .tab-content-header-icon.violet { background: rgba(139,92,246,0.15); color: var(--violet); }
+        .tab-content-header-icon.blue { background: rgba(59,130,246,0.15); color: var(--accent); }
+        .tab-content-header-icon.emerald { background: rgba(16,185,129,0.15); color: var(--emerald); }
+
+        .tab-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+        }
+        .tab-breadcrumb span { color: var(--text-muted); font-weight: 600; }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden print:h-auto print:overflow-visible print:block">
@@ -668,13 +982,42 @@
 
         <!-- Nav -->
         <nav class="flex-1 overflow-y-auto p-4 space-y-1">
-            <div class="section-label mb-3 mt-1">เมนูหลัก</div>
-            <a href="#" onclick="location.reload()" class="nav-item active">
-                <i class="fa-solid fa-table-columns w-4 text-center"></i>
-                <span>ภาพรวม (Overview)</span>
-            </a>
 
-            <div class="section-label mt-5 mb-3">จัดการระบบ</div>
+            <!-- ===== MAIN MENU TABS ===== -->
+            <div class="section-label mb-3 mt-1">เมนูหลัก</div>
+
+            <!-- สรุปภาพรวม -->
+            <button id="sidebar-tab-overview"
+                    onclick="showTab('overview')"
+                    class="nav-item violet w-full">
+                <i class="fa-solid fa-star w-4 text-center"></i>
+                <span>สรุปภาพรวม</span>
+                <span class="ml-auto text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(139,92,246,0.15); color:var(--violet); font-weight:700;">AI</span>
+            </button>
+
+            <!-- Dashboard -->
+            <button id="sidebar-tab-dashboard"
+                    onclick="showTab('dashboard')"
+                    class="nav-item active w-full">
+                <i class="fa-solid fa-table-columns w-4 text-center"></i>
+                <span>Dashboard</span>
+                <span class="ml-auto text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(59,130,246,0.12); color:var(--accent); font-weight:700;">KPI</span>
+            </button>
+
+            <!-- รายชื่อพนักงาน -->
+            <button id="sidebar-tab-employees"
+                    onclick="showTab('employees')"
+                    class="nav-item emerald w-full">
+                <i class="fa-solid fa-users w-4 text-center"></i>
+                <span>รายชื่อพนักงาน</span>
+                <span id="sidebar-emp-count" class="ml-auto text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(16,185,129,0.12); color:var(--emerald); font-weight:700;">0</span>
+            </button>
+
+            <!-- Divider -->
+            <div class="my-3" style="height:1px; background:var(--border);"></div>
+
+            <!-- ===== MANAGEMENT ===== -->
+            <div class="section-label mt-2 mb-3">จัดการระบบ</div>
             <button onclick="prepareReport()" class="nav-item emerald w-full">
                 <i class="fa-solid fa-print w-4 text-center"></i>
                 <span>พิมพ์รายงาน PDF</span>
@@ -695,7 +1038,6 @@
 
         <!-- Connection Status -->
         <div class="p-4 border-t" style="border-color:var(--border);">
-            <!-- Auto Refresh Status -->
             <div class="flex items-center justify-between text-xs mb-3">
                 <span style="color:var(--text-dim);">
                     <i class="fa-solid fa-clock-rotate-left mr-1"></i>Auto Sync
@@ -705,7 +1047,6 @@
                     <span id="autoRefreshCountdown">5:00</span>
                 </span>
             </div>
-            <!-- Last Sync Time -->
             <div class="text-[10px] mb-3" style="color:var(--text-dim);">
                 <i class="fa-regular fa-clock mr-1"></i>อัปเดตล่าสุด: <span id="lastSyncTime">-</span>
             </div>
@@ -729,213 +1070,357 @@
         </div>
 
         <!-- ===== STICKY HEADER ===== -->
-        <header class="sticky top-0 z-40 px-4 md:px-6 py-4 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 no-print">
-            <div class="flex items-center gap-3 w-full xl:w-auto">
-                <!-- Mobile hamburger -->
-                <button onclick="toggleMobileSidebar()" class="md:hidden btn btn-ghost p-2" style="padding:8px 10px;">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <div>
-                    <h1 class="text-xl font-bold" style="color:var(--text); font-family:'Space Grotesk',sans-serif;">สรุปผลการเข้าอบรมพนักงานใหม่</h1>
-                    <p class="text-xs mt-0.5 flex items-center gap-1.5" style="color:var(--text-muted);">
-                        <span class="status-dot status-offline" id="headerStatusDot" style="margin:0;"></span>
-                        เชื่อมต่อ Google Sheets Web App (100% Sync)
-                    </p>
+        <header class="sticky top-0 z-40 px-4 md:px-6 py-4 flex flex-col gap-4 no-print">
+            <!-- Row 1: Title + Actions -->
+            <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3">
+                <div class="flex items-center gap-3 w-full xl:w-auto">
+                    <button onclick="toggleMobileSidebar()" class="md:hidden btn btn-ghost p-2" style="padding:8px 10px;">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div>
+                        <h1 class="text-xl font-bold" style="color:var(--text); font-family:'Space Grotesk',sans-serif;">สรุปผลการเข้าอบรมพนักงานใหม่</h1>
+                        <p class="text-xs mt-0.5 flex items-center gap-1.5" style="color:var(--text-muted);">
+                            <span class="status-dot status-offline" id="headerStatusDot" style="margin:0;"></span>
+                            เชื่อมต่อ Google Sheets Web App (100% Sync)
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+                    <!-- Filter Bar -->
+                    <div class="filter-bar flex-wrap gap-y-1">
+                        <i class="fa-solid fa-magnifying-glass text-xs" style="color:var(--text-dim)"></i>
+                        <input type="text" id="searchInput" oninput="applyDateFilter()" placeholder="ค้นหาชื่อ, ทีม, แผนก..." class="ml-2 w-32 focus:w-44 transition-all" title="พิมพ์เพื่อค้นหา">
+                        <div class="divider"></div>
+                        <select id="statusFilter" onchange="applyDateFilter()">
+                            <option value="all">ทุกสถานะ</option>
+                            <option value="active">กำลังเทรน</option>
+                            <option value="pass">ผ่านอบรม / Back Office</option>
+                            <option value="drop">ออก / ไม่ได้ไปต่อ</option>
+                        </select>
+                        <div class="divider"></div>
+                        <i class="fa-regular fa-calendar text-xs" style="color:var(--text-dim)"></i>
+                        <input type="date" id="startDate" onchange="applyDateFilter()" class="ml-2">
+                        <span class="mx-1" style="color:var(--text-dim);">—</span>
+                        <input type="date" id="endDate" onchange="applyDateFilter()">
+                        <div class="divider"></div>
+                        <button onclick="applyDateFilter()" style="background:none; border:none; color:var(--accent); cursor:pointer; padding:2px 6px; border-radius:6px;" title="กรอง">
+                            <i class="fa-solid fa-filter text-xs"></i>
+                        </button>
+                        <button onclick="clearDateFilter()" style="background:none; border:none; color:var(--text-dim); cursor:pointer; padding:2px 6px; border-radius:6px;" title="ล้าง">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-2 items-center">
+                        <!-- Theme Picker -->
+                        <div id="themePicker" class="no-print" style="position:relative;">
+                            <button id="themePickerBtn" onclick="toggleThemeDropdown()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:10px;font-size:12px;font-weight:600;background:var(--surface2);border:1px solid var(--border-bright);color:var(--text-muted);cursor:pointer;transition:all 0.2s;white-space:nowrap;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text-muted)'">
+                                <i class="fa-solid fa-palette"></i>
+                                <span class="hidden sm:inline">ธีม</span>
+                                <i class="fa-solid fa-chevron-down" style="font-size:9px;"></i>
+                            </button>
+                            <div id="themeDropdown" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border-bright);border-radius:14px;padding:8px;z-index:999;min-width:210px;box-shadow:0 16px 48px rgba(0,0,0,0.5);">
+                                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);padding:4px 8px 6px;">เลือกธีม</div>
+                                <div class="theme-opt active-theme" id="opt-dark"     onclick="setTheme('dark')">     <div style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#0d1117,#3b82f6);flex-shrink:0;border:2px solid rgba(255,255,255,0.15);"></div> Dark (ค่าเริ่มต้น)  <i id="check-dark"     class="fa-solid fa-check ml-auto" style="font-size:10px;color:var(--accent);"></i></div>
+                                <div class="theme-opt"             id="opt-light"    onclick="setTheme('light')">    <div style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#f1f5f9,#2563eb);flex-shrink:0;border:2px solid rgba(0,0,0,0.1);"></div>  Light (สว่าง)        <i id="check-light"    class="fa-solid fa-check ml-auto" style="font-size:10px;color:var(--accent);display:none;"></i></div>
+                                <div class="theme-opt"             id="opt-midnight" onclick="setTheme('midnight')"> <div style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#060a14,#38bdf8);flex-shrink:0;border:2px solid rgba(255,255,255,0.15);"></div> Midnight (น้ำเงิน)  <i id="check-midnight" class="fa-solid fa-check ml-auto" style="font-size:10px;color:var(--accent);display:none;"></i></div>
+                                <div class="theme-opt"             id="opt-forest"   onclick="setTheme('forest')">   <div style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#0a1209,#4ade80);flex-shrink:0;border:2px solid rgba(255,255,255,0.15);"></div> Forest (เขียวป่า)   <i id="check-forest"   class="fa-solid fa-check ml-auto" style="font-size:10px;color:var(--accent);display:none;"></i></div>
+                                <div class="theme-opt"             id="opt-rose"     onclick="setTheme('rose')">     <div style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#13080c,#fb7185);flex-shrink:0;border:2px solid rgba(255,255,255,0.15);"></div> Rose (ชมพูเข้ม)     <i id="check-rose"     class="fa-solid fa-check ml-auto" style="font-size:10px;color:var(--accent);display:none;"></i></div>
+                            </div>
+                        </div>
+                        <button onclick="exportToImage()" class="btn btn-cyan no-print">
+                            <i class="fa-solid fa-image"></i> <span class="hidden sm:inline">แคปรูป</span>
+                        </button>
+                        <button onclick="prepareReport()" class="btn btn-emerald no-print">
+                            <i class="fa-solid fa-print"></i> <span class="hidden sm:inline">พิมพ์</span>
+                        </button>
+                        <button onclick="fetchAutoData(true)" class="btn btn-blue no-print" id="syncBtn">
+                            <i class="fa-solid fa-rotate"></i> Sync
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
-                <!-- Filter Bar -->
-                <div class="filter-bar flex-wrap gap-y-1">
-                    <i class="fa-solid fa-magnifying-glass text-xs" style="color:var(--text-dim)"></i>
-                    <input type="text" id="searchInput" oninput="applyDateFilter()" placeholder="ค้นหาชื่อ, ทีม, แผนก..." class="ml-2 w-32 focus:w-44 transition-all" title="พิมพ์เพื่อค้นหา">
-                    <div class="divider"></div>
-                    <select id="statusFilter" onchange="applyDateFilter()">
-                        <option value="all">ทุกสถานะ</option>
-                        <option value="active">กำลังเทรน</option>
-                        <option value="pass">ผ่านอบรม / Back Office</option>
-                        <option value="drop">ออก / ไม่ได้ไปต่อ</option>
-                    </select>
-                    <div class="divider"></div>
-                    <i class="fa-regular fa-calendar text-xs" style="color:var(--text-dim)"></i>
-                    <input type="date" id="startDate" onchange="applyDateFilter()" class="ml-2">
-                    <span class="mx-1" style="color:var(--text-dim);">—</span>
-                    <input type="date" id="endDate" onchange="applyDateFilter()">
-                    <div class="divider"></div>
-                    <button onclick="applyDateFilter()" style="background:none; border:none; color:var(--accent); cursor:pointer; padding:2px 6px; border-radius:6px;" title="กรอง">
-                        <i class="fa-solid fa-filter text-xs"></i>
-                    </button>
-                    <button onclick="clearDateFilter()" style="background:none; border:none; color:var(--text-dim); cursor:pointer; padding:2px 6px; border-radius:6px;" title="ล้าง">
-                        <i class="fa-solid fa-xmark text-xs"></i>
-                    </button>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex gap-2">
-                    <button onclick="exportToImage()" class="btn btn-cyan no-print">
-                        <i class="fa-solid fa-image"></i> <span class="hidden sm:inline">แคปรูป</span>
-                    </button>
-                    <button onclick="prepareReport()" class="btn btn-emerald no-print">
-                        <i class="fa-solid fa-print"></i> <span class="hidden sm:inline">พิมพ์</span>
-                    </button>
-                    <button onclick="fetchAutoData(true)" class="btn btn-blue no-print" id="syncBtn">
-                        <i class="fa-solid fa-rotate"></i> Sync
-                    </button>
-                </div>
+            <!-- Row 2: Tab Bar -->
+            <div class="tab-bar w-full md:w-auto self-start no-print" id="mainTabBar">
+                <!-- สรุปภาพรวม -->
+                <button class="tab-bar-btn tab-overview"
+                        id="tabbar-overview"
+                        onclick="showTab('overview')">
+                    <span class="tab-dot violet"></span>
+                    <i class="fa-solid fa-star text-[11px]"></i>
+                    สรุปภาพรวม
+                </button>
+                <!-- Dashboard -->
+                <button class="tab-bar-btn tab-dashboard active-tab"
+                        id="tabbar-dashboard"
+                        onclick="showTab('dashboard')">
+                    <span class="tab-dot blue"></span>
+                    <i class="fa-solid fa-table-columns text-[11px]"></i>
+                    Dashboard
+                </button>
+                <!-- รายชื่อพนักงาน -->
+                <button class="tab-bar-btn tab-employees"
+                        id="tabbar-employees"
+                        onclick="showTab('employees')">
+                    <span class="tab-dot emerald"></span>
+                    <i class="fa-solid fa-users text-[11px]"></i>
+                    รายชื่อพนักงาน
+                    <span class="tab-count" id="tabbar-emp-count">0</span>
+                </button>
             </div>
         </header>
 
-        <!-- ===== DASHBOARD ===== -->
-        <div id="dashboard-content" class="p-4 md:p-6 space-y-6 max-w-[1600px] mx-auto w-full">
+        <!-- ===== DASHBOARD CONTENT ===== -->
+        <div id="dashboard-content" class="p-4 md:p-6 max-w-[1600px] mx-auto w-full">
 
-            <!-- AI Summary Section -->
-            <section class="card p-6" style="border-color:rgba(99,102,241,0.25); background:linear-gradient(135deg, rgba(99,102,241,0.06) 0%, rgba(139,92,246,0.04) 100%);">
-                <div class="flex flex-wrap justify-between items-center gap-3">
-                    <label class="text-sm font-semibold flex items-center gap-2 cursor-pointer select-none" onclick="toggleAITextbox()" style="color:var(--text);">
-                        <span style="color:var(--amber)">⚡</span>
-                        Executive Analytical Summary
-                        <span class="text-xs font-normal px-2 py-0.5 rounded-md ml-1 cursor-pointer" style="background:rgba(255,255,255,0.07); color:var(--text-muted); border:1px solid var(--border);">
-                            คลิกซ่อน/แสดง <i id="toggleAIIcon" class="fa-solid fa-chevron-down ml-1 text-[10px]"></i>
-                        </span>
-                    </label>
-                    <button id="btnAISummary" onclick="generateAISummary()" class="btn btn-ai no-print">
-                        <span id="aiBtnText"><i class="fa-solid fa-wand-magic-sparkles"></i> AI จัดอันดับข้อมูลทุกมิติ</span>
-                    </button>
-                </div>
-                <div id="aiTextWrapper" class="hidden mt-5 transition-all duration-300">
-                    <textarea id="reportSummaryInput" rows="26" placeholder="กดปุ่ม 'AI จัดอันดับข้อมูลทุกมิติ' เพื่อประมวลผลจัดอันดับยอดผู้เข้าอบรม อัตราการผ่านงาน อัตราการลาออกของทุกทีม วิเคราะห์คนกลับมาเทรนซ้ำ และผู้แนะนำทั้งหมด..."></textarea>
-                    <div class="mt-3 flex justify-end gap-2">
-                        <button onclick="copyAISummary()" class="btn btn-ghost no-print" style="font-size:12px;">
-                            <i class="fa-regular fa-copy"></i> คัดลอกข้อความ
-                        </button>
-                    </div>
-                </div>
-            </section>
+            <!-- ══════════════════════════════════════════
+                 TAB 1: สรุปภาพรวม
+            ══════════════════════════════════════════ -->
+            <div id="tab-overview" class="tab-panel space-y-6">
 
-            <!-- KPI Cards -->
-            <section class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <!-- Total — [FIX] Added clickable + onclick -->
-                <div class="kpi-card blue clickable" onclick="showTotalTrainees()" title="คลิกเพื่อดูรายชื่อทั้งหมด">
-                    <div class="flex justify-between items-start">
-                        <div class="kpi-icon blue"><i class="fa-solid fa-users"></i></div>
-                        <span class="badge badge-blue text-[9px] no-print" style="margin-top:2px;"><i class="fa-solid fa-arrow-pointer mr-1"></i>ดู</span>
+                <!-- Header -->
+                <div class="tab-content-header">
+                    <div class="tab-content-header-icon violet">
+                        <i class="fa-solid fa-star"></i>
                     </div>
-                    <div class="kpi-value" style="color:var(--accent)" id="kpi-total">0</div>
-                    <div class="kpi-label" title="นับจากบุคคลจริง (ไม่นับซ้ำถ้ารีเทรน)">เข้าร่วมจริง</div>
-                </div>
-                <!-- Passed — [FIX] Added clickable + onclick -->
-                <div class="kpi-card emerald clickable" onclick="showPassedTrainees()" title="คลิกเพื่อดูรายชื่อผู้ผ่านอบรม">
-                    <div class="flex justify-between items-start">
-                        <div class="kpi-icon emerald"><i class="fa-solid fa-circle-check"></i></div>
-                        <span class="badge badge-emerald text-[9px] no-print" style="margin-top:2px;"><i class="fa-solid fa-arrow-pointer mr-1"></i>ดู</span>
-                    </div>
-                    <div class="kpi-value" style="color:var(--emerald)" id="kpi-passed">0</div>
-                    <div class="kpi-label">ผ่านอบรม</div>
-                </div>
-                <!-- Dropped -->
-                <div class="kpi-card rose clickable" onclick="showDroppedTrainees()" title="คลิกเพื่อดูรายละเอียด">
-                    <div class="flex justify-between items-start">
-                        <div class="kpi-icon rose"><i class="fa-solid fa-person-walking-arrow-right"></i></div>
-                        <span class="badge badge-rose text-[9px] no-print" style="margin-top:2px;"><i class="fa-solid fa-arrow-pointer mr-1"></i>ดู</span>
-                    </div>
-                    <div class="kpi-value" style="color:var(--rose)" id="kpi-dropped">0</div>
-                    <div class="kpi-label" style="color:rgba(244,63,94,0.7);">ออก / ได้งานใหม่</div>
-                </div>
-                <!-- Active -->
-                <div class="kpi-card amber clickable" onclick="showActiveTrainees()" title="คลิกเพื่อดูรายละเอียด">
-                    <div class="flex justify-between items-start">
-                        <div class="kpi-icon amber"><i class="fa-solid fa-person-chalkboard"></i></div>
-                        <span class="badge badge-amber text-[9px] no-print" style="margin-top:2px;"><i class="fa-solid fa-arrow-pointer mr-1"></i>ดู</span>
-                    </div>
-                    <div class="kpi-value" style="color:var(--amber)" id="kpi-active">0</div>
-                    <div class="kpi-label" style="color:rgba(245,158,11,0.7);">กำลังเทรน</div>
-                </div>
-                <!-- Rate -->
-                <div class="kpi-card violet" style="background:linear-gradient(135deg, rgba(139,92,246,0.1), rgba(99,102,241,0.06));">
-                    <div class="kpi-icon violet"><i class="fa-solid fa-percent"></i></div>
-                    <div class="kpi-value" style="color:var(--violet)" id="kpi-rate">0%</div>
-                    <div class="kpi-label" style="color:rgba(139,92,246,0.7);">อัตราการผ่าน</div>
-                    <!-- Progress bar showing rate -->
-                    <div class="progress-bar mt-4"><div class="progress-fill" id="kpi-rate-bar" style="width:0%; background:var(--violet);"></div></div>
-                </div>
-            </section>
-
-            <!-- Charts Row -->
-            <section class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                <!-- Pie Chart -->
-                <div class="card p-6 chart-card group">
-                    <div class="flex justify-between items-center mb-5">
-                        <h3 class="text-sm font-semibold flex items-center gap-2" style="color:var(--text);">
-                            <i class="fa-solid fa-chart-pie" style="color:var(--violet)"></i> สถานะผู้เข้าอบรม
-                        </h3>
-                        <span class="text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition" style="background:rgba(255,255,255,0.06); color:var(--text-muted); border:1px solid var(--border);">
-                            <i class="fa-solid fa-hand-pointer mr-1"></i>คลิกกราฟ
-                        </span>
-                    </div>
-                    <div class="h-60 relative"><canvas id="statusChart"></canvas></div>
-                </div>
-                <!-- Bar Chart Dept -->
-                <div class="card p-6 chart-card group lg:col-span-2">
-                    <div class="flex justify-between items-center mb-5">
-                        <h3 class="text-sm font-semibold flex items-center gap-2" style="color:var(--text);">
-                            <i class="fa-solid fa-building-user" style="color:var(--accent)"></i> พนักงานแยกตามแผนก
-                        </h3>
-                        <span class="text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition" style="background:rgba(255,255,255,0.06); color:var(--text-muted); border:1px solid var(--border);">
-                            <i class="fa-solid fa-hand-pointer mr-1"></i>คลิกแท่งกราฟ
-                        </span>
-                    </div>
-                    <div class="h-60 relative"><canvas id="deptChart"></canvas></div>
-                </div>
-            </section>
-
-            <!-- Team Chart -->
-            <section class="card p-6 chart-card group">
-                <div class="flex justify-between items-center mb-5">
-                    <h3 class="text-sm font-semibold flex items-center gap-2" style="color:var(--text);">
-                        <i class="fa-solid fa-users-gear" style="color:var(--emerald)"></i> อัตราการรอดและลาออก แยกตามทีม
-                    </h3>
-                    <span class="text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition" style="background:rgba(255,255,255,0.06); color:var(--text-muted); border:1px solid var(--border);">
-                        <i class="fa-solid fa-hand-pointer mr-1"></i>คลิกแท่งกราฟเพื่อดูรายชื่อทีม
-                    </span>
-                </div>
-                <div class="h-72 relative"><canvas id="teamChart"></canvas></div>
-            </section>
-
-            <!-- Data Table -->
-            <section class="card overflow-hidden flex flex-col">
-                <div class="px-6 py-5 flex flex-wrap justify-between items-center gap-3" style="border-bottom:1px solid var(--border);">
                     <div>
-                        <h3 class="text-sm font-semibold" style="color:var(--text);">ฐานข้อมูลการลงทะเบียนทั้งหมด</h3>
-                        <p class="text-[11px] mt-0.5" style="color:var(--text-muted);">คลิกที่ชื่อพนักงานเพื่อดูโปรไฟล์ | คลิกหัวตารางเพื่อเรียงลำดับ</p>
+                        <div class="tab-breadcrumb">
+                            <i class="fa-solid fa-house text-[9px]"></i>
+                            <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                            <span>สรุปภาพรวม</span>
+                        </div>
+                        <h2 class="text-base font-bold" style="color:var(--text); font-family:'Space Grotesk',sans-serif;">Executive Analytical Summary</h2>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <span id="filterStatus" class="no-print text-xs px-3 py-1 rounded-lg font-semibold" style="background:rgba(255,255,255,0.05); color:var(--text-muted); border:1px solid var(--border);">แสดงข้อมูลทั้งหมด</span>
-                        <button onclick="exportToCSV()" class="btn no-print" style="background:rgba(16,185,129,0.12); color:var(--emerald); border:1px solid rgba(16,185,129,0.25); padding:7px 14px; font-size:12px;">
-                            <i class="fa-solid fa-file-excel"></i> ดาวน์โหลด CSV
+                </div>
+
+                <!-- Quick KPI Mini Row -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="rounded-xl p-4 flex items-center gap-3" style="background:rgba(59,130,246,0.07); border:1px solid rgba(59,130,246,0.18);">
+                        <div style="width:36px;height:36px;background:rgba(59,130,246,0.15);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:14px;flex-shrink:0;">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div>
+                            <div class="text-xl font-bold" style="color:var(--accent); font-family:'Space Grotesk',sans-serif;" id="ov-total">0</div>
+                            <div class="text-[10px] uppercase tracking-wider font-semibold" style="color:var(--text-dim);">เข้าร่วมจริง</div>
+                        </div>
+                    </div>
+                    <div class="rounded-xl p-4 flex items-center gap-3" style="background:rgba(16,185,129,0.07); border:1px solid rgba(16,185,129,0.18);">
+                        <div style="width:36px;height:36px;background:rgba(16,185,129,0.15);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--emerald);font-size:14px;flex-shrink:0;">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <div>
+                            <div class="text-xl font-bold" style="color:var(--emerald); font-family:'Space Grotesk',sans-serif;" id="ov-passed">0</div>
+                            <div class="text-[10px] uppercase tracking-wider font-semibold" style="color:var(--text-dim);">ผ่านอบรม</div>
+                        </div>
+                    </div>
+                    <div class="rounded-xl p-4 flex items-center gap-3" style="background:rgba(244,63,94,0.07); border:1px solid rgba(244,63,94,0.18);">
+                        <div style="width:36px;height:36px;background:rgba(244,63,94,0.15);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--rose);font-size:14px;flex-shrink:0;">
+                            <i class="fa-solid fa-person-walking-arrow-right"></i>
+                        </div>
+                        <div>
+                            <div class="text-xl font-bold" style="color:var(--rose); font-family:'Space Grotesk',sans-serif;" id="ov-dropped">0</div>
+                            <div class="text-[10px] uppercase tracking-wider font-semibold" style="color:var(--text-dim);">ออก/ไม่ผ่าน</div>
+                        </div>
+                    </div>
+                    <div class="rounded-xl p-4 flex items-center gap-3" style="background:rgba(139,92,246,0.07); border:1px solid rgba(139,92,246,0.18);">
+                        <div style="width:36px;height:36px;background:rgba(139,92,246,0.15);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--violet);font-size:14px;flex-shrink:0;">
+                            <i class="fa-solid fa-percent"></i>
+                        </div>
+                        <div>
+                            <div class="text-xl font-bold" style="color:var(--violet); font-family:'Space Grotesk',sans-serif;" id="ov-rate">0%</div>
+                            <div class="text-[10px] uppercase tracking-wider font-semibold" style="color:var(--text-dim);">อัตราผ่าน</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Summary Card -->
+                <section class="card p-6" style="border-color:rgba(99,102,241,0.25); background:linear-gradient(135deg, rgba(99,102,241,0.06) 0%, rgba(139,92,246,0.04) 100%);">
+                    <div class="flex flex-wrap justify-between items-center gap-3">
+                        <label class="text-sm font-semibold flex items-center gap-2 cursor-pointer select-none" onclick="toggleAITextbox()" style="color:var(--text);">
+                            <span style="color:var(--amber)">⚡</span>
+                            Executive Analytical Summary
+                            <span class="text-xs font-normal px-2 py-0.5 rounded-md ml-1 cursor-pointer" style="background:rgba(255,255,255,0.07); color:var(--text-muted); border:1px solid var(--border);">
+                                คลิกซ่อน/แสดง <i id="toggleAIIcon" class="fa-solid fa-chevron-down ml-1 text-[10px]"></i>
+                            </span>
+                        </label>
+                        <button id="btnAISummary" onclick="generateAISummary()" class="btn btn-ai no-print">
+                            <span id="aiBtnText"><i class="fa-solid fa-wand-magic-sparkles"></i> AI จัดอันดับข้อมูลทุกมิติ</span>
                         </button>
                     </div>
+                    <div id="aiTextWrapper" class="hidden mt-5 transition-all duration-300">
+                        <textarea id="reportSummaryInput" rows="26" placeholder="กดปุ่ม 'AI จัดอันดับข้อมูลทุกมิติ' เพื่อประมวลผลจัดอันดับยอดผู้เข้าอบรม อัตราการผ่านงาน อัตราการลาออกของทุกทีม วิเคราะห์คนกลับมาเทรนซ้ำ และผู้แนะนำทั้งหมด..."></textarea>
+                        <div class="mt-3 flex justify-end gap-2">
+                            <button onclick="copyAISummary()" class="btn btn-ghost no-print" style="font-size:12px;">
+                                <i class="fa-regular fa-copy"></i> คัดลอกข้อความ
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+            </div><!-- /tab-overview -->
+
+            <!-- ══════════════════════════════════════════
+                 TAB 2: Dashboard
+            ══════════════════════════════════════════ -->
+            <div id="tab-dashboard" class="tab-panel active space-y-6">
+
+                <!-- Header -->
+                <div class="tab-content-header">
+                    <div class="tab-content-header-icon blue">
+                        <i class="fa-solid fa-table-columns"></i>
+                    </div>
+                    <div>
+                        <div class="tab-breadcrumb">
+                            <i class="fa-solid fa-house text-[9px]"></i>
+                            <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                            <span>Dashboard</span>
+                        </div>
+                        <h2 class="text-base font-bold" style="color:var(--text); font-family:'Space Grotesk',sans-serif;">KPI & Analytics Charts</h2>
+                    </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="data-table w-full">
-                        <thead>
-                            <tr>
-                                <th class="py-3 px-5 text-left sortable-th" onclick="sortTable('timestamp')" id="th-timestamp">วันที่ลงทะเบียน</th>
-                                <th class="py-3 px-5 text-left">ชื่อ-สกุล / แผนก / ทีม</th>
-                                <th class="py-3 px-5 text-center sortable-th" onclick="sortTable('days')" id="th-days">มาเรียน (วัน)</th>
-                                <th class="py-3 px-5 text-left sortable-th" onclick="sortTable('status')" id="th-status">สถานะ</th>
-                                <th class="py-3 px-5 text-left">ผู้แนะนำ</th>
-                                <th class="py-3 px-5 text-left">หมายเหตุ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dataTableBody"></tbody>
-                    </table>
+
+                <!-- KPI Cards -->
+                <section class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <div class="kpi-card blue clickable" onclick="showTotalTrainees()" title="คลิกเพื่อดูรายชื่อทั้งหมด">
+                        <div class="flex justify-between items-start">
+                            <div class="kpi-icon blue"><i class="fa-solid fa-users"></i></div>
+                            <span class="badge badge-blue text-[9px] no-print" style="margin-top:2px;"><i class="fa-solid fa-arrow-pointer mr-1"></i>ดู</span>
+                        </div>
+                        <div class="kpi-value" style="color:var(--accent)" id="kpi-total">0</div>
+                        <div class="kpi-label" title="นับจากบุคคลจริง (ไม่นับซ้ำถ้ารีเทรน)">เข้าร่วมจริง</div>
+                    </div>
+                    <div class="kpi-card emerald clickable" onclick="showPassedTrainees()" title="คลิกเพื่อดูรายชื่อผู้ผ่านอบรม">
+                        <div class="flex justify-between items-start">
+                            <div class="kpi-icon emerald"><i class="fa-solid fa-circle-check"></i></div>
+                            <span class="badge badge-emerald text-[9px] no-print" style="margin-top:2px;"><i class="fa-solid fa-arrow-pointer mr-1"></i>ดู</span>
+                        </div>
+                        <div class="kpi-value" style="color:var(--emerald)" id="kpi-passed">0</div>
+                        <div class="kpi-label">ผ่านอบรม</div>
+                    </div>
+                    <div class="kpi-card rose clickable" onclick="showDroppedTrainees()" title="คลิกเพื่อดูรายละเอียด">
+                        <div class="flex justify-between items-start">
+                            <div class="kpi-icon rose"><i class="fa-solid fa-person-walking-arrow-right"></i></div>
+                            <span class="badge badge-rose text-[9px] no-print" style="margin-top:2px;"><i class="fa-solid fa-arrow-pointer mr-1"></i>ดู</span>
+                        </div>
+                        <div class="kpi-value" style="color:var(--rose)" id="kpi-dropped">0</div>
+                        <div class="kpi-label" style="color:rgba(244,63,94,0.7);">ออก / ได้งานใหม่</div>
+                    </div>
+                    <div class="kpi-card amber clickable" onclick="showActiveTrainees()" title="คลิกเพื่อดูรายละเอียด">
+                        <div class="flex justify-between items-start">
+                            <div class="kpi-icon amber"><i class="fa-solid fa-person-chalkboard"></i></div>
+                            <span class="badge badge-amber text-[9px] no-print" style="margin-top:2px;"><i class="fa-solid fa-arrow-pointer mr-1"></i>ดู</span>
+                        </div>
+                        <div class="kpi-value" style="color:var(--amber)" id="kpi-active">0</div>
+                        <div class="kpi-label" style="color:rgba(245,158,11,0.7);">กำลังเทรน</div>
+                    </div>
+                    <div class="kpi-card violet" style="background:linear-gradient(135deg, rgba(139,92,246,0.1), rgba(99,102,241,0.06));">
+                        <div class="kpi-icon violet"><i class="fa-solid fa-percent"></i></div>
+                        <div class="kpi-value" style="color:var(--violet)" id="kpi-rate">0%</div>
+                        <div class="kpi-label" style="color:rgba(139,92,246,0.7);">อัตราการผ่าน</div>
+                        <div class="progress-bar mt-4"><div class="progress-fill" id="kpi-rate-bar" style="width:0%; background:var(--violet);"></div></div>
+                    </div>
+                </section>
+
+                <!-- Charts Row -->
+                <section class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <div class="card p-6 chart-card group">
+                        <div class="flex justify-between items-center mb-5">
+                            <h3 class="text-sm font-semibold flex items-center gap-2" style="color:var(--text);">
+                                <i class="fa-solid fa-chart-pie" style="color:var(--violet)"></i> สถานะผู้เข้าอบรม
+                            </h3>
+                            <span class="text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition" style="background:rgba(255,255,255,0.06); color:var(--text-muted); border:1px solid var(--border);">
+                                <i class="fa-solid fa-hand-pointer mr-1"></i>คลิกกราฟ
+                            </span>
+                        </div>
+                        <div class="h-60 relative"><canvas id="statusChart"></canvas></div>
+                    </div>
+                    <div class="card p-6 chart-card group lg:col-span-2">
+                        <div class="flex justify-between items-center mb-5">
+                            <h3 class="text-sm font-semibold flex items-center gap-2" style="color:var(--text);">
+                                <i class="fa-solid fa-building-user" style="color:var(--accent)"></i> พนักงานแยกตามแผนก
+                            </h3>
+                            <span class="text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition" style="background:rgba(255,255,255,0.06); color:var(--text-muted); border:1px solid var(--border);">
+                                <i class="fa-solid fa-hand-pointer mr-1"></i>คลิกแท่งกราฟ
+                            </span>
+                        </div>
+                        <div class="h-60 relative"><canvas id="deptChart"></canvas></div>
+                    </div>
+                </section>
+
+                <!-- Team Chart -->
+                <section class="card p-6 chart-card group">
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 class="text-sm font-semibold flex items-center gap-2" style="color:var(--text);">
+                            <i class="fa-solid fa-users-gear" style="color:var(--emerald)"></i> อัตราการรอดและลาออก แยกตามทีม
+                        </h3>
+                        <span class="text-[9px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition" style="background:rgba(255,255,255,0.06); color:var(--text-muted); border:1px solid var(--border);">
+                            <i class="fa-solid fa-hand-pointer mr-1"></i>คลิกแท่งกราฟเพื่อดูรายชื่อทีม
+                        </span>
+                    </div>
+                    <div class="h-72 relative"><canvas id="teamChart"></canvas></div>
+                </section>
+
+            </div><!-- /tab-dashboard -->
+
+            <!-- ══════════════════════════════════════════
+                 TAB 3: รายชื่อพนักงาน
+            ══════════════════════════════════════════ -->
+            <div id="tab-employees" class="tab-panel space-y-6">
+
+                <!-- Header -->
+                <div class="tab-content-header">
+                    <div class="tab-content-header-icon emerald">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <div class="tab-breadcrumb">
+                            <i class="fa-solid fa-house text-[9px]"></i>
+                            <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                            <span>รายชื่อพนักงาน</span>
+                        </div>
+                        <h2 class="text-base font-bold" style="color:var(--text); font-family:'Space Grotesk',sans-serif;">ฐานข้อมูลการลงทะเบียนทั้งหมด</h2>
+                    </div>
                 </div>
-                <!-- Pagination Info -->
-                <div class="px-6 py-3 flex items-center justify-between text-xs" style="border-top:1px solid var(--border); color:var(--text-dim);">
-                    <span id="tableRowCount">0 รายการ</span>
-                    <span>คลิกชื่อพนักงาน เพื่อดูรายละเอียด</span>
-                </div>
-            </section>
+
+                <!-- Data Table -->
+                <section class="card overflow-hidden flex flex-col">
+                    <div class="px-6 py-5 flex flex-wrap justify-between items-center gap-3" style="border-bottom:1px solid var(--border);">
+                        <div>
+                            <h3 class="text-sm font-semibold" style="color:var(--text);">ตารางรายชื่อพนักงาน</h3>
+                            <p class="text-[11px] mt-0.5" style="color:var(--text-muted);">คลิกที่ชื่อพนักงานเพื่อดูโปรไฟล์ | คลิกหัวตารางเพื่อเรียงลำดับ</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span id="filterStatus" class="no-print text-xs px-3 py-1 rounded-lg font-semibold" style="background:rgba(255,255,255,0.05); color:var(--text-muted); border:1px solid var(--border);">แสดงข้อมูลทั้งหมด</span>
+                            <button onclick="exportToCSV()" class="btn no-print" style="background:rgba(16,185,129,0.12); color:var(--emerald); border:1px solid rgba(16,185,129,0.25); padding:7px 14px; font-size:12px;">
+                                <i class="fa-solid fa-file-excel"></i> ดาวน์โหลด CSV
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="data-table w-full">
+                            <thead>
+                                <tr>
+                                    <th class="py-3 px-5 text-left sortable-th" onclick="sortTable('timestamp')" id="th-timestamp">วันที่ลงทะเบียน</th>
+                                    <th class="py-3 px-5 text-left">ชื่อ-สกุล / แผนก / ทีม</th>
+                                    <th class="py-3 px-5 text-center sortable-th" onclick="sortTable('days')" id="th-days">มาเรียน (วัน)</th>
+                                    <th class="py-3 px-5 text-left sortable-th" onclick="sortTable('status')" id="th-status">สถานะ</th>
+                                    <th class="py-3 px-5 text-left">ผู้แนะนำ</th>
+                                    <th class="py-3 px-5 text-left">หมายเหตุ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="px-6 py-3 flex items-center justify-between text-xs" style="border-top:1px solid var(--border); color:var(--text-dim);">
+                        <span id="tableRowCount">0 รายการ</span>
+                        <span>คลิกชื่อพนักงาน เพื่อดูรายละเอียด</span>
+                    </div>
+                </section>
+
+            </div><!-- /tab-employees -->
 
             <!-- Signature (print only) -->
             <div id="signatureArea">
@@ -953,7 +1438,7 @@
                 </div>
             </div>
 
-        </div>
+        </div><!-- /dashboard-content -->
     </main>
 
     <!-- ===== JAVASCRIPT ===== -->
@@ -963,14 +1448,48 @@
         let allData = [];
         let charts = {};
         let allNameCounts = {};
-        // [FIX] Global filtered data for modal access
         let currentFilteredData = [];
-        // [NEW] Sort state
         let sortKey = 'timestamp';
         let sortDir = 'desc';
-        // [NEW] Auto-refresh
         let autoRefreshTimer = null;
-        let autoRefreshCountdown = 300; // seconds
+        let autoRefreshCountdown = 300;
+
+        // ========== TAB SYSTEM ==========
+        let currentTab = 'dashboard';
+
+        function showTab(tabName) {
+            // Hide all panels
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            // Show target
+            const panel = document.getElementById('tab-' + tabName);
+            if (panel) panel.classList.add('active');
+
+            currentTab = tabName;
+
+            // Update tab bar buttons
+            document.querySelectorAll('.tab-bar-btn').forEach(btn => btn.classList.remove('active-tab'));
+            const activeBtn = document.getElementById('tabbar-' + tabName);
+            if (activeBtn) activeBtn.classList.add('active-tab');
+
+            // Update sidebar nav items
+            const sidebarItems = ['overview','dashboard','employees'];
+            sidebarItems.forEach(t => {
+                const el = document.getElementById('sidebar-tab-' + t);
+                if (!el) return;
+                // Reset all
+                el.classList.remove('active','tab-nav-active-overview','tab-nav-active-dashboard','tab-nav-active-employees');
+                if (t === tabName) {
+                    el.classList.add('active');
+                }
+            });
+
+            // Resize charts if switching to dashboard tab (fixes Chart.js hidden canvas bug)
+            if (tabName === 'dashboard') {
+                setTimeout(() => {
+                    Object.values(charts).forEach(c => { if (c && typeof c.resize === 'function') c.resize(); });
+                }, 50);
+            }
+        }
 
         // ========== UTILS ==========
         const safeString = (val) => val === null || val === undefined ? '' : String(val).trim();
@@ -988,13 +1507,11 @@
             return Object.values(groups);
         }
 
-        // [FIX] Safe encode for onclick inline — prevents XSS via single-quote in name
         function safeEncode(str) {
             return encodeURIComponent(safeString(str));
         }
 
         // ========== MOBILE SIDEBAR ==========
-        // [NEW] Mobile hamburger toggle
         function toggleMobileSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('mobileSidebarOverlay');
@@ -1015,7 +1532,6 @@
             const icon = document.getElementById('toggleAIIcon');
             if (wrapper.classList.contains('hidden')) {
                 wrapper.classList.remove('hidden');
-                // [FIX] Safe icon class replacement — check before replacing
                 if (icon.classList.contains('fa-chevron-down')) {
                     icon.classList.remove('fa-chevron-down');
                     icon.classList.add('fa-chevron-up');
@@ -1029,7 +1545,6 @@
             }
         }
 
-        // [NEW] Copy AI Summary to clipboard
         function copyAISummary() {
             const text = document.getElementById('reportSummaryInput').value;
             if (!text.trim()) { showToast('ยังไม่มีข้อความ กรุณากด AI จัดอันดับก่อน', 'warning'); return; }
@@ -1042,6 +1557,7 @@
 
         // ========== INIT ==========
         window.onload = () => {
+            showTab('dashboard'); // Default tab
             fetchAutoData(true);
             initAutoRefresh();
             initKeyboardShortcuts();
@@ -1049,7 +1565,6 @@
         };
 
         // ========== AUTO REFRESH ==========
-        // [NEW] Auto-refresh every 5 minutes
         function initAutoRefresh() {
             autoRefreshCountdown = 300;
             updateCountdownDisplay();
@@ -1073,12 +1588,9 @@
         }
 
         // ========== KEYBOARD SHORTCUTS ==========
-        // [NEW] Escape key closes all modals
         function initKeyboardShortcuts() {
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    closeAllModals();
-                }
+                if (e.key === 'Escape') closeAllModals();
             });
         }
 
@@ -1089,20 +1601,15 @@
              'detailModal|detailModalContent'].forEach(pair => {
                 const [ov, ct] = pair.split('|');
                 const el = document.getElementById(ov);
-                if (el && !el.classList.contains('hidden')) {
-                    closeModal(ov, ct);
-                }
+                if (el && !el.classList.contains('hidden')) closeModal(ov, ct);
             });
         }
 
-        // ========== BACKDROP CLICK ==========
-        // [FIX] Click outside modal box to close
         function initModalBackdropClose() {
             ['detailModal','activeModal','droppedModal','individualModal'].forEach(id => {
                 const overlay = document.getElementById(id);
                 if (!overlay) return;
                 overlay.addEventListener('click', (e) => {
-                    // Only close if clicking the overlay itself, not the modal box
                     if (e.target === overlay) {
                         overlay.querySelectorAll('[id$="Content"]').forEach(box => {
                             closeModal(id, box.id);
@@ -1162,13 +1669,11 @@
                     const dot = document.getElementById('headerStatusDot');
                     if (dot) { dot.style.background = 'var(--emerald)'; dot.style.boxShadow = '0 0 6px var(--emerald)'; }
 
-                    // [NEW] Update last sync time
                     const now = new Date();
                     const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
                     const lastSyncEl = document.getElementById('lastSyncTime');
                     if (lastSyncEl) lastSyncEl.textContent = timeStr;
 
-                    // Reset auto-refresh countdown
                     autoRefreshCountdown = 300;
 
                     if (showUI) {
@@ -1184,7 +1689,6 @@
             } catch (err) {
                 console.error("Error fetching data:", err);
                 document.getElementById('connectionStatus').innerHTML = `<span class="status-dot status-offline"></span> ล้มเหลว`;
-                // [FIX] Properly hide loading overlay on error
                 if (showUI) {
                     const overlay = document.getElementById('loadingOverlay');
                     overlay.classList.add('opacity-0');
@@ -1196,15 +1700,12 @@
             }
         }
 
-        // ========== DATE INPUT PARSER (Local Time — แก้ Timezone Bug) ==========
+        // ========== DATE INPUT PARSER ==========
         function parseDateInputLocal(val) {
-            // new Date("2026-02-17") แปลงเป็น UTC ทำให้คลาดเคลื่อน 7 ชั่วโมงใน Bangkok (UTC+7)
-            // ใช้วิธีนี้แทนเพื่อให้ได้ Local midnight ตรงกับ parseThaiDate
             const [y, m, d] = val.split('-').map(Number);
             return new Date(y, m - 1, d);
         }
 
-        // ========== DATE PARSER ==========
         function parseThaiDate(dateStr) {
             if (!dateStr) return null;
             let str = String(dateStr).trim();
@@ -1252,7 +1753,6 @@
                 const matchDate = rowDate ? (rowDate >= startDate && rowDate <= endDate) : (!startVal && !endVal);
                 const searchText = `${d.name} ${d.nickname} ${d.dept} ${d.team} ${d.recruiter}`.toLowerCase();
                 const matchSearch = searchVal === '' || searchText.includes(searchVal);
-
                 let matchStatus = true;
                 if (statusVal !== 'all') {
                     if (statusVal === 'pass') matchStatus = isPassedStatus(d);
@@ -1262,7 +1762,6 @@
                 return matchDate && matchSearch && matchStatus;
             });
 
-            // [FIX] Store globally for modal access
             currentFilteredData = filteredData;
 
             const filterEl = document.getElementById('filterStatus');
@@ -1286,7 +1785,6 @@
         }
 
         // ========== SORT TABLE ==========
-        // [NEW] Client-side sort
         function sortTable(key) {
             if (sortKey === key) {
                 sortDir = sortDir === 'asc' ? 'desc' : 'asc';
@@ -1294,7 +1792,6 @@
                 sortKey = key;
                 sortDir = key === 'timestamp' ? 'desc' : 'asc';
             }
-            // Update header indicators
             ['timestamp','days','status'].forEach(k => {
                 const th = document.getElementById('th-' + k);
                 if (!th) return;
@@ -1313,14 +1810,31 @@
             const active = headCount - passed - dropped;
             const rate = headCount > 0 ? Math.round((passed / headCount) * 100) : 0;
 
+            // Update KPI cards (Dashboard tab)
             document.getElementById("kpi-total").innerText = headCount;
             document.getElementById("kpi-passed").innerText = passed;
             document.getElementById("kpi-dropped").innerText = dropped;
             document.getElementById("kpi-active").innerText = active;
             document.getElementById("kpi-rate").innerText = rate + "%";
-            // [NEW] Update rate progress bar
             const rateBar = document.getElementById('kpi-rate-bar');
             if (rateBar) setTimeout(() => { rateBar.style.width = rate + '%'; }, 200);
+
+            // Update Overview mini KPIs
+            const ovTotal = document.getElementById('ov-total');
+            const ovPassed = document.getElementById('ov-passed');
+            const ovDropped = document.getElementById('ov-dropped');
+            const ovRate = document.getElementById('ov-rate');
+            if (ovTotal) ovTotal.innerText = headCount;
+            if (ovPassed) ovPassed.innerText = passed;
+            if (ovDropped) ovDropped.innerText = dropped;
+            if (ovRate) ovRate.innerText = rate + '%';
+
+            // Update employee count badges
+            const empCount = dataToRender.length;
+            const sidebarEmpCount = document.getElementById('sidebar-emp-count');
+            const tabbarEmpCount = document.getElementById('tabbar-emp-count');
+            if (sidebarEmpCount) sidebarEmpCount.innerText = empCount;
+            if (tabbarEmpCount) tabbarEmpCount.innerText = empCount;
 
             renderTable(dataToRender);
             drawCharts(active, passed, dropped, latestRecords);
@@ -1336,7 +1850,6 @@
                 return;
             }
 
-            // Sort
             let sortedData = [...dataToRender];
             sortedData.sort((a, b) => {
                 let aVal, bVal;
@@ -1381,7 +1894,6 @@
                     ? `<span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold" style="background:rgba(16,185,129,0.2); color:var(--emerald);">${daysCount}/3</span>`
                     : `<span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold" style="background:rgba(255,255,255,0.07); color:var(--text-muted);">${daysCount}/3</span>`;
 
-                // [FIX] Use safeEncode to prevent XSS / broken onclick
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="color:var(--text-muted); font-size:12px;">${escapeHtml(dateStr)}</td>
@@ -1397,7 +1909,6 @@
             });
         }
 
-        // [NEW] HTML escape to prevent XSS
         function escapeHtml(str) {
             const div = document.createElement('div');
             div.appendChild(document.createTextNode(String(str || '')));
@@ -1426,22 +1937,16 @@
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     cutout: '68%',
-                    plugins: {
-                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 16, font: { size: 11 } } }
-                    },
+                    plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 16, font: { size: 11 } } } },
                     onHover: (e, el) => { e.native.target.style.cursor = el[0] ? 'pointer' : 'default'; },
                     onClick: (event, elements) => {
                         if (elements.length > 0) {
                             const index = elements[0].index;
                             const label = charts['status'].data.labels[index];
                             let filteredList = [];
-                            if (label.includes('กำลัง')) {
-                                filteredList = dataToRender.filter(isActiveStatus);
-                            } else if (label.includes('ผ่าน')) {
-                                filteredList = dataToRender.filter(isPassedStatus);
-                            } else if (label.includes('ออก')) {
-                                filteredList = dataToRender.filter(isDroppedStatus);
-                            }
+                            if (label.includes('กำลัง')) filteredList = dataToRender.filter(isActiveStatus);
+                            else if (label.includes('ผ่าน')) filteredList = dataToRender.filter(isPassedStatus);
+                            else if (label.includes('ออก')) filteredList = dataToRender.filter(isDroppedStatus);
                             showDetailModal(`สถานะ: ${label}`, filteredList);
                         }
                     }
@@ -1479,11 +1984,8 @@
             dataToRender.forEach(d => {
                 const k = d.team || 'ไม่ระบุทีม';
                 if (!teamStats[k]) teamStats[k] = { successActive: 0, dropped: 0 };
-                if (isDroppedStatus(d)) {
-                    teamStats[k].dropped++;
-                } else {
-                    teamStats[k].successActive++;
-                }
+                if (isDroppedStatus(d)) teamStats[k].dropped++;
+                else teamStats[k].successActive++;
             });
 
             const teamLabels = Object.keys(teamStats);
@@ -1516,13 +2018,8 @@
                             const label = charts['team'].data.labels[index];
                             let filteredList = dataToRender.filter(d => (d.team || 'ไม่ระบุทีม') === label);
                             let subtitle = "ทั้งหมด";
-                            if (datasetIndex === 0) {
-                                filteredList = filteredList.filter(d => !isDroppedStatus(d));
-                                subtitle = "เฉพาะกลุ่มที่รอด";
-                            } else if (datasetIndex === 1) {
-                                filteredList = filteredList.filter(isDroppedStatus);
-                                subtitle = "เฉพาะกลุ่มที่ลาออก/ไม่ผ่าน";
-                            }
+                            if (datasetIndex === 0) { filteredList = filteredList.filter(d => !isDroppedStatus(d)); subtitle = "เฉพาะกลุ่มที่รอด"; }
+                            else if (datasetIndex === 1) { filteredList = filteredList.filter(isDroppedStatus); subtitle = "เฉพาะกลุ่มที่ลาออก/ไม่ผ่าน"; }
                             showDetailModal(`ทีม: ${label} (${subtitle})`, filteredList);
                         }
                     }
@@ -1530,13 +2027,12 @@
             });
         }
 
-        // ========== [NEW] SHOW TOTAL TRAINEES ==========
+        // ========== SHOW TOTAL / PASSED TRAINEES ==========
         function showTotalTrainees() {
             const latestRecords = getLatestRecords(currentFilteredData);
             showDetailModal(`ผู้เข้าร่วมทั้งหมด (เข้าร่วมจริง)`, latestRecords);
         }
 
-        // ========== [NEW] SHOW PASSED TRAINEES ==========
         function showPassedTrainees() {
             const latestRecords = getLatestRecords(currentFilteredData);
             const passedList = latestRecords.filter(isPassedStatus);
@@ -1545,7 +2041,6 @@
 
         // ========== DROPPED MODAL ==========
         function showDroppedTrainees() {
-            // [FIX] Now uses currentFilteredData instead of allData
             const latestRecords = getLatestRecords(currentFilteredData);
             const droppedList = latestRecords.filter(isDroppedStatus);
 
@@ -1602,7 +2097,6 @@
 
         // ========== ACTIVE MODAL ==========
         function showActiveTrainees() {
-            // [FIX] Now uses currentFilteredData instead of allData
             const latestRecords = getLatestRecords(currentFilteredData);
             const activeList = latestRecords.filter(isActiveStatus);
 
@@ -1679,46 +2173,34 @@
             const name = decodeURIComponent(encodedName);
             const timestamp = decodeURIComponent(encodedTimestamp);
             const person = allData.find(d => d.name === name && d.timestamp === timestamp);
-            if (!person) {
-                showToast('ไม่พบข้อมูลพนักงาน', 'warning');
-                return;
-            }
+            if (!person) { showToast('ไม่พบข้อมูลพนักงาน', 'warning'); return; }
 
             let daysCount = checkDay(person.d1) + checkDay(person.d2) + checkDay(person.d3);
             let badgeHtml = `<span class="badge badge-amber">${escapeHtml(person.status || 'Active')}</span>`;
-            if (isPassedStatus(person)) {
-                badgeHtml = `<span class="badge badge-emerald">${escapeHtml(person.status)}</span>`;
-            } else if (isDroppedStatus(person)) {
-                badgeHtml = `<span class="badge badge-rose">${escapeHtml(person.status)}</span>`;
-            }
+            if (isPassedStatus(person)) badgeHtml = `<span class="badge badge-emerald">${escapeHtml(person.status)}</span>`;
+            else if (isDroppedStatus(person)) badgeHtml = `<span class="badge badge-rose">${escapeHtml(person.status)}</span>`;
 
             const pct = Math.round((daysCount / 3) * 100);
             const barColor = daysCount === 3 ? 'var(--emerald)' : daysCount >= 2 ? 'var(--amber)' : 'var(--rose)';
 
-            // Check if retrain
             const cleanKey = person.name.trim().toLowerCase() + '|' + person.nickname.trim().toLowerCase();
             const isRetrain = (allNameCounts[cleanKey] || 0) > 1;
             const retrainNote = isRetrain ? `<span class="badge badge-violet ml-2"><i class="fa-solid fa-rotate-right mr-1"></i>Re-train ครั้งที่ ${allNameCounts[cleanKey]}</span>` : '';
 
-            // Day attendance detail
             const dayDetails = [
                 { label: 'วันที่ 1', val: person.d1 },
                 { label: 'วันที่ 2', val: person.d2 },
                 { label: 'วันที่ 3', val: person.d3 }
             ].map(day => {
                 const attended = checkDay(day.val);
-                const icon = attended
-                    ? `<i class="fa-solid fa-circle-check" style="color:var(--emerald);"></i>`
-                    : `<i class="fa-regular fa-circle-xmark" style="color:var(--text-dim);"></i>`;
+                const icon = attended ? `<i class="fa-solid fa-circle-check" style="color:var(--emerald);"></i>` : `<i class="fa-regular fa-circle-xmark" style="color:var(--text-dim);"></i>`;
                 const val = day.val ? ` <span style="color:var(--text-muted); font-size:10px;">(${escapeHtml(day.val)})</span>` : '';
                 return `<div class="flex items-center gap-2 text-sm py-1">${icon} ${day.label}${val}</div>`;
             }).join('');
 
             document.getElementById('individualModalBody').innerHTML = `
                 <div class="flex items-center gap-4 mb-6 pb-5" style="border-bottom:1px solid var(--border);">
-                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0" style="background:rgba(59,130,246,0.12); color:var(--accent);">
-                        <i class="fa-solid fa-user-tie"></i>
-                    </div>
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0" style="background:rgba(59,130,246,0.12); color:var(--accent);"><i class="fa-solid fa-user-tie"></i></div>
                     <div class="flex-1">
                         <h2 class="text-xl font-bold" style="color:var(--text); font-family:'Space Grotesk',sans-serif;">${escapeHtml(person.prefix || '')}${escapeHtml(person.name)}</h2>
                         <div class="flex flex-wrap items-center gap-3 mt-2">
@@ -1729,22 +2211,10 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3 mb-5">
-                    <div class="p-4 rounded-xl" style="background:rgba(255,255,255,0.04); border:1px solid var(--border);">
-                        <div class="text-[10px] font-bold uppercase tracking-widest mb-1.5" style="color:var(--text-dim);">Department</div>
-                        <div class="text-sm font-semibold" style="color:var(--text);">${escapeHtml(person.dept || '-')}</div>
-                    </div>
-                    <div class="p-4 rounded-xl" style="background:rgba(255,255,255,0.04); border:1px solid var(--border);">
-                        <div class="text-[10px] font-bold uppercase tracking-widest mb-1.5" style="color:var(--text-dim);">Team</div>
-                        <div class="text-sm font-semibold" style="color:var(--accent);">${escapeHtml(person.team || '-')}</div>
-                    </div>
-                    <div class="p-4 rounded-xl" style="background:rgba(255,255,255,0.04); border:1px solid var(--border);">
-                        <div class="text-[10px] font-bold uppercase tracking-widest mb-1.5" style="color:var(--text-dim);">Start Date</div>
-                        <div class="text-sm font-semibold" style="color:var(--text);">${escapeHtml(person.timestamp || '-')}</div>
-                    </div>
-                    <div class="p-4 rounded-xl" style="background:rgba(255,255,255,0.04); border:1px solid var(--border);">
-                        <div class="text-[10px] font-bold uppercase tracking-widest mb-1.5" style="color:var(--text-dim);">Recruiter</div>
-                        <div class="text-sm font-semibold" style="color:var(--text);">${escapeHtml(person.recruiter || '-')}</div>
-                    </div>
+                    <div class="p-4 rounded-xl" style="background:rgba(255,255,255,0.04); border:1px solid var(--border);"><div class="text-[10px] font-bold uppercase tracking-widest mb-1.5" style="color:var(--text-dim);">Department</div><div class="text-sm font-semibold" style="color:var(--text);">${escapeHtml(person.dept || '-')}</div></div>
+                    <div class="p-4 rounded-xl" style="background:rgba(255,255,255,0.04); border:1px solid var(--border);"><div class="text-[10px] font-bold uppercase tracking-widest mb-1.5" style="color:var(--text-dim);">Team</div><div class="text-sm font-semibold" style="color:var(--accent);">${escapeHtml(person.team || '-')}</div></div>
+                    <div class="p-4 rounded-xl" style="background:rgba(255,255,255,0.04); border:1px solid var(--border);"><div class="text-[10px] font-bold uppercase tracking-widest mb-1.5" style="color:var(--text-dim);">Start Date</div><div class="text-sm font-semibold" style="color:var(--text);">${escapeHtml(person.timestamp || '-')}</div></div>
+                    <div class="p-4 rounded-xl" style="background:rgba(255,255,255,0.04); border:1px solid var(--border);"><div class="text-[10px] font-bold uppercase tracking-widest mb-1.5" style="color:var(--text-dim);">Recruiter</div><div class="text-sm font-semibold" style="color:var(--text);">${escapeHtml(person.recruiter || '-')}</div></div>
                 </div>
                 <div class="p-4 rounded-xl mb-4" style="background:rgba(255,255,255,0.03); border:1px solid var(--border);">
                     <div class="flex justify-between items-center mb-3">
@@ -1758,10 +2228,7 @@
                     <div class="text-xs font-semibold" style="color:var(--text-muted);">สถานะล่าสุด</div>
                     ${badgeHtml}
                 </div>
-                ${person.reason ? `<div class="p-4 rounded-xl" style="background:rgba(244,63,94,0.07); border:1px solid rgba(244,63,94,0.2);">
-                    <div class="text-[10px] font-bold uppercase tracking-widest mb-2" style="color:var(--rose);">หมายเหตุ / สาเหตุ</div>
-                    <div class="text-sm font-medium" style="color:var(--rose);">${escapeHtml(person.reason)}</div>
-                </div>` : ''}`;
+                ${person.reason ? `<div class="p-4 rounded-xl" style="background:rgba(244,63,94,0.07); border:1px solid rgba(244,63,94,0.2);"><div class="text-[10px] font-bold uppercase tracking-widest mb-2" style="color:var(--rose);">หมายเหตุ / สาเหตุ</div><div class="text-sm font-medium" style="color:var(--rose);">${escapeHtml(person.reason)}</div></div>` : ''}`;
 
             openModal('individualModal', 'individualModalContent');
         }
@@ -1779,11 +2246,8 @@
             } else {
                 dataList.forEach(d => {
                     let badgeHtml = `<span class="badge badge-amber">${escapeHtml(d.status || 'Active')}</span>`;
-                    if (isPassedStatus(d)) {
-                        badgeHtml = `<span class="badge badge-emerald">${escapeHtml(d.status)}</span>`;
-                    } else if (isDroppedStatus(d)) {
-                        badgeHtml = `<span class="badge badge-rose">${escapeHtml(d.status)}</span>`;
-                    }
+                    if (isPassedStatus(d)) badgeHtml = `<span class="badge badge-emerald">${escapeHtml(d.status)}</span>`;
+                    else if (isDroppedStatus(d)) badgeHtml = `<span class="badge badge-rose">${escapeHtml(d.status)}</span>`;
 
                     let retrainBadge = '';
                     const cleanKey = d.name.trim().toLowerCase() + '|' + d.nickname.trim().toLowerCase();
@@ -1834,7 +2298,6 @@
         }
 
         // ========== TOAST ==========
-        // [NEW] Toast notifications
         function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
             const iconMap = { success: 'fa-circle-check', error: 'fa-circle-exclamation', warning: 'fa-triangle-exclamation', info: 'fa-circle-info' };
@@ -2002,11 +2465,7 @@ ${attendanceInsight}
             const wrapper = document.getElementById('aiTextWrapper');
             const icon = document.getElementById('toggleAIIcon');
             wrapper.classList.remove('hidden');
-            // [FIX] Safe icon replacement
-            if (icon) {
-                icon.classList.remove('fa-chevron-down');
-                icon.classList.add('fa-chevron-up');
-            }
+            if (icon) { icon.classList.remove('fa-chevron-down'); icon.classList.add('fa-chevron-up'); }
 
             const btnTextSpan = document.getElementById('aiBtnText');
             btnTextSpan.innerHTML = `<i class="fa-solid fa-check-double"></i> AI จัดอันดับเรียบร้อย!`;
@@ -2021,44 +2480,498 @@ ${attendanceInsight}
             }, 3000);
         }
 
-        // ========== PREPARE REPORT ==========
-        function prepareReport() {
+        // ========== HELPERS: FORMAT THAI DATE ==========
+        function formatThaiDate(dStr) {
+            if (!dStr) return '-';
+            const d = new Date(dStr);
+            const mn = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+            return `${d.getDate()} ${mn[d.getMonth()]} ${d.getFullYear() + 543}`;
+        }
+        function getDateRangeLabel() {
+            const s = document.getElementById('startDate').value;
+            const e = document.getElementById('endDate').value;
+            if (!s || !e) return 'ภาพรวมสะสมทั้งหมด (All Time)';
+            const sd = new Date(s); const ed = new Date(e);
+            const mn = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+            if (sd.getMonth() === ed.getMonth() && sd.getFullYear() === ed.getFullYear())
+                return `ประจำเดือน ${mn[sd.getMonth()]} ${sd.getFullYear() + 543}`;
+            return `${sd.getDate()} ${mn[sd.getMonth()]} ${sd.getFullYear()+543} – ${ed.getDate()} ${mn[ed.getMonth()]} ${ed.getFullYear()+543}`;
+        }
+
+        // ========== CAPTURE CHARTS AS BASE64 IMAGES ==========
+        function captureChartsAsImages() {
+            const out = {};
+            const savedTab = currentTab;
+            // Force all panels visible so canvases are rendered
+            document.querySelectorAll('.tab-panel').forEach(p => { p.style.display = 'block'; p.style.opacity = '1'; });
+            Object.values(charts).forEach(c => { try { c && c.resize && c.resize(); } catch(e){} });
+            ['statusChart','deptChart','teamChart'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) { try { out[id] = el.toDataURL('image/png', 1.0); } catch(e){ out[id] = ''; } }
+            });
+            // Restore
+            document.querySelectorAll('.tab-panel').forEach(p => { p.style.display = ''; p.style.opacity = ''; });
+            showTab(savedTab);
+            Object.values(charts).forEach(c => { try { c && c.resize && c.resize(); } catch(e){} });
+            return out;
+        }
+
+        // ========== BUILD CORPORATE REPORT HTML ==========
+        function buildReportHTML(chartImgs, dateRangeLabel, printDate) {
+            const lr = getLatestRecords(currentFilteredData);
+            const hc = lr.length;
+            const passed  = lr.filter(isPassedStatus).length;
+            const dropped = lr.filter(isDroppedStatus).length;
+            const active  = hc - passed - dropped;
+            const rate    = hc > 0 ? Math.round((passed / hc) * 100) : 0;
+            const dropRate= hc > 0 ? Math.round((dropped / hc) * 100) : 0;
+            const aiText  = document.getElementById('reportSummaryInput').value.trim();
+
+            // Team stats
+            const teamStats = {};
+            currentFilteredData.forEach(d => {
+                const k = d.team || 'ไม่ระบุ';
+                if (!teamStats[k]) teamStats[k] = {total:0,pass:0,drop:0,active:0};
+                teamStats[k].total++;
+                if (isPassedStatus(d)) teamStats[k].pass++;
+                else if (isDroppedStatus(d)) teamStats[k].drop++;
+                else teamStats[k].active++;
+            });
+            const teamRows = Object.entries(teamStats)
+                .sort((a,b) => b[1].total - a[1].total)
+                .map(([name, s], i) => {
+                    const r = s.total > 0 ? Math.round((s.pass/s.total)*100) : 0;
+                    const barW = Math.max(r, 3);
+                    const barC = r >= 70 ? '#10b981' : r >= 40 ? '#f59e0b' : '#f43f5e';
+                    return `<tr>
+                        <td style="padding:9px 14px;border-bottom:1px solid #f1f5f9;font-weight:600;color:#0f172a;">${i+1}. ${escapeHtml(name)}</td>
+                        <td style="padding:9px 14px;border-bottom:1px solid #f1f5f9;text-align:center;">${s.total}</td>
+                        <td style="padding:9px 14px;border-bottom:1px solid #f1f5f9;text-align:center;color:#059669;font-weight:700;">${s.pass}</td>
+                        <td style="padding:9px 14px;border-bottom:1px solid #f1f5f9;text-align:center;color:#d97706;">${s.active}</td>
+                        <td style="padding:9px 14px;border-bottom:1px solid #f1f5f9;text-align:center;color:#e11d48;">${s.drop}</td>
+                        <td style="padding:9px 14px;border-bottom:1px solid #f1f5f9;">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <div style="flex:1;height:6px;background:#e2e8f0;border-radius:4px;overflow:hidden;">
+                                    <div style="width:${barW}%;height:100%;background:${barC};border-radius:4px;"></div>
+                                </div>
+                                <span style="font-size:11px;font-weight:700;color:${barC};min-width:30px;">${r}%</span>
+                            </div>
+                        </td>
+                    </tr>`;
+                }).join('');
+
+            // Employee table rows (latest records only)
+            const tableRows = lr.sort((a,b) => (parseThaiDate(b.timestamp)||new Date(0))-(parseThaiDate(a.timestamp)||new Date(0)))
+                .map((d, i) => {
+                    const days = checkDay(d.d1)+checkDay(d.d2)+checkDay(d.d3);
+                    let statusLabel = d.status || 'Active';
+                    let statusStyle = 'background:#fef3c7;color:#92400e;border:1px solid #fcd34d;';
+                    if (isPassedStatus(d)) statusStyle = 'background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;';
+                    else if (isDroppedStatus(d)) statusStyle = 'background:#ffe4e6;color:#9f1239;border:1px solid #fda4af;';
+                    const retrainKey = d.name.trim().toLowerCase()+'|'+d.nickname.trim().toLowerCase();
+                    const isRe = (allNameCounts[retrainKey]||0) > 1;
+                    return `<tr style="background:${i%2===0?'#ffffff':'#f8fafc'};">
+                        <td style="padding:7px 10px;font-size:11px;color:#64748b;">${escapeHtml(d.timestamp?d.timestamp.split(' ')[0]:'-')}</td>
+                        <td style="padding:7px 10px;font-size:12px;font-weight:600;color:#0f172a;">${escapeHtml((d.prefix||'')+d.name)}${isRe?' <span style="font-size:9px;background:#ede9fe;color:#5b21b6;padding:1px 5px;border-radius:4px;border:1px solid #c4b5fd;">Re</span>':''}</td>
+                        <td style="padding:7px 10px;font-size:11px;color:#475569;">${escapeHtml(d.dept||'-')}</td>
+                        <td style="padding:7px 10px;font-size:11px;color:#475569;">${escapeHtml(d.team||'-')}</td>
+                        <td style="padding:7px 10px;text-align:center;font-size:12px;font-weight:700;color:${days===3?'#059669':'#64748b'}">${days}/3</td>
+                        <td style="padding:7px 10px;"><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;${statusStyle}">${escapeHtml(statusLabel)}</span></td>
+                        <td style="padding:7px 10px;font-size:11px;color:#475569;">${escapeHtml(d.recruiter||'-')}</td>
+                        <td style="padding:7px 10px;font-size:11px;color:#e11d48;">${escapeHtml(d.reason||'-')}</td>
+                    </tr>`;
+                }).join('');
+
+            const rateBarW = Math.max(rate, 2);
+            const dropBarW = Math.max(dropRate, 2);
+            const activeBarW = Math.max(hc>0?Math.round((active/hc)*100):0, 2);
+
+            return `<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>รายงานการอบรมพนักงาน — ${escapeHtml(dateRangeLabel)}</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    @page { size: A4; margin: 12mm 14mm 14mm 14mm; }
+    body { font-family:'IBM Plex Sans Thai','Sarabun',sans-serif; background:#fff; color:#0f172a; font-size:12px; line-height:1.6; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    
+    /* ---- HEADER BANNER ---- */
+    .page-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1e40af 100%);
+        color: white;
+        padding: 22px 28px 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        position: relative;
+        overflow: hidden;
+        page-break-inside: avoid;
+    }
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: -30px; right: -30px;
+        width: 140px; height: 140px;
+        border-radius: 50%;
+        background: rgba(59,130,246,0.15);
+    }
+    .page-header::after {
+        content: '';
+        position: absolute;
+        bottom: -20px; right: 80px;
+        width: 90px; height: 90px;
+        border-radius: 50%;
+        background: rgba(99,102,241,0.12);
+    }
+    .header-top { display:flex; justify-content:space-between; align-items:flex-start; }
+    .header-badge {
+        font-size: 9px; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.1em; color: #93c5fd;
+        background: rgba(59,130,246,0.2);
+        border: 1px solid rgba(59,130,246,0.4);
+        padding: 3px 10px; border-radius: 20px;
+        display: inline-block; margin-bottom: 8px;
+    }
+    .header-title { font-size: 20px; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 6px; }
+    .header-sub { font-size: 12px; color: #93c5fd; margin-bottom: 4px; }
+    .header-meta { font-size: 10px; color: rgba(255,255,255,0.55); margin-top: 10px; display:flex; gap:20px; flex-wrap:wrap; }
+    .header-meta span { display:flex; align-items:center; gap:4px; }
+    .header-logo {
+        width: 50px; height: 50px;
+        background: rgba(255,255,255,0.1);
+        border: 2px solid rgba(255,255,255,0.2);
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 22px; flex-shrink: 0;
+    }
+
+    /* ---- KPI ROW ---- */
+    .kpi-row { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:18px; page-break-inside:avoid; }
+    .kpi-box {
+        border-radius: 10px;
+        padding: 14px 12px 12px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+    }
+    .kpi-box::before { content:''; position:absolute; top:0;left:0;right:0;height:3px; border-radius:10px 10px 0 0; }
+    .kpi-box.blue::before  { background:linear-gradient(90deg,#3b82f6,#93c5fd); }
+    .kpi-box.green::before { background:linear-gradient(90deg,#10b981,#6ee7b7); }
+    .kpi-box.red::before   { background:linear-gradient(90deg,#f43f5e,#fda4af); }
+    .kpi-box.amber::before { background:linear-gradient(90deg,#f59e0b,#fcd34d); }
+    .kpi-box.violet::before{ background:linear-gradient(90deg,#8b5cf6,#c4b5fd); }
+    .kpi-num  { font-size:28px; font-weight:700; line-height:1; margin:6px 0 4px; }
+    .kpi-lbl  { font-size:9px; text-transform:uppercase; letter-spacing:0.08em; color:#64748b; font-weight:700; }
+    .kpi-bar-wrap { height:4px; background:#f1f5f9; border-radius:4px; margin-top:8px; overflow:hidden; }
+    .kpi-bar-fill { height:100%; border-radius:4px; }
+
+    /* ---- SECTION HEADER ---- */
+    .sec-header {
+        display:flex; align-items:center; gap:10px;
+        margin: 18px 0 10px;
+        page-break-after: avoid;
+    }
+    .sec-icon {
+        width:28px; height:28px; border-radius:7px;
+        display:flex; align-items:center; justify-content:center;
+        font-size:12px; flex-shrink:0;
+    }
+    .sec-icon.blue   { background:#dbeafe; color:#1d4ed8; }
+    .sec-icon.green  { background:#d1fae5; color:#065f46; }
+    .sec-icon.amber  { background:#fef3c7; color:#92400e; }
+    .sec-icon.violet { background:#ede9fe; color:#5b21b6; }
+    .sec-title { font-size:13px; font-weight:700; color:#0f172a; }
+    .sec-rule { flex:1; height:1px; background:linear-gradient(90deg,#e2e8f0,transparent); }
+
+    /* ---- CHARTS ROW ---- */
+    .charts-row { display:grid; grid-template-columns:1fr 1.6fr; gap:12px; margin-bottom:14px; page-break-inside:avoid; }
+    .chart-box {
+        background:#fff; border:1px solid #e2e8f0;
+        border-radius:10px; padding:14px;
+    }
+    .chart-box-full { background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:14px; margin-bottom:14px; page-break-inside:avoid; }
+    .chart-label { font-size:10px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.07em; margin-bottom:8px; }
+    .chart-box img, .chart-box-full img { width:100%; height:auto; display:block; }
+
+    /* ---- TABLE SECTION ---- */
+    .data-card { background:#fff; border:1px solid #e2e8f0; border-radius:10px; overflow:hidden; margin-bottom:14px; }
+    .data-card-header { padding:10px 14px; background:linear-gradient(90deg,#f8fafc,#fff); border-bottom:2px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; }
+    .data-card-title { font-size:12px; font-weight:700; color:#0f172a; }
+    .data-card-count { font-size:10px; font-weight:700; color:#2563eb; background:#dbeafe; padding:2px 8px; border-radius:5px; border:1px solid #93c5fd; }
+    table.report-table { width:100%; border-collapse:collapse; font-size:11px; }
+    table.report-table thead tr { background:linear-gradient(90deg,#1e3a5f,#1e40af); }
+    table.report-table thead th { padding:8px 10px; color:#fff; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; text-align:left; }
+    table.report-table tbody td { padding:7px 10px; border-bottom:1px solid #f1f5f9; color:#334155; font-size:11px; vertical-align:middle; }
+    table.team-table { width:100%; border-collapse:collapse; }
+    table.team-table thead tr { background:linear-gradient(90deg,#1e3a5f,#1e40af); }
+    table.team-table thead th { padding:8px 14px; color:#fff; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; text-align:left; }
+
+    /* ---- AI SUMMARY ---- */
+    .ai-box { background:linear-gradient(135deg,#f0f9ff,#f8faff); border:1px solid #bfdbfe; border-radius:10px; padding:16px 18px; page-break-inside:avoid; }
+    .ai-header { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+    .ai-badge { font-size:9px; font-weight:700; background:#1e40af; color:#fff; padding:2px 8px; border-radius:4px; text-transform:uppercase; letter-spacing:0.07em; }
+    .ai-body { font-size:11px; line-height:1.85; color:#1e293b; white-space:pre-wrap; font-family:'IBM Plex Sans Thai',monospace; }
+
+    /* ---- SIGNATURE ---- */
+    .sig-row { display:flex; justify-content:space-around; margin-top:20px; padding:18px 0; border-top:2px solid #e2e8f0; page-break-inside:avoid; }
+    .sig-box { text-align:center; width:200px; }
+    .sig-line { border-top:1.5px solid #334155; padding-top:8px; margin-top:30px; font-size:11px; color:#334155; }
+    .sig-role { font-size:10px; color:#64748b; margin-top:3px; }
+    .sig-date { font-size:10px; color:#94a3b8; margin-top:4px; }
+
+    /* ---- PAGE FOOTER ---- */
+    .page-footer { margin-top:16px; padding-top:10px; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; font-size:9px; color:#94a3b8; }
+    .footer-logo { font-weight:700; color:#475569; font-size:10px; }
+
+    /* ---- DIVIDER ---- */
+    .page-break { page-break-before: always; }
+    .avoid-break { page-break-inside: avoid; }
+
+    @media print {
+        body { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+        .page-break { page-break-before: always; }
+    }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER BANNER ===== -->
+<div class="page-header">
+    <div class="header-top">
+        <div style="flex:1;">
+            <div class="header-badge">HR Training Report — Confidential</div>
+            <div class="header-title">รายงานสรุปผลโครงการอบรมพนักงานใหม่</div>
+            <div class="header-sub">${escapeHtml(dateRangeLabel)}</div>
+        </div>
+        <div class="header-logo">📊</div>
+    </div>
+    <div class="header-meta">
+        <span>📅 จัดทำวันที่: ${escapeHtml(printDate)}</span>
+        <span>🏢 ฝ่ายบริหารทรัพยากรบุคคล (HR)</span>
+        <span>📋 จำนวนผู้เข้าร่วม: ${hc} คน</span>
+        <span>✅ Success Rate: ${rate}%</span>
+    </div>
+</div>
+
+<!-- ===== KPI ROW ===== -->
+<div class="kpi-row avoid-break">
+    <div class="kpi-box blue">
+        <div class="kpi-lbl">เข้าร่วมจริง</div>
+        <div class="kpi-num" style="color:#1d4ed8;">${hc}</div>
+        <div style="font-size:10px;color:#64748b;">จากข้อมูลล่าสุด</div>
+    </div>
+    <div class="kpi-box green">
+        <div class="kpi-lbl">ผ่านอบรม</div>
+        <div class="kpi-num" style="color:#059669;">${passed}</div>
+        <div style="font-size:10px;color:#64748b;">Pass / Back Office</div>
+    </div>
+    <div class="kpi-box red">
+        <div class="kpi-lbl">ออก / ไม่ผ่าน</div>
+        <div class="kpi-num" style="color:#e11d48;">${dropped}</div>
+        <div style="font-size:10px;color:#64748b;">Drop / Resign</div>
+    </div>
+    <div class="kpi-box amber">
+        <div class="kpi-lbl">กำลังเทรน</div>
+        <div class="kpi-num" style="color:#d97706;">${active}</div>
+        <div style="font-size:10px;color:#64748b;">Active Training</div>
+    </div>
+    <div class="kpi-box violet">
+        <div class="kpi-lbl">อัตราการผ่าน</div>
+        <div class="kpi-num" style="color:#7c3aed;">${rate}%</div>
+        <div class="kpi-bar-wrap"><div class="kpi-bar-fill" style="width:${rateBarW}%;background:linear-gradient(90deg,#7c3aed,#a78bfa);"></div></div>
+    </div>
+</div>
+
+<!-- ===== PROGRESS OVERVIEW ===== -->
+<div class="avoid-break" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:18px;">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#64748b;margin-bottom:10px;">สัดส่วนผลลัพธ์โครงการ</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:11px;color:#059669;font-weight:700;min-width:80px;">✅ ผ่านอบรม</div>
+            <div style="flex:1;height:10px;background:#e2e8f0;border-radius:6px;overflow:hidden;">
+                <div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;width:${rateBarW}%;height:100%;background:linear-gradient(90deg,#10b981,#34d399);border-radius:6px;"></div>
+            </div>
+            <span style="font-size:12px;font-weight:700;color:#059669;min-width:38px;">${rate}%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:11px;color:#d97706;font-weight:700;min-width:80px;">🔄 กำลังเทรน</div>
+            <div style="flex:1;height:10px;background:#e2e8f0;border-radius:6px;overflow:hidden;">
+                <div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;width:${activeBarW}%;height:100%;background:linear-gradient(90deg,#f59e0b,#fcd34d);border-radius:6px;"></div>
+            </div>
+            <span style="font-size:12px;font-weight:700;color:#d97706;min-width:38px;">${activeBarW}%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:11px;color:#e11d48;font-weight:700;min-width:80px;">❌ ออก/ไม่ผ่าน</div>
+            <div style="flex:1;height:10px;background:#e2e8f0;border-radius:6px;overflow:hidden;">
+                <div style="-webkit-print-color-adjust:exact;print-color-adjust:exact;width:${dropBarW}%;height:100%;background:linear-gradient(90deg,#f43f5e,#fb7185);border-radius:6px;"></div>
+            </div>
+            <span style="font-size:12px;font-weight:700;color:#e11d48;min-width:38px;">${dropRate}%</span>
+        </div>
+    </div>
+</div>
+
+<!-- ===== CHARTS ROW ===== -->
+<div class="sec-header">
+    <div class="sec-icon blue">📈</div>
+    <div class="sec-title">กราฟวิเคราะห์ภาพรวม</div>
+    <div class="sec-rule"></div>
+</div>
+<div class="charts-row">
+    <div class="chart-box">
+        <div class="chart-label">สถานะผู้เข้าอบรม (Doughnut)</div>
+        ${chartImgs.statusChart ? `<img src="${chartImgs.statusChart}" alt="Status Chart">` : '<div style="height:160px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:11px;">ไม่มีข้อมูลกราฟ</div>'}
+    </div>
+    <div class="chart-box">
+        <div class="chart-label">จำนวนพนักงานแยกตามแผนก</div>
+        ${chartImgs.deptChart ? `<img src="${chartImgs.deptChart}" alt="Dept Chart">` : '<div style="height:160px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:11px;">ไม่มีข้อมูลกราฟ</div>'}
+    </div>
+</div>
+<div class="chart-box-full">
+    <div class="chart-label">อัตราการรอดและลาออก แยกตามทีม (Stacked Bar)</div>
+    ${chartImgs.teamChart ? `<img src="${chartImgs.teamChart}" alt="Team Chart">` : '<div style="height:160px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:11px;">ไม่มีข้อมูลกราฟ</div>'}
+</div>
+
+<!-- ===== TEAM PERFORMANCE TABLE ===== -->
+<div class="sec-header">
+    <div class="sec-icon green">🏆</div>
+    <div class="sec-title">ประสิทธิภาพแยกตามทีม</div>
+    <div class="sec-rule"></div>
+</div>
+<div class="data-card avoid-break">
+    <div class="data-card-header">
+        <div class="data-card-title">Team Performance Summary</div>
+        <div class="data-card-count">${Object.keys(teamStats).length} ทีม</div>
+    </div>
+    <table class="team-table">
+        <thead><tr>
+            <th>ทีม</th>
+            <th style="text-align:center;">รวม</th>
+            <th style="text-align:center;">ผ่าน</th>
+            <th style="text-align:center;">เทรน</th>
+            <th style="text-align:center;">ออก</th>
+            <th>อัตราผ่าน</th>
+        </tr></thead>
+        <tbody>${teamRows || '<tr><td colspan="6" style="text-align:center;padding:16px;color:#94a3b8;">ไม่มีข้อมูล</td></tr>'}</tbody>
+    </table>
+</div>
+
+<!-- ===== EMPLOYEE TABLE ===== -->
+<div class="page-break"></div>
+<div class="sec-header">
+    <div class="sec-icon amber">👥</div>
+    <div class="sec-title">ฐานข้อมูลรายชื่อพนักงาน</div>
+    <div class="sec-rule"></div>
+</div>
+<div class="data-card">
+    <div class="data-card-header">
+        <div class="data-card-title">รายชื่อผู้เข้าร่วมโครงการทั้งหมด</div>
+        <div class="data-card-count">${lr.length} รายการ</div>
+    </div>
+    <table class="report-table">
+        <thead><tr>
+            <th>วันที่</th><th>ชื่อ-สกุล</th><th>แผนก</th><th>ทีม</th>
+            <th style="text-align:center;">มาเรียน</th><th>สถานะ</th>
+            <th>ผู้แนะนำ</th><th>หมายเหตุ</th>
+        </tr></thead>
+        <tbody>${tableRows || '<tr><td colspan="8" style="text-align:center;padding:16px;color:#94a3b8;">ไม่มีข้อมูล</td></tr>'}</tbody>
+    </table>
+</div>
+
+<!-- ===== AI SUMMARY ===== -->
+${aiText ? `
+<div class="page-break"></div>
+<div class="sec-header">
+    <div class="sec-icon violet">⚡</div>
+    <div class="sec-title">Executive Analytical Summary (AI)</div>
+    <div class="sec-rule"></div>
+</div>
+<div class="ai-box">
+    <div class="ai-header">
+        <div class="ai-badge">AI Analysis Report</div>
+        <div style="font-size:10px;color:#64748b;">ประมวลผลโดยระบบ AI วิเคราะห์ข้อมูลอัตโนมัติ</div>
+    </div>
+    <div class="ai-body">${escapeHtml(aiText)}</div>
+</div>
+` : ''}
+
+<!-- ===== SIGNATURE ===== -->
+<div class="sig-row">
+    <div class="sig-box">
+        <div style="font-size:11px;font-weight:700;color:#0f172a;margin-bottom:4px;">ผู้จัดทำรายงาน</div>
+        <div style="font-size:10px;color:#64748b;">HR Training Manager</div>
+        <div class="sig-line">(.................................................)</div>
+        <div class="sig-date">วันที่ ......... / ......... / .........</div>
+    </div>
+    <div class="sig-box">
+        <div style="font-size:11px;font-weight:700;color:#0f172a;margin-bottom:4px;">ผู้ตรวจสอบ</div>
+        <div style="font-size:10px;color:#64748b;">HR Department Head</div>
+        <div class="sig-line">(.................................................)</div>
+        <div class="sig-date">วันที่ ......... / ......... / .........</div>
+    </div>
+    <div class="sig-box">
+        <div style="font-size:11px;font-weight:700;color:#0f172a;margin-bottom:4px;">ผู้บริหารรับทราบ</div>
+        <div style="font-size:10px;color:#64748b;">General Manager / Director</div>
+        <div class="sig-line">(.................................................)</div>
+        <div class="sig-date">วันที่ ......... / ......... / .........</div>
+    </div>
+</div>
+
+<!-- ===== PAGE FOOTER ===== -->
+<div class="page-footer">
+    <div class="footer-logo">📊 HR Training Dashboard — Confidential</div>
+    <div>จัดทำด้วยระบบ HR Portal Live Dashboard | ${escapeHtml(printDate)}</div>
+</div>
+
+</body>
+</html>`;
+        }
+
+        // ========== PREPARE REPORT (NEW WINDOW APPROACH) ==========
+        async function prepareReport() {
             const start = document.getElementById('startDate').value;
-            const end = document.getElementById('endDate').value;
+            const end   = document.getElementById('endDate').value;
             if (!start || !end) {
-                Swal.fire({ icon: 'warning', title: 'กรุณาเลือกช่วงวันที่', text: 'กรุณาเลือกตั้งแต่วันที่ และ ถึงวันที่ ก่อนกดพิมพ์รายงานครับ', confirmButtonColor: '#3b82f6', background: '#1c2230', color: '#e6edf3' });
+                Swal.fire({ icon:'warning', title:'กรุณาเลือกช่วงวันที่', text:'กรุณาเลือกตั้งแต่วันที่ และ ถึงวันที่ ก่อนกดพิมพ์รายงานครับ', confirmButtonColor:'#3b82f6', background:'#1c2230', color:'#e6edf3' });
                 return;
             }
-            const formatThai = (dStr) => {
-                const d = new Date(dStr);
-                const monthNames = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
-                return `${d.getDate()} ${monthNames[d.getMonth()]} ${d.getFullYear() + 543}`;
-            };
-            document.getElementById('reportDateRange').innerText = `${formatThai(start)} ถึง ${formatThai(end)}`;
 
-            const wrapper = document.getElementById('aiTextWrapper');
-            wrapper.classList.remove('hidden');
+            Swal.fire({ title:'🖨️ กำลังเตรียมรายงาน...', html:'<div style="font-size:13px;color:#93c5fd;">กำลังจับภาพกราฟและประมวลผลข้อมูล</div>', allowOutsideClick:false, background:'#1c2230', color:'#e6edf3', didOpen:()=>{ Swal.showLoading(); } });
 
-            const summaryInput = document.getElementById('reportSummaryInput');
-            const summaryText = summaryInput.value;
-            if (summaryText.trim() !== "") {
-                const div = document.createElement('div');
-                div.id = "tempSummaryDiv";
-                div.className = "whitespace-pre-wrap text-[15px] text-slate-800 bg-transparent border-0 p-2 font-sarabun mt-2";
-                div.innerText = summaryText;
-                summaryInput.style.display = "none";
-                summaryInput.parentNode.insertBefore(div, summaryInput.nextSibling);
-            }
+            // Small delay so Swal renders
+            await new Promise(r => setTimeout(r, 300));
 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setTimeout(() => {
-                window.print();
-                if (summaryText.trim() !== "") {
-                    const tempDiv = document.getElementById('tempSummaryDiv');
-                    if (tempDiv) tempDiv.remove();
-                    summaryInput.style.display = "block";
+            try {
+                // 1. Capture charts
+                const chartImgs = captureChartsAsImages();
+
+                // 2. Build report HTML
+                const dateRangeLabel = getDateRangeLabel();
+                const printDate = new Date().toLocaleDateString('th-TH', { year:'numeric', month:'long', day:'numeric' });
+                const html = buildReportHTML(chartImgs, dateRangeLabel, printDate);
+
+                // 3. Open print window
+                const printWin = window.open('', '_blank', 'width=900,height=700');
+                if (!printWin) {
+                    Swal.fire({ icon:'error', title:'Pop-up ถูกบล็อก', text:'กรุณาอนุญาต Pop-up สำหรับเว็บไซต์นี้ในเบราว์เซอร์ แล้วลองใหม่', confirmButtonColor:'#3b82f6', background:'#1c2230', color:'#e6edf3' });
+                    return;
                 }
-            }, 500);
+                printWin.document.write(html);
+                printWin.document.close();
+
+                // 4. Wait for fonts/images to load, then print
+                Swal.close();
+                await new Promise(r => setTimeout(r, 1200));
+                printWin.focus();
+                printWin.print();
+
+                showToast('เปิดหน้าต่างพิมพ์รายงานเรียบร้อย!', 'success');
+
+            } catch(err) {
+                console.error(err);
+                Swal.fire({ icon:'error', title:'เกิดข้อผิดพลาด', text: err.message, confirmButtonColor:'#3b82f6', background:'#1c2230', color:'#e6edf3' });
+            }
         }
 
         // ========== EXPORT CSV ==========
@@ -2110,37 +3023,215 @@ ${attendanceInsight}
             showToast(`ดาวน์โหลด CSV สำเร็จ (${dataToExport.length} รายการ)`, 'success');
         }
 
-        // ========== EXPORT IMAGE ==========
-        function exportToImage() {
-            Swal.fire({ title: 'กำลังเตรียมรูปภาพ...', text: 'กรุณารอสักครู่', allowOutsideClick: false, background: '#1c2230', color: '#e6edf3', didOpen: () => { Swal.showLoading(); } });
+        // ========== EXPORT INFOGRAPHIC IMAGE ==========
+        async function exportToImage() {
+            Swal.fire({ title:'📸 กำลังสร้าง Infographic...', html:'<div style="font-size:13px;color:#93c5fd;">กำลังจัดเรียงข้อมูลและเรนเดอร์กราฟ</div>', allowOutsideClick:false, background:'#1c2230', color:'#e6edf3', didOpen:()=>{ Swal.showLoading(); } });
+            await new Promise(r => setTimeout(r, 250));
 
-            const noPrintElements = document.querySelectorAll('.no-print');
-            noPrintElements.forEach(el => el.style.display = 'none');
+            // Get computed bg from current theme
+            const themeBg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d1117';
+            const themeSurface = getComputedStyle(document.documentElement).getPropertyValue('--surface').trim() || '#161b22';
 
+            // Force all tabs visible for capture
+            const savedTab = currentTab;
+            document.querySelectorAll('.tab-panel').forEach(p => { p.style.display='block'; p.style.opacity='1'; });
+            Object.values(charts).forEach(c => { try { c&&c.resize&&c.resize(); } catch(e){} });
             const mainContent = document.getElementById('main-content');
+            const origH = mainContent.style.height;
+            const origO = mainContent.style.overflow;
             mainContent.style.height = 'auto';
             mainContent.style.overflow = 'visible';
 
-            html2canvas(document.getElementById('dashboard-content'), { scale: 2, useCORS: true, backgroundColor: '#0d1117' }).then(canvas => {
-                noPrintElements.forEach(el => el.style.display = '');
-                mainContent.style.height = '';
-                mainContent.style.overflow = '';
+            // Hide UI-only elements from capture
+            const hideEls = document.querySelectorAll('.no-print, header, aside, #mainTabBar');
+            hideEls.forEach(el => { el._origDisplay = el.style.display; el.style.display = 'none'; });
 
+            try {
+                await new Promise(r => setTimeout(r, 400));
+
+                const canvas = await html2canvas(document.getElementById('dashboard-content'), {
+                    scale: 2, useCORS: true,
+                    backgroundColor: themeBg,
+                    logging: false,
+                    windowWidth: 1440
+                });
+
+                // --- Build final infographic canvas with header + footer ---
+                const PAD = 0;
+                const HEADER_H = 90;
+                const FOOTER_H = 44;
+                const totalH = HEADER_H + canvas.height + FOOTER_H + PAD * 2;
+                const totalW = canvas.width;
+
+                const out = document.createElement('canvas');
+                out.width  = totalW;
+                out.height = totalH;
+                const ctx = out.getContext('2d');
+
+                // Header gradient
+                const hGrad = ctx.createLinearGradient(0, 0, totalW, HEADER_H);
+                hGrad.addColorStop(0, '#0f172a');
+                hGrad.addColorStop(0.5, '#1e3a5f');
+                hGrad.addColorStop(1, '#1e40af');
+                ctx.fillStyle = hGrad;
+                ctx.fillRect(0, 0, totalW, HEADER_H);
+
+                // Header decorative circles
+                ctx.save();
+                ctx.globalAlpha = 0.1;
+                ctx.fillStyle = '#60a5fa';
+                ctx.beginPath(); ctx.arc(totalW - 60, 20, 70, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(totalW - 160, 70, 40, 0, Math.PI*2); ctx.fill();
+                ctx.restore();
+
+                // Header text — emoji icon
+                ctx.font = `bold 34px sans-serif`;
+                ctx.fillStyle = '#fff';
+                ctx.fillText('📊', 28, 54);
+
+                // Header title
+                ctx.font = `700 ${Math.round(totalW * 0.014)}px "IBM Plex Sans Thai", sans-serif`;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText('รายงานสรุปผลโครงการอบรมพนักงานใหม่', 74, 38);
+
+                // Header subtitle
+                const dateRange = getDateRangeLabel();
+                ctx.font = `${Math.round(totalW * 0.0095)}px "IBM Plex Sans Thai", sans-serif`;
+                ctx.fillStyle = '#93c5fd';
+                ctx.fillText(dateRange, 76, 58);
+
+                // Header meta
+                const lr   = getLatestRecords(currentFilteredData);
+                const hc   = lr.length;
+                const passed  = lr.filter(isPassedStatus).length;
+                const dropped = lr.filter(isDroppedStatus).length;
+                const active  = hc - passed - dropped;
+                const rate    = hc > 0 ? Math.round((passed/hc)*100) : 0;
+                ctx.font = `${Math.round(totalW * 0.0082)}px "IBM Plex Sans Thai", sans-serif`;
+                ctx.fillStyle = 'rgba(255,255,255,0.55)';
+                const metaY = 76;
+                const metaItems = [
+                    `✅ ผ่านอบรม: ${passed} คน`,
+                    `🔄 กำลังเทรน: ${active} คน`,
+                    `❌ ออก: ${dropped} คน`,
+                    `📈 Success Rate: ${rate}%`,
+                    `📅 ${new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'})}`
+                ];
+                let metaX = 76;
+                metaItems.forEach(t => {
+                    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+                    ctx.fillText(t, metaX, metaY);
+                    metaX += ctx.measureText(t).width + 28;
+                });
+
+                // Dashboard content
+                ctx.drawImage(canvas, 0, HEADER_H);
+
+                // Footer
+                const fGrad = ctx.createLinearGradient(0, HEADER_H + canvas.height, totalW, totalH);
+                fGrad.addColorStop(0, '#0f172a');
+                fGrad.addColorStop(1, '#1e3a5f');
+                ctx.fillStyle = fGrad;
+                ctx.fillRect(0, HEADER_H + canvas.height, totalW, FOOTER_H);
+
+                ctx.font = `${Math.round(totalW * 0.008)}px "IBM Plex Sans Thai", sans-serif`;
+                ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                ctx.fillText('📊 HR Training Dashboard — Confidential | สร้างโดยระบบ HR Portal Live Dashboard', 24, HEADER_H + canvas.height + 20);
+                const ts = new Date().toLocaleString('th-TH');
+                const tsW = ctx.measureText(ts).width;
+                ctx.fillText(ts, totalW - tsW - 24, HEADER_H + canvas.height + 20);
+
+                // Footer separator line
+                ctx.fillStyle = 'rgba(59,130,246,0.5)';
+                ctx.fillRect(0, HEADER_H + canvas.height, totalW, 2);
+
+                // Download
                 const link = document.createElement('a');
-                link.download = 'Training_Dashboard_Infographic.png';
-                link.href = canvas.toDataURL('image/png');
+                const dateStr = new Date().toISOString().split('T')[0];
+                link.download = `HR_Training_Dashboard_${dateStr}.png`;
+                link.href = out.toDataURL('image/png', 1.0);
                 link.click();
 
                 Swal.close();
-                Swal.fire({ icon: 'success', title: 'บันทึกรูปภาพสำเร็จ!', showConfirmButton: false, timer: 1500, background: '#1c2230', color: '#e6edf3' });
-            }).catch(err => {
+                Swal.fire({ icon:'success', title:'บันทึก Infographic สำเร็จ!', text:'ไฟล์ PNG คุณภาพสูงได้รับการบันทึกแล้ว', showConfirmButton:false, timer:2000, background:'#1c2230', color:'#e6edf3' });
+
+            } catch(err) {
                 Swal.close();
-                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถสร้างรูปภาพได้: ' + err.message, 'error');
-                noPrintElements.forEach(el => el.style.display = '');
-                mainContent.style.height = '';
-                mainContent.style.overflow = '';
-            });
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถสร้างรูปภาพได้: '+err.message, 'error');
+            } finally {
+                // Restore
+                hideEls.forEach(el => { el.style.display = el._origDisplay || ''; });
+                mainContent.style.height = origH;
+                mainContent.style.overflow = origO;
+                document.querySelectorAll('.tab-panel').forEach(p => { p.style.display=''; p.style.opacity=''; });
+                showTab(savedTab);
+                setTimeout(() => { Object.values(charts).forEach(c => { try { c&&c.resize&&c.resize(); } catch(e){} }); }, 100);
+            }
         }
+        // ========== THEME SYSTEM ==========
+        const THEMES = ['dark','light','midnight','forest','rose'];
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('hr-dashboard-theme', theme);
+
+            // Update checkmarks & active state
+            THEMES.forEach(t => {
+                const opt  = document.getElementById('opt-' + t);
+                const chk  = document.getElementById('check-' + t);
+                if (!opt || !chk) return;
+                if (t === theme) {
+                    opt.classList.add('active-theme');
+                    chk.style.display = '';
+                } else {
+                    opt.classList.remove('active-theme');
+                    chk.style.display = 'none';
+                }
+            });
+
+            // Redraw charts after theme change (colors update)
+            setTimeout(() => {
+                if (currentFilteredData.length > 0) {
+                    const lr = getLatestRecords(currentFilteredData);
+                    const passed  = lr.filter(isPassedStatus).length;
+                    const dropped = lr.filter(isDroppedStatus).length;
+                    const active  = lr.length - passed - dropped;
+                    drawCharts(active, passed, dropped, lr);
+                }
+            }, 80);
+
+            closeThemeDropdown();
+            showToast(`เปลี่ยนธีมเป็น "${theme}" เรียบร้อย`, 'success');
+        }
+
+        function toggleThemeDropdown() {
+            const dd = document.getElementById('themeDropdown');
+            const isOpen = dd.style.display === 'block';
+            dd.style.display = isOpen ? 'none' : 'block';
+            if (!isOpen) {
+                // Close on outside click
+                setTimeout(() => {
+                    document.addEventListener('click', closeThemeOnOutside, { once: true });
+                }, 10);
+            }
+        }
+
+        function closeThemeDropdown() {
+            const dd = document.getElementById('themeDropdown');
+            if (dd) dd.style.display = 'none';
+        }
+
+        function closeThemeOnOutside(e) {
+            const picker = document.getElementById('themePicker');
+            if (picker && !picker.contains(e.target)) closeThemeDropdown();
+        }
+
+        // Load saved theme on init
+        (function loadSavedTheme() {
+            const saved = localStorage.getItem('hr-dashboard-theme') || 'dark';
+            if (saved !== 'dark') setTheme(saved);
+        })();
+
     </script>
 </body>
 </html>
